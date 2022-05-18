@@ -84,63 +84,6 @@ in
         pskRaw = "fd4c201d618d6cd19f43d3f17f757f19505c6011d3fa3fc069761acc7d391356";
       };
     };
-
-#    nftables = {
-#      ruleset = ''
-#        table inet filter {
-#          flowtable f {
-#            hook ingress priority 0;
-#            devices = { "${lan_if}", "${wlan_if}", "${wan_if}", "${wan2_if}" };
-#          }
-#        }
-#
-#        chain output {
-#          type filter hook output priority 100; policy accept;
-#        }
-#
-#        chain input {
-#          type filter hook input priority filter; policy drop;
-#
-#          iifname {
-#            "${lan_if}", "${wlan_if}"
-#          } counter accept
-#
-#          iifname {
-#            "${wan_if}", "${wan2_if}"
-#          } ct state { established, related } counter accept
-#        }
-#
-#        chain forward {
-#          type filter hook forward priority filter; policy drop;
-#
-#          ip protocol { tcp, udp } flow offload @f
-#
-#          iifname {
-#            "${lan_if}", "${wlan_if}"
-#          } oifname {
-#            "${wan_if}", "${wan2_if}"
-#          } counter accept comment "Allow LAN to WLAN"
-#
-#          iifname {
-#            "${wan_if}", "${wan2_if}"
-#          } oifname {
-#            "${lan_if}", "${wlan_if}"
-#          } ct state { established, related } counter accept comment "Allow established back to LAN"
-#        }
-#
-#        table ip nat {
-#          chain prerouting {
-#            type nat hook output priority filter; policy accept;
-#          }
-#
-#          chain postrouting {
-#            type nat hook postrouting priority filter; policy accept;
-#
-#            oifname "${wan2_if}" masquerade
-#          }
-#        }
-#      '';
-#    };
   };
 
   services.dhcpd4 = {
