@@ -180,6 +180,31 @@ in
     podman = {
       enable = true;
     };
+
+    oci-containers = {
+      backend = "podman";
+
+      containers = {
+        unifi = {
+          image = "docker.io/linuxserver/unifi-controller:7.1.65";
+          environment = {
+            PUID = "1000";
+            PGID = "1000";
+            MEM_LIMIT = "1024";
+            MEM_STARTUP = "256";
+          };
+          volumes = [
+            "unifi-config:/config"
+          ];
+          ports = [
+            "8080:8080"
+            "8443:8443"
+            "3478:3478/udp"
+            "10001:10001/udp"
+          ];
+        };
+      };
+    };
   };
 
   # Some programs need SUID wrappers, can be configured further or are
