@@ -104,6 +104,19 @@ in
         hardware ethernet 36:01:ca:37:a7:10;
         fixed-address 192.168.2.2;
       }
+
+      host ap1 {
+	hardware ethernet f0:9f:c2:7c:57:fe;
+        fixed-address 192.168.2.241;
+      }
+      host ap2 {
+	hardware ethernet 78:8a:20:48:e3:9c;
+        fixed-address 192.168.2.242;
+      }
+      host ap3 {
+	hardware ethernet 80:2a:a8:46:18:28;
+        fixed-address 192.168.2.243;
+      }
     '';
   };
 
