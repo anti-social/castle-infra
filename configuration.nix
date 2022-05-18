@@ -99,6 +99,11 @@ in
         interface ${lan_br_if};
         range 192.168.2.100 192.168.2.200;
       }
+
+      host pc {
+        hardware ethernet 36:01:ca:37:a7:10;
+        fixed-address 192.168.2.2;
+      }
     '';
   };
 
