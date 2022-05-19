@@ -25,6 +25,36 @@ let
       ip = "${lan_addr_prefix}.2";
     }
     {
+      host = "oldpc";
+      mac = "f8:32:e4:9a:87:da";
+      ip = "${lan_addr_prefix}.3";
+    }
+    {
+      host = "laptop";
+      mac = "8c:47:be:32:67:10";
+      ip = "${lan_addr_prefix}.11";
+    }
+    {
+      host = "laptop-wifi";
+      mac = "cc:d9:ac:d8:60:7b";
+      ip = "${lan_addr_prefix}.12";
+    }
+    {
+      host = "flipmoon";
+      mac = "ac:12:03:2d:6e:eb";
+      ip = "${lan_addr_prefix}.13";
+    }
+    {
+      host = "huawei-p10";
+      mac = "30:74:96:46:1f:f9";
+      ip = "${lan_addr_prefix}.21";
+    }
+    {
+      host = "redmi-1";
+      mac = "4c:63:71:5a:c1:9d";
+      ip = "${lan_addr_prefix}.22";
+    }
+    {
       host = "ap1";
       mac = "f0:9f:c2:7c:57:fe";
       ip = "${lan_addr_prefix}.241";
@@ -38,6 +68,12 @@ let
       host = "ap3";
       mac = "80:2a:a8:46:18:28";
       ip = "${lan_addr_prefix}.243";
+    }
+    {
+      host = "switch";
+      mac = "bc:67:1c:c8:f2:3d";
+      ip = "${lan_addr_prefix}.254";
+      aliases = [ "cisco" ];
     }
   ];
 in
