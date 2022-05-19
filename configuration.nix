@@ -146,24 +146,35 @@ in
     '';
   };
 
-  services.dnsmasq = let
+  services.coredns = let
     fqdn = host: "${host}.${local_domain}";
     renderHost = { host, ip, aliases ? [], ... }:
       let
-        record_values = ["${fqdn host}"] ++ (map fqdn aliases) ++ [ip];
+        record_values = [ip] ++ ["${fqdn host}"] ++ (map fqdn aliases);
       in
-        "host-record=${builtins.concatStringsSep "," record_values}";
+        "${builtins.concatStringsSep " " record_values}";
   in {
     enable = true;
-    servers = [ "1.1.1.2" "1.0.0.2" ];
-    extraConfig = ''
-      no-resolv
-      no-hosts
-      cache-size=10000
-      domain=${local_domain}
-      expand-hosts
-      ${renderHost {host = hostname; ip = local_addr; aliases = hostname_aliases;}}
-      ${builtins.concatStringsSep "\n" (map renderHost static_hosts)}
+    config = ''
+      . {
+        bind 127.0.0.1 ${local_addr}
+
+        prometheus localhost:9153
+
+        hosts {
+          ${renderHost {host = hostname; ip = local_addr; aliases = hostname_aliases;}}
+          ${builtins.concatStringsSep "\n    " (map renderHost static_hosts)}
+
+          fallthrough
+        }
+
+        forward . tls://1.1.1.2 tls://1.0.0.2 {
+          tls_servername cloudflare-dns.com
+        }
+
+        cache
+        errors
+      }
     '';
   };
 
@@ -323,6 +334,10 @@ in
           scrape_interval: 15s
           static_configs:
           - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
+        - job_name: coredns
+          scrape_interval: 15s
+          static_configs:
+          - targets: [ "localhost:9153" ]
         - job_name: node
           scrape_interval: 15s
           static_configs:
