@@ -323,6 +323,10 @@ in
           scrape_interval: 15s
           static_configs:
           - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
+        - job_name: node
+          scrape_interval: 15s
+          static_configs:
+          - targets: [ "pc.castle:9100" ]
       '';
     };
   };
@@ -330,6 +334,8 @@ in
   systemd.services.vmagent = {
     enable = true;
     description = "Victoria metrics agent";
+    wantedBy = [ "multi-user.target" ];
+    requires = [ "victoriametrics.service" ];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${config.services.victoriametrics.package}/bin/vmagent -promscrape.config=/etc/vmagent.yaml -remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write";
