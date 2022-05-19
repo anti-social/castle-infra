@@ -69,7 +69,8 @@ in
     };
 
     firewall = {
-      enable = true;      
+      enable = true;
+      interfaces."${lan_br_if}".allowedTCPPorts = [ 80 ];
     };
 
     nat = {
@@ -182,6 +183,7 @@ in
     mc
     nftables
     tcpdump
+    telnet
     tmux
     usb-modeswitch
     usb-modeswitch-data
@@ -233,6 +235,68 @@ in
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
+  };
+
+  services = {
+    victoriametrics = {
+      enable = true;
+      listenAddress = "127.0.0.1:8428";
+    };
+
+    prometheus = {
+      exporters = {
+        node = {
+          enable = true;
+          listenAddress = "127.0.0.1";
+          port = 9100;
+          enabledCollectors = [ "systemd" ];
+        };
+      };
+      scrapeConfigs = [
+        {
+          job_name = "gw";
+          static_configs = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
+        }
+      ];
+    };
+
+    grafana = {
+      enable = true;
+      domain = "grafana.castle";
+      port = 5000;
+      addr = "127.0.0.1";
+    };
+  };
+
+  environment.etc = {
+    "vmagent.yaml" = {
+      text = ''
+        scrape_configs:
+        - job_name: node
+          scrape_interval: 15s
+          static_configs:
+          - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
+      '';
+    };
+  };
+
+  systemd.services.vmagent = {
+    enable = true;
+    description = "Victoria metrics agent";
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${config.services.victoriametrics.package}/bin/vmagent -promscrape.config=/etc/vmagent.yaml -remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write";
+    };
+  };
+
+  services.nginx = {
+    enable = true;
+    virtualHosts.${config.services.grafana.domain} = {
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
+        # proxyWebsockets = true;
+      };
+    };
   };
 
   # Open ports in the firewall.
