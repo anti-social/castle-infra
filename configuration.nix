@@ -10,9 +10,36 @@ let
   lan_br_if = "br0";
   wan_bak_if = "enp0s21f0u2";
   wlan_if = "wlp3s0b1";
-
   lan_zone = [ lan_br_if ];
   wan_zone = [ wan_bak_if ];
+
+  hostname = "gw";
+  hostname_aliases = [ "unifi" "grafana" ];
+  local_domain = "castle";
+  lan_addr_prefix = "192.168.2";
+  local_addr = "${lan_addr_prefix}.1";
+  static_hosts = [
+    {
+      host = "pc";
+      mac = "36:01:ca:37:a7:10";
+      ip = "${lan_addr_prefix}.2";
+    }
+    {
+      host = "ap1";
+      mac = "f0:9f:c2:7c:57:fe";
+      ip = "${lan_addr_prefix}.241";
+    }
+    {
+      host = "ap2";
+      mac = "78:8a:20:48:e3:9c";
+      ip = "${lan_addr_prefix}.242";
+    }
+    {
+      host = "ap3";
+      mac = "80:2a:a8:46:18:28";
+      ip = "${lan_addr_prefix}.243";
+    }
+  ];
 in
 {
   imports =
@@ -23,7 +50,10 @@ in
   # Use the systemd-boot EFI boot loader.
   # boot.loader.systemd-boot.enable = true;
   # boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub = {
+    device = "/dev/sda";
+    gfxmodeEfi = "1920x1080";
+  };
 
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.forwarding" = true;
@@ -46,7 +76,7 @@ in
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking = {
-    hostName = "gw2";
+    hostName = hostname;
     useDHCP = false;
     
     bridges = {
@@ -61,7 +91,7 @@ in
       "${lan_br_if}" = {
         useDHCP = false;
         ipv4.addresses = [
-          { address = "192.168.2.1"; prefixLength = 24; }
+          { address = local_addr; prefixLength = 24; }
         ];
       };
       "${wan_bak_if}".useDHCP = true;
@@ -70,7 +100,10 @@ in
 
     firewall = {
       enable = true;
-      interfaces."${lan_br_if}".allowedTCPPorts = [ 80 ];
+      interfaces."${lan_br_if}" = {
+        allowedTCPPorts = [ 80 ];
+        allowedUDPPorts = [ 53 67 68 ];
+      };
     };
 
     nat = {
@@ -87,37 +120,50 @@ in
     };
   };
 
-  services.dhcpd4 = {
+  services.dhcpd4 = let 
+    renderHost = { host, mac, ip, ... }: ''
+      host ${host} {
+        hardware ethernet ${mac};
+        fixed-address ${ip};
+      }
+    '';
+  in {
     enable = true;
     interfaces = [ lan_br_if ];
     extraConfig = ''
-      option domain-name-servers 1.1.1.1;
+      option domain-name-servers ${local_addr};
+      option domain-name castle;
       option subnet-mask 255.255.255.0;
       
-      subnet 192.168.2.0 netmask 255.255.255.0 {
-        option broadcast-address 192.168.2.255;
-        option routers 192.168.2.1;
+      subnet ${lan_addr_prefix}.0 netmask 255.255.255.0 {
+        option broadcast-address ${lan_addr_prefix}.255;
+        option routers ${local_addr};
         interface ${lan_br_if};
-        range 192.168.2.100 192.168.2.200;
+        range ${lan_addr_prefix}.100 ${lan_addr_prefix}.200;
       }
 
-      host pc {
-        hardware ethernet 36:01:ca:37:a7:10;
-        fixed-address 192.168.2.2;
-      }
+      ${builtins.concatStringsSep "\n" (map renderHost static_hosts)}
+    '';
+  };
 
-      host ap1 {
-	hardware ethernet f0:9f:c2:7c:57:fe;
-        fixed-address 192.168.2.241;
-      }
-      host ap2 {
-	hardware ethernet 78:8a:20:48:e3:9c;
-        fixed-address 192.168.2.242;
-      }
-      host ap3 {
-	hardware ethernet 80:2a:a8:46:18:28;
-        fixed-address 192.168.2.243;
-      }
+  services.dnsmasq = let
+    fqdn = host: "${host}.${local_domain}";
+    renderHost = { host, ip, aliases ? [], ... }:
+      let
+        record_values = ["${fqdn host}"] ++ (map fqdn aliases) ++ [ip];
+      in
+        "host-record=${builtins.concatStringsSep "," record_values}";
+  in {
+    enable = true;
+    servers = [ "1.1.1.2" "1.0.0.2" ];
+    extraConfig = ''
+      no-resolv
+      no-hosts
+      cache-size=10000
+      domain=${local_domain}
+      expand-hosts
+      ${renderHost {host = hostname; ip = local_addr; aliases = hostname_aliases;}}
+      ${builtins.concatStringsSep "\n" (map renderHost static_hosts)}
     '';
   };
 
@@ -176,6 +222,7 @@ in
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     bridge-utils
+    dnsutils
     ethtool
     git
     htop
