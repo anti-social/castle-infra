@@ -134,6 +134,13 @@ in
       "${wlan_if}".useDHCP = false;
     };
 
+    resolvconf = {
+      useLocalResolver = true;
+      extraConfig = ''
+        search_domains="${local_domain}"
+      '';
+    };
+
     firewall = {
       enable = true;
       interfaces."${lan_br_if}" = {
