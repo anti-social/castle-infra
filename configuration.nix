@@ -283,6 +283,7 @@ in
     pciutils
     mc
     nftables
+    ripgrep
     tcpdump
     telnet
     tmux
