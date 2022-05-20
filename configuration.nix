@@ -81,6 +81,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./vmagent.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -220,6 +221,12 @@ in
       }
     '';
   };
+  services.vmagent.scrapeConfigs.localhostCoredns = ''
+    - job_name: coredns
+      scrape_interval: 15s
+      static_configs:
+      - targets: [ "localhost:9153" ]
+  '';
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -354,61 +361,40 @@ in
           enabledCollectors = [ "systemd" ];
         };
       };
-      scrapeConfigs = [
-        {
-          job_name = "gw";
-          static_configs = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
-        }
-      ];
-    };
-
-    grafana = {
-      enable = true;
-      domain = "grafana.castle";
-      port = 5000;
-      addr = "127.0.0.1";
     };
   };
+  services.vmagent.scrapeConfigs.localhostNode = ''
+    - job_name: node
+      scrape_interval: 15s
+      static_configs:
+      - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
+  '';
 
-  environment.etc = {
-    "vmagent.yaml" = {
-      text = ''
-        scrape_configs:
-        - job_name: node
-          scrape_interval: 15s
-          static_configs:
-          - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
-        - job_name: coredns
-          scrape_interval: 15s
-          static_configs:
-          - targets: [ "localhost:9153" ]
-        - job_name: node
-          scrape_interval: 15s
-          static_configs:
-          - targets: [ "pc.castle:9100" ]
-      '';
-    };
-  };
-
-  systemd.services.vmagent = {
+  services.grafana = {
     enable = true;
-    description = "Victoria metrics agent";
-    wantedBy = [ "multi-user.target" ];
-    requires = [ "victoriametrics.service" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${config.services.victoriametrics.package}/bin/vmagent -promscrape.config=/etc/vmagent.yaml -remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write";
+    domain = "grafana.castle";
+    port = 5000;
+    addr = "127.0.0.1";
+  };
+  services.nginx.virtualHosts.${config.services.grafana.domain} = {
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
+      # proxyWebsockets = true;
     };
   };
+
+  services.vmagent = {
+    enable = true;
+  };
+  services.vmagent.scrapeConfigs.pcNode = ''
+    - job_name: node
+      scrape_interval: 15s
+      static_configs:
+      - targets: [ "pc.castle:9100" ]
+  '';
 
   services.nginx = {
     enable = true;
-    virtualHosts.${config.services.grafana.domain} = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
-        # proxyWebsockets = true;
-      };
-    };
   };
 
   # Open ports in the firewall.
