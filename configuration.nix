@@ -144,7 +144,7 @@ in
 
     firewall = {
       enable = true;
-      interfaces."${lan_br_if}" = {
+      interfaces.${lan_br_if} = {
         allowedTCPPorts = [ 80 ];
         allowedUDPPorts = [ 53 67 68 ];
       };
@@ -194,7 +194,7 @@ in
     fqdn = host: "${host}.${local_domain}";
     renderHost = { host, ip, aliases ? [], ... }:
       let
-        record_values = [ip] ++ ["${fqdn host}"] ++ (map fqdn aliases);
+        record_values = [ip] ++ [(fqdn host)] ++ (map fqdn aliases);
       in
         "${builtins.concatStringsSep " " record_values}";
   in {
