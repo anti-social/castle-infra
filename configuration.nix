@@ -174,6 +174,60 @@ in
     };
   };
 
+  # Select internationalisation properties.
+  # i18n.defaultLocale = "en_US.UTF-8";
+  # console = {
+  #   font = "Lat2-Terminus16";
+  #   keyMap = "us";
+  # };
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users = {
+    # mutableUsers = false;
+    users.nixos = {
+      uid = 999;
+      isNormalUser = true;
+      extraGroups = [ "wheel" ];
+    };
+    users.alexk = {
+      uid = 1000;
+      isNormalUser = true;
+      extraGroups = [ "wheel" ];
+      openssh.authorizedKeys.keys = [
+	"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
+      ];
+    };
+  };
+
+  nixpkgs.config.allowUnfree = true;
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    bridge-utils
+    dnsutils
+    ethtool
+    git
+    htop
+    pciutils
+    mc
+    nftables
+    ripgrep
+    tcpdump
+    telnet
+    tmux
+    usb-modeswitch
+    usb-modeswitch-data
+    usbutils
+    wget
+  ];
+
+  ### List services that you want to enable:
+
+  services.openssh = {
+    enable = true;
+  };
+
   services.dhcpd4 = let 
     renderHost = { host, mac, ip, ... }: ''
       host ${host} {
@@ -238,91 +292,6 @@ in
       - targets: [ "localhost:9153" ]
   '';
 
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  # };
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users = {
-    # mutableUsers = false;
-    users.nixos = {
-      uid = 999;
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-    };
-    users.alexk = {
-      uid = 1000;
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-      openssh.authorizedKeys.keys = [
-	"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
-      ];
-    };
-  };
-
-  nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    bridge-utils
-    dnsutils
-    ethtool
-    git
-    htop
-    pciutils
-    mc
-    nftables
-    ripgrep
-    tcpdump
-    telnet
-    tmux
-    usb-modeswitch
-    usb-modeswitch-data
-    usbutils
-    wget
-  ];
-
-  virtualisation = {
-    podman = {
-      enable = true;
-    };
-
-    oci-containers = {
-      backend = "podman";
-
-      containers = {
-        unifi = {
-          image = "docker.io/linuxserver/unifi-controller:7.1.65";
-          environment = {
-            PUID = "1000";
-            PGID = "1000";
-            MEM_LIMIT = "1024";
-            MEM_STARTUP = "256";
-          };
-          volumes = [
-            "unifi-config:/config"
-          ];
-          ports = [
-            "8080:8080"
-            "8443:8443"
-            "3478:3478/udp"
-            "10001:10001/udp"
-          ];
-        };
-      };
-    };
-  };
-
-  ### List services that you want to enable:
-
-  services.openssh = {
-    enable = true;
-  };
-
   services = {
     victoriametrics = {
       enable = true;
@@ -372,6 +341,39 @@ in
 
   services.nginx = {
     enable = true;
+  };
+
+  ### Containers:
+
+  virtualisation = {
+    podman = {
+      enable = true;
+    };
+
+    oci-containers = {
+      backend = "podman";
+
+      containers = {
+        unifi = {
+          image = "docker.io/linuxserver/unifi-controller:7.1.65";
+          environment = {
+            PUID = "1000";
+            PGID = "1000";
+            MEM_LIMIT = "1024";
+            MEM_STARTUP = "256";
+          };
+          volumes = [
+            "unifi-config:/config"
+          ];
+          ports = [
+            "8080:8080"
+            "8443:8443"
+            "3478:3478/udp"
+            "10001:10001/udp"
+          ];
+        };
+      };
+    };
   };
 
   # This value determines the NixOS release from which the default
