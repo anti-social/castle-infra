@@ -117,22 +117,22 @@ in
     useDHCP = false;
     
     bridges = {
-      "${lan_br_if}" = {
+      ${lan_br_if} = {
         interfaces = [ lan1_if lan2_if ];
       };
     };
 
     interfaces = {
-      "${lan1_if}".useDHCP = false;
-      "${lan2_if}".useDHCP = false;
-      "${lan_br_if}" = {
+      ${lan1_if}.useDHCP = false;
+      ${lan2_if}.useDHCP = false;
+      ${lan_br_if} = {
         useDHCP = false;
         ipv4.addresses = [
           { address = local_addr; prefixLength = 24; }
         ];
       };
-      "${wan_bak_if}".useDHCP = true;
-      "${wlan_if}".useDHCP = false;
+      ${wan_bak_if}.useDHCP = true;
+      ${wlan_if}.useDHCP = false;
     };
 
     resolvconf = {
