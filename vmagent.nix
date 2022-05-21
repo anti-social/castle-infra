@@ -24,6 +24,12 @@ in {
         description = "Scrape endpoints";
       };
 
+      writeUrl = mkOption {
+        type = types.str;
+	default = "http://${config.services.victoriametrics.listenAddress}/api/v1/write";
+        description = "Endpoint to send metrics";
+      };
+
       extraOptions = mkOption {
         type = types.listOf types.str;
         default = [];
@@ -51,7 +57,7 @@ in {
         ExecStart = ''
           ${config.services.victoriametrics.package}/bin/vmagent \
             -promscrape.config=${vmagentConfig} \
-            -remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write \
+            -remoteWrite.url=${cfg.writeUrl} \
             -remoteWrite.tmpDataPath=/var/lib/vmagent \
             ${lib.escapeShellArgs cfg.extraOptions}
         '';
