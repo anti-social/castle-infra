@@ -34,8 +34,8 @@ in {
       requires = [ "victoriametrics.service" ];
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${config.services.victoriametrics.package}/bin/vmagent "
-          "-promscrape.config=${vmagentConfig} "
+        ExecStart = "${config.services.victoriametrics.package}/bin/vmagent " +
+          "-promscrape.config=${vmagentConfig} " +
           "-remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write";
       };
     };
