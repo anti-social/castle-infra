@@ -58,6 +58,23 @@ let
       host = "redmi-1";
       mac = "4c:63:71:5a:c1:9d";
       ip = "${lan_addr_prefix}.22";
+      aliases = ["redmi-ksyusha"];
+    }
+    {
+      host = "redmi-2";
+      mac = "4c:63:71:5b:0b:00";
+      ip = "${lan_addr_prefix}.23";
+      aliases = ["redmi-nastya"];
+    }
+    {
+      host = "ipad";
+      mac = "e2:2b:94:4a:d0:3d";
+      ip = "${lan_addr_prefix}.24";
+    }
+    {
+      host = "iphone";
+      mac = "ea:00:77:1a:1b:9c";
+      ip = "${lan_addr_prefix}.25";
     }
     {
       host = "boiler";
@@ -108,6 +125,13 @@ in
 
   # Set your time zone.
   time.timeZone = "Europe/Kiev";
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "us";
+  };
 
   # TODO: find out why it does not work
   # services.udev.extraRules = ''
@@ -174,13 +198,6 @@ in
     };
   };
 
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  # };
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users = {
     # mutableUsers = false;
@@ -212,6 +229,7 @@ in
     pciutils
     mc
     nftables
+    nmap
     ripgrep
     tcpdump
     telnet
