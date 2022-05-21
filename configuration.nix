@@ -30,6 +30,11 @@ let
       ip = "${lan_addr_prefix}.3";
     }
     {
+      host = "tv";
+      mac = "c4:36:6c:06:73:3e";
+      ip = "${lan_addr_prefix}.10";
+    }
+    {
       host = "laptop";
       mac = "8c:47:be:32:67:10";
       ip = "${lan_addr_prefix}.11";
@@ -53,6 +58,11 @@ let
       host = "redmi-1";
       mac = "4c:63:71:5a:c1:9d";
       ip = "${lan_addr_prefix}.22";
+    }
+    {
+      host = "boiler";
+      mac = "44:23:7c:ab:9c:07";
+      ip = "${lan_addr_prefix}.90";
     }
     {
       host = "ap1";
