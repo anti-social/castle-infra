@@ -23,6 +23,17 @@ in {
         default = {};
         description = "Scrape endpoints";
       };
+
+      extraOptions = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          Extra options to pass to VictoriaMetrics agent.
+          See available options at
+          <link xlink:href="https://docs.victoriametrics.com/vmagent.html#advanced-usage"/>
+          or run <command>vmagent -help</command>
+        '';
+      };
     };
   };
 
@@ -31,12 +42,19 @@ in {
       enable = true;
       description = "Victoria metrics agent";
       wantedBy = [ "multi-user.target" ];
-      requires = [ "victoriametrics.service" ];
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${config.services.victoriametrics.package}/bin/vmagent " +
-          "-promscrape.config=${vmagentConfig} " +
-          "-remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write";
+        Restart = "on-failure";
+        RestartSec = 1;
+        DynamicUser = true;
+        StateDirectory = "vmagent";
+        ExecStart = ''
+          ${config.services.victoriametrics.package}/bin/vmagent \
+            -promscrape.config=${vmagentConfig} \
+            -remoteWrite.url=http://${toString config.services.victoriametrics.listenAddress}/api/v1/write \
+            -remoteWrite.tmpDataPath=/var/lib/vmagent \
+            ${lib.escapeShellArgs cfg.extraOptions}
+        '';
       };
     };
   };
