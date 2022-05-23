@@ -143,6 +143,12 @@ in
     keyMap = "us";
   };
 
+  boot.kernelParams = [ "systemd.debug-shell=1" ];
+  systemd.additionalUpstreamSystemUnits = [
+    "debug-shell.service"
+  ];
+  #systemd.services.debug-shell.enable = true;
+
   # TODO: find out why it does not work
   # services.udev.extraRules = ''
   #   SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="62:b6:6e:8a:2f:11", NAME="wan_huawei"
