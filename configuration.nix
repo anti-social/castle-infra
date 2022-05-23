@@ -77,9 +77,19 @@ let
       ip = "${lan_addr_prefix}.25";
     }
     {
+      host = "vacuum";
+      mac = "50:ec:50:1b:d5:ac";
+      ip = "${lan_addr_prefix}.80";
+    }
+    {
       host = "boiler";
       mac = "44:23:7c:ab:9c:07";
       ip = "${lan_addr_prefix}.90";
+    }
+    {
+      host = "heat-2";
+      mac = "5c:e5:0c:0f:13:57";
+      ip = "${lan_addr_prefix}.91";
     }
     {
       host = "ap1";
