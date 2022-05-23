@@ -226,6 +226,7 @@ in
       uid = 1000;
       isNormalUser = true;
       extraGroups = [ "wheel" ];
+      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = [
 	"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
       ];
@@ -254,6 +255,7 @@ in
     usb-modeswitch-data
     usbutils
     wget
+    zsh
   ];
 
   ### List services that you want to enable:
