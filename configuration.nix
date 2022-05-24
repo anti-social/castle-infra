@@ -19,7 +19,7 @@ let
   wan_zone = [ wan_if ];
 
   hostname = "gw";
-  hostname_aliases = [ "unifi" "grafana" ];
+  hostname_aliases = [ "unifi" "grafana" "home" ];
   local_domain = "castle";
   lan_addr_prefix = "192.168.2";
   local_addr = "${lan_addr_prefix}.1";
@@ -332,20 +332,18 @@ in
       - targets: [ "localhost:9153" ]
   '';
 
-  services = {
-    victoriametrics = {
-      enable = true;
-      listenAddress = "127.0.0.1:8428";
-    };
-
-    prometheus = {
-      exporters = {
-        node = {
-          enable = true;
-          listenAddress = "127.0.0.1";
-          port = 9100;
-          enabledCollectors = [ "systemd" ];
-        };
+  services.victoriametrics = {
+    enable = true;
+    listenAddress = "127.0.0.1:8428";
+  };
+    
+  services.prometheus = {
+    exporters = {
+      node = {
+        enable = true;
+        listenAddress = "127.0.0.1";
+        port = 9100;
+        enabledCollectors = [ "systemd" ];
       };
     };
   };
@@ -354,6 +352,12 @@ in
       scrape_interval: 15s
       static_configs:
       - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
+  '';
+  services.vmagent.relabelConfigs.localhostNode = ''
+    - source_labels: [instance]
+      regex: "localhost(:.+)?"
+      target_label: instance
+      replacement: "${hostname}.${local_domain}"
   '';
 
   services.grafana = {
@@ -372,6 +376,12 @@ in
   services.vmagent = {
     enable = true;
   };
+  services.vmagent.relabelConfigs.pcNode = ''
+    - source_labels: [instance]
+      regex: "(.*):.+"
+      target_label: instance
+      replacement: "$1"
+  '';
   services.vmagent.scrapeConfigs.pcNode = ''
     - job_name: node
       scrape_interval: 15s
@@ -381,6 +391,7 @@ in
 
   services.nginx = {
     enable = true;
+    #recommendedProxySettings = true;
   };
 
   ### Containers:
@@ -413,6 +424,46 @@ in
           ];
         };
       };
+    };
+  };
+
+  virtualisation.oci-containers.containers.home-assistant = let
+    configuration = pkgs.writeText "home-assistant-configuration.yaml" ''
+      # Loads default set of integrations. Do not remove.
+      default_config:
+
+      http:
+        use_x_forwarded_for: true
+        trusted_proxies: [ "10.88.0.1" ]
+
+      # Text to speech
+      tts:
+      - platform: google_translate
+
+      automation: !include automations.yaml
+      #script: !include scripts.yaml
+      #scene: !include scenes.yaml
+    '';
+  in {
+    image = "ghcr.io/home-assistant/home-assistant:2022.5.5";
+    environment = {
+      TZ = config.time.timeZone;
+    };
+    volumes = [
+      "home-assistant:/config"
+      "${configuration}:/config/configuration.yaml"
+    ];
+    ports = [
+      "127.0.0.1:8123:8123"
+    ];
+  };
+  services.nginx.virtualHosts."home.castle" = {
+    extraConfig = ''
+      proxy_buffering off;
+    '';
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8123";
+      proxyWebsockets = true;
     };
   };
 
