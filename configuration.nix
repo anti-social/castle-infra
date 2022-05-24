@@ -7,11 +7,16 @@
 let
   lan1_if = "enp1s0";
   lan2_if = "enp2s0";
-  lan_br_if = "br0";
-  wan_bak_if = "enp0s21f0u2";
   wlan_if = "wlp3s0b1";
+
+  lan_br_if = "br0";
+  lan_br_ifs = [ lan2_if ];
+
+  wan_if = lan1_if;
+  # wan_if = "enp0s21f0u2";
+
   lan_zone = [ lan_br_if ];
-  wan_zone = [ wan_bak_if ];
+  wan_zone = [ wan_if ];
 
   hostname = "gw";
   hostname_aliases = [ "unifi" "grafana" ];
@@ -168,12 +173,11 @@ in
     
     bridges = {
       ${lan_br_if} = {
-        interfaces = [ lan1_if lan2_if ];
+        interfaces = lan_br_ifs;
       };
     };
 
     interfaces = {
-      ${lan1_if}.useDHCP = false;
       ${lan2_if}.useDHCP = false;
       ${lan_br_if} = {
         useDHCP = false;
@@ -181,7 +185,7 @@ in
           { address = local_addr; prefixLength = 24; }
         ];
       };
-      ${wan_bak_if}.useDHCP = true;
+      ${wan_if}.useDHCP = true;
       ${wlan_if}.useDHCP = false;
     };
 
@@ -203,11 +207,11 @@ in
     nat = {
       enable = true;
       internalInterfaces = lan_zone;
-      externalInterface = wan_bak_if;
+      externalInterface = wan_if;
     };
 
     wireless = {
-      enable = true;
+      enable = false;
       networks.Castle = {
         pskRaw = "fd4c201d618d6cd19f43d3f17f757f19505c6011d3fa3fc069761acc7d391356";
       };
