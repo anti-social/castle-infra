@@ -9,6 +9,10 @@ let
     scrape_configs:
     ${concatStringsSep "\n" (builtins.attrValues cfg.scrapeConfigs)}
   '';
+
+  relabelConfig = pkgs.writeText "vmagent-relabel.yaml" ''
+    ${concatStringsSep "\n" (builtins.attrValues cfg.relabelConfigs)}
+  '';
 in {
   options = {
     services.vmagent = {
@@ -22,6 +26,12 @@ in {
         type = types.attrsOf types.lines;
         default = {};
         description = "Scrape endpoints";
+      };
+
+      relabelConfigs = mkOption {
+        type = types.attrsOf types.lines;
+        default = {};
+        description = "Relabel configs";
       };
 
       writeUrl = mkOption {
@@ -59,6 +69,7 @@ in {
             -promscrape.config=${vmagentConfig} \
             -remoteWrite.url=${cfg.writeUrl} \
             -remoteWrite.tmpDataPath=/var/lib/vmagent \
+            -remoteWrite.relabelConfig=${relabelConfig} \
             ${lib.escapeShellArgs cfg.extraOptions}
         '';
       };
