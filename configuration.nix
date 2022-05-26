@@ -97,6 +97,12 @@ let
       ip = "${lan_addr_prefix}.91";
     }
     {
+      host = "light-entrance";
+      mac = "c4:4f:33:e2:81:3e";
+      ip = "${lan_addr_prefix}.92";
+      aliases = [ "sonoff-mini-01" ];
+    }
+    {
       host = "ap1";
       mac = "f0:9f:c2:7c:57:fe";
       ip = "${lan_addr_prefix}.241";
