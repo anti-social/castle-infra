@@ -134,6 +134,7 @@ in
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./vmagent.nix
+      ./dns-proxy.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -304,43 +305,19 @@ in
     '';
   };
 
-  services.coredns = let
+  services.dns-proxy = let
     fqdn = host: "${host}.${local_domain}";
-    renderHost = { host, ip, aliases ? [], ... }:
+    renderStaticHost = { host, ip, aliases ? [], ... }:
       let
         record_values = [ip] ++ [(fqdn host)] ++ (map fqdn aliases);
       in
         "${builtins.concatStringsSep " " record_values}";
   in {
     enable = true;
-    config = ''
-      . {
-        bind 127.0.0.1 ${local_addr}
-
-        prometheus localhost:9153
-
-        hosts {
-          ${renderHost {host = hostname; ip = local_addr; aliases = hostname_aliases;}}
-          ${builtins.concatStringsSep "\n    " (map renderHost static_hosts)}
-
-          fallthrough
-        }
-
-        forward . tls://1.1.1.2 tls://1.0.0.2 {
-          tls_servername cloudflare-dns.com
-        }
-
-        cache
-        errors
-      }
-    '';
+    bindAddr = local_addr;
+    staticHosts = [ (renderStaticHost { host = hostname; ip = local_addr; aliases = hostname_aliases; }) ] ++
+      (map renderStaticHost static_hosts);
   };
-  services.vmagent.scrapeConfigs.localhostCoredns = ''
-    - job_name: coredns
-      scrape_interval: 15s
-      static_configs:
-      - targets: [ "localhost:9153" ]
-  '';
 
   services.victoriametrics = {
     enable = true;
