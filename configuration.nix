@@ -97,10 +97,14 @@ let
       ip = "${lan_addr_prefix}.91";
     }
     {
-      host = "light-entrance";
+      host = "entrance-light";
       mac = "c4:4f:33:e2:81:3e";
       ip = "${lan_addr_prefix}.92";
-      aliases = [ "sonoff-mini-01" ];
+    }
+    {
+      host = "bath-fan";
+      mac = "8c:ce:4e:0c:62:37";
+      ip = "${lan_addr_prefix}.93";
     }
     {
       host = "ap1";
