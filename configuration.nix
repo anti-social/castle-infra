@@ -19,7 +19,7 @@ let
   wan_zone = [ wan_if ];
 
   hostname = "gw";
-  hostname_aliases = [ "unifi" "grafana" "home" ];
+  hostname_aliases = [ "unifi" "grafana" "home" "mqtt" ];
   local_domain = "castle";
   lan_addr_prefix = "192.168.2";
   local_addr = "${lan_addr_prefix}.1";
@@ -135,6 +135,7 @@ in
       ./hardware-configuration.nix
       ./vmagent.nix
       ./dns-proxy.nix
+      ./mqtt.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -210,8 +211,11 @@ in
     firewall = {
       enable = true;
       interfaces.${lan_br_if} = {
-        allowedTCPPorts = [ 80 ];
+        allowedTCPPorts = [ 80 1883 ];
         allowedUDPPorts = [ 53 67 68 ];
+      };
+      interfaces.cni-podman0 = {
+        allowedTCPPorts = [ 1883 ];
       };
     };
 
@@ -414,14 +418,21 @@ in
     };
   };
 
+  services.mqtt = {
+    enable = true;
+    bindAddr = local_addr;
+  };
   virtualisation.oci-containers.containers.home-assistant = let
     configuration = pkgs.writeText "home-assistant-configuration.yaml" ''
       # Loads default set of integrations. Do not remove.
       default_config:
 
       http:
+        #server_host: "127.0.0.1"
         use_x_forwarded_for: true
-        trusted_proxies: [ "10.88.0.1" ]
+        trusted_proxies:
+        - "127.0.0.1"
+        - "10.88.0.1"
 
       # Text to speech
       tts:
@@ -431,6 +442,10 @@ in
       #script: !include scripts.yaml
       #scene: !include scenes.yaml
     '';
+    #sonoff_lan_plugin = fetchTarball {
+    #  url = "https://github.com/AlexxIT/SonoffLAN/archive/refs/tags/v3.0.5.tar.gz";
+    #  sha256 = "146a197znmwgph3s404939wqjk2sbcmnzxifhll9xr76xn3xmjsv";
+    #};
   in {
     image = "ghcr.io/home-assistant/home-assistant:2022.5.5";
     environment = {
@@ -439,10 +454,12 @@ in
     volumes = [
       "home-assistant:/config"
       "${configuration}:/config/configuration.yaml"
+      #"${sonoff_lan_plugin}/custom_components/sonoff:/config/custom_components/sonoff"
     ];
     ports = [
       "127.0.0.1:8123:8123"
     ];
+    #extraOptions = [ "--network=host" ];
   };
   services.nginx.virtualHosts."home.castle" = {
     extraConfig = ''
