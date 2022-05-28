@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   lan1_if = "enp1s0";
@@ -407,12 +407,12 @@ in
           volumes = [
             "unifi-config:/config"
           ];
-          ports = [
+          ports = lib.flatten (lib.forEach [
             "8080:8080"
             "8443:8443"
             "3478:3478/udp"
             "10001:10001/udp"
-          ];
+          ] (portForward: [ "127.0.0.1:${portForward}" "${local_addr}:${portForward}" ]));
         };
       };
     };
