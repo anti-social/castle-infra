@@ -131,10 +131,10 @@
     imports =
       [ # Include the results of the hardware scan.
         ./gw-hardware-configuration.nix
-        ./secrets.nix
-        ./vmagent.nix
-        ./dns-proxy.nix
-        ./mqtt.nix
+        ./modules/secrets.nix
+        ./modules/vmagent.nix
+        ./modules/dns-proxy.nix
+        ./modules/mqtt.nix
       ];
 
     deployment = {

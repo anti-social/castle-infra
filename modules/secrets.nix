@@ -28,7 +28,7 @@ in {
   };
 
   config = let
-    secret_file = name: pkgs.writeText name (builtins.readFile (./. + builtins.toPath "/${name}"));
+    secret_file = name: pkgs.writeText name (builtins.readFile (../. + builtins.toPath "/${name}"));
     decode_secret = pkgs.writeShellScript "decode-secret.sh" ''
       set -eu
 
