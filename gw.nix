@@ -252,7 +252,7 @@
       ];
     };
     services.secrets.wg0-privkey = {
-      src = "gw-wireguard-privkey.aes-256-cbc.base64";
+      src = "secrets/gw-wireguard-privkey.aes-256-cbc.base64";
       dest = "/etc/wireguard/wg0.privkey";
       beforeService = "wireguard-wg0.service";
     };
