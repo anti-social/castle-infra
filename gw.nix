@@ -3,7 +3,7 @@
     nixpkgs = ./gw-nixpkgs;
   };
   
-  gw = { modulesPath, config, lib, name, pkgs, ... }: let
+  gw = { modulesPath, config, lib, name, pkgs, stdenv, ... }: let
     lan1_if = "enp1s0";
     lan2_if = "enp2s0";
     wlan_if = "wlp3s0b1";
@@ -135,6 +135,7 @@
         ./modules/vmagent.nix
         ./modules/dns-proxy.nix
         ./modules/mqtt.nix
+        ./modules/ups.nix
       ];
 
     deployment = {
@@ -258,22 +259,20 @@
     };
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
-    users = {
-      # mutableUsers = false;
-      users.nixos = {
-        uid = 999;
-        isNormalUser = true;
-        extraGroups = [ "wheel" ];
-      };
-      users.alexk = {
-        uid = 1000;
-        isNormalUser = true;
-        extraGroups = [ "wheel" ];
-        shell = pkgs.zsh;
-        openssh.authorizedKeys.keys = [
-  	"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
-        ];
-      };
+    # users.mutableUsers = false;
+    users.users.nixos = {
+      uid = 999;
+      isNormalUser = true;
+      extraGroups = [ "wheel" ];
+    };
+    users.users.alexk = {
+      uid = 1000;
+      isNormalUser = true;
+      extraGroups = [ "wheel" ];
+      shell = pkgs.zsh;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
+      ];
     };
 
     nixpkgs.config.allowUnfree = true;
