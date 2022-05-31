@@ -32,6 +32,7 @@
         ./modules/vmagent.nix
         ./modules/smart-home.nix
         ./modules/ups.nix
+        ./modules/unifi-controller.nix
       ];
 
     deployment = {
@@ -283,34 +284,12 @@
     ### Containers:
 
     virtualisation = {
-      podman = {
-        enable = true;
-      };
+      podman.enable = true;
+      oci-containers.backend = "podman";
+    };
 
-      oci-containers = {
-        backend = "podman";
-
-        containers = {
-          unifi = {
-            image = "docker.io/linuxserver/unifi-controller:7.1.65";
-            environment = {
-              PUID = "1000";
-              PGID = "1000";
-              MEM_LIMIT = "1024";
-              MEM_STARTUP = "256";
-            };
-            volumes = [
-              "unifi-config:/config"
-            ];
-            ports = lib.flatten (lib.forEach [
-              "8080:8080"
-              "8443:8443"
-              "3478:3478/udp"
-              "10001:10001/udp"
-            ] (portForward: [ "127.0.0.1:${portForward}" "${local_addr}:${portForward}" ]));
-          };
-        };
-      };
+    services.unifi-controller = {
+      localAddr = local_addr;
     };
 
     services.smart-home = {
