@@ -1,8 +1,12 @@
 rec {
-  domain = "castle";
   addr_prefix = "192.168.2";
   mkAddr = i: "${addr_prefix}.${toString i}";
   mkFQDN = name: "${name}.${domain}";
+
+  domain = "castle";
+  net_mask = "255.255.255.0";
+  net_addr = mkAddr(0);
+  broadcast_addr = mkAddr(255);
   hosts = [
     {
       host = "gw";

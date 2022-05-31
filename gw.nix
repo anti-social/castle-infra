@@ -27,8 +27,9 @@
         ./gw-hardware-configuration.nix
 
         ./modules/secrets.nix
-        ./modules/vmagent.nix
+        ./modules/dhcp-server.nix
         ./modules/dns-proxy.nix
+        ./modules/vmagent.nix
         ./modules/mqtt.nix
         ./modules/ups.nix
       ];
@@ -203,30 +204,9 @@
       enable = true;
     };
 
-    services.dhcpd4 = let 
-      renderHost = { host, mac, ip, ... }: ''
-        host ${host} {
-          hardware ethernet ${mac};
-          fixed-address ${ip};
-        }
-      '';
-    in {
-      enable = true;
-      interfaces = [ lan_br_if ];
-      extraConfig = ''
-        option domain-name-servers ${local_addr};
-        option domain-name castle;
-        option subnet-mask 255.255.255.0;
-        
-        subnet ${lan.addr_prefix}.0 netmask 255.255.255.0 {
-          option broadcast-address ${lan.addr_prefix}.255;
-          option routers ${local_addr};
-          interface ${lan_br_if};
-          range ${lan.mkAddr(100)} ${lan.mkAddr(200)};
-        }
-
-        ${builtins.concatStringsSep "\n" (map renderHost (builtins.tail lan.hosts))}
-      '';
+    services.dhcp-server = {
+      interface = lan_br_if;
+      lan = lan;
     };
 
     services.dns-proxy = let
