@@ -3,18 +3,18 @@
 with lib;
 
 let
-    nut-exporter = pkgs.buildGoModule rec {
-      name = "nut_exporter";
-      version = "2.3.5";
+  prometheus-nut-exporter = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "prometheus-nut-exporter";
+    version = "1.1.1";
 
-      src = pkgs.fetchFromGitHub {
-        owner = "DRuggeri";
-        repo = "nut_exporter";
-        rev = "v${version}";
-        sha256 = "0ynzgkq1z8d1mk38574mz0hnyq1d7h8bmhl2bph9liccibdhwfx8";
-      };
-     vendorSha256 = "0w98nngzcjb1gkizglyrbkhp8ncvvknfnwnyj9dg11028sa0jbwf";
+    src = pkgs.fetchFromGitHub {
+      owner = "HON95";
+      repo = pname;
+      rev = "v${version}";
+      sha256 = "153kk9725d3r7177mwcyl8nl0f1dsgn82m728hfybs7d39qa4yqm";
     };
+    cargoSha256 = "066s2wp5pqfcqi4hry8xc5a07g42f88vpl2vvgj20dkk6an8in54";
+  };
 in {
   config = {
     power.ups = {
@@ -37,6 +37,7 @@ in {
     environment.etc."nut/upsmon.conf".text = ''
       MONITOR powerwalker@localhost 1 upsmon password primary
     '';
+
     users.users.nut = {
       isSystemUser = true;
       createHome = true;
@@ -44,29 +45,32 @@ in {
       group = "nut";
     };
     users.groups.nut.name = "nut";
-    systemd.services.nut-exporter = {
+
+    systemd.services.prometheus-nut-exporter = {
       enable = true;
-      description = "NUT exporter";
+      description = "Prometheus NUT exporter";
       wantedBy = [ "multi-user.target" ];
-      environment = {
-        NUT_EXPORTER_PASSWORD = "password";
-      };
       serviceConfig = {
         Type = "simple";
         Restart = "on-failure";
         RestartSec = 1;
         DynamicUser = true;
-        ExecStart = ''${nut-exporter}/bin/nut_exporter --nut.username=upsmon'';
+        ExecStart = "${prometheus-nut-exporter}/bin/prometheus-nut-exporter";
       };
     };
     services.vmagent.scrapeConfigs.localhostNut = ''
       - job_name: nut
         scrape_interval: 15s
-        metrics_path: /ups_metrics
+        metrics_path: /nut
         static_configs:
-        - targets: [ "localhost:9199" ]
-          labels:
-            ups: powerwalker
+        - targets: ["localhost:3493"]
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: localhost:9995
     '';
     services.vmagent.relabelConfigs.localhostNut = ''
       - source_labels: [__name__]
