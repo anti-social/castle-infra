@@ -376,11 +376,12 @@
         replacement: "${hostname}.${local_domain}"
     '';
 
-    services.grafana = {
+    services.grafana = rec {
       enable = true;
       domain = "grafana.castle";
       port = 5000;
       addr = "127.0.0.1";
+      rootUrl = "http://${domain}";
     };
     services.nginx.virtualHosts.${config.services.grafana.domain} = {
       locations."/" = {
