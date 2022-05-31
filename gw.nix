@@ -17,120 +17,15 @@
     lan_zone = [ lan_br_if ];
     wan_zone = [ wan_if ];
 
-    hostname = "gw";
-    hostname_aliases = [ "unifi" "grafana" "home" "mqtt" ];
-    local_domain = "castle";
-    lan_addr_prefix = "192.168.2";
-    local_addr = "${lan_addr_prefix}.1";
-    static_hosts = [
-      {
-        host = "pc";
-        mac = "36:01:ca:37:a7:10";
-        ip = "${lan_addr_prefix}.2";
-      }
-      {
-        host = "oldpc";
-        mac = "f8:32:e4:9a:87:da";
-        ip = "${lan_addr_prefix}.3";
-      }
-      {
-        host = "tv";
-        mac = "c4:36:6c:06:73:3e";
-        ip = "${lan_addr_prefix}.10";
-      }
-      {
-        host = "laptop";
-        mac = "8c:47:be:32:67:10";
-        ip = "${lan_addr_prefix}.11";
-      }
-      {
-        host = "laptop-wifi";
-        mac = "cc:d9:ac:d8:60:7b";
-        ip = "${lan_addr_prefix}.12";
-      }
-      {
-        host = "flipmoon";
-        mac = "ac:12:03:2d:6e:eb";
-        ip = "${lan_addr_prefix}.13";
-      }
-      {
-        host = "huawei-p10";
-        mac = "30:74:96:46:1f:f9";
-        ip = "${lan_addr_prefix}.21";
-      }
-      {
-        host = "redmi-1";
-        mac = "4c:63:71:5a:c1:9d";
-        ip = "${lan_addr_prefix}.22";
-        aliases = ["redmi-ksyusha"];
-      }
-      {
-        host = "redmi-2";
-        mac = "4c:63:71:5b:0b:00";
-        ip = "${lan_addr_prefix}.23";
-        aliases = ["redmi-nastya"];
-      }
-      {
-        host = "ipad";
-        mac = "e2:2b:94:4a:d0:3d";
-        ip = "${lan_addr_prefix}.24";
-      }
-      {
-        host = "iphone";
-        mac = "ea:00:77:1a:1b:9c";
-        ip = "${lan_addr_prefix}.25";
-      }
-      {
-        host = "vacuum";
-        mac = "50:ec:50:1b:d5:ac";
-        ip = "${lan_addr_prefix}.80";
-      }
-      {
-        host = "boiler";
-        mac = "44:23:7c:ab:9c:07";
-        ip = "${lan_addr_prefix}.90";
-      }
-      {
-        host = "heat-2";
-        mac = "5c:e5:0c:0f:13:57";
-        ip = "${lan_addr_prefix}.91";
-      }
-      {
-        host = "entrance-light";
-        mac = "c4:4f:33:e2:81:3e";
-        ip = "${lan_addr_prefix}.92";
-      }
-      {
-        host = "bath-fan";
-        mac = "8c:ce:4e:0c:62:37";
-        ip = "${lan_addr_prefix}.93";
-      }
-      {
-        host = "ap1";
-        mac = "f0:9f:c2:7c:57:fe";
-        ip = "${lan_addr_prefix}.241";
-      }
-      {
-        host = "ap2";
-        mac = "78:8a:20:48:e3:9c";
-        ip = "${lan_addr_prefix}.242";
-      }
-      {
-        host = "ap3";
-        mac = "80:2a:a8:46:18:28";
-        ip = "${lan_addr_prefix}.243";
-      }
-      {
-        host = "switch";
-        mac = "bc:67:1c:c8:f2:3d";
-        ip = "${lan_addr_prefix}.254";
-        aliases = [ "cisco" ];
-      }
-    ];
+    lan = import ./lan.nix;
+    hostname = (builtins.head lan.hosts).host;
+    hostname_aliases = (builtins.head lan.hosts).aliases;
+    local_addr = lan.mkAddr(1);
   in {
     imports =
       [ # Include the results of the hardware scan.
         ./gw-hardware-configuration.nix
+
         ./modules/secrets.nix
         ./modules/vmagent.nix
         ./modules/dns-proxy.nix
@@ -210,7 +105,7 @@
       resolvconf = {
         useLocalResolver = true;
         extraConfig = ''
-          search_domains="${local_domain}"
+          search_domains="${lan.domain}"
         '';
       };
 
@@ -323,19 +218,19 @@
         option domain-name castle;
         option subnet-mask 255.255.255.0;
         
-        subnet ${lan_addr_prefix}.0 netmask 255.255.255.0 {
-          option broadcast-address ${lan_addr_prefix}.255;
+        subnet ${lan.addr_prefix}.0 netmask 255.255.255.0 {
+          option broadcast-address ${lan.addr_prefix}.255;
           option routers ${local_addr};
           interface ${lan_br_if};
-          range ${lan_addr_prefix}.100 ${lan_addr_prefix}.200;
+          range ${lan.mkAddr(100)} ${lan.mkAddr(200)};
         }
 
-        ${builtins.concatStringsSep "\n" (map renderHost static_hosts)}
+        ${builtins.concatStringsSep "\n" (map renderHost (builtins.tail lan.hosts))}
       '';
     };
 
     services.dns-proxy = let
-      fqdn = host: "${host}.${local_domain}";
+      fqdn = host: "${host}.${lan.domain}";
       renderStaticHost = { host, ip, aliases ? [], ... }:
         let
           record_values = [ip] ++ [(fqdn host)] ++ (map fqdn aliases);
@@ -344,8 +239,7 @@
     in {
       enable = true;
       bindAddr = local_addr;
-      staticHosts = [ (renderStaticHost { host = hostname; ip = local_addr; aliases = hostname_aliases; }) ] ++
-        (map renderStaticHost static_hosts);
+      staticHosts = map renderStaticHost lan.hosts;
     };
 
     services.victoriametrics = {
@@ -373,7 +267,7 @@
       - source_labels: [instance]
         regex: "localhost(:.+)?"
         target_label: instance
-        replacement: "${hostname}.${local_domain}"
+        replacement: "${lan.mkFQDN(hostname)}"
     '';
 
     services.grafana = rec {
