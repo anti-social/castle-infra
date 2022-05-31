@@ -29,6 +29,8 @@
         ./modules/secrets.nix
         ./modules/dhcp-server.nix
         ./modules/dns-proxy.nix
+        ./modules/metrics.nix
+        ./modules/node-exporter.nix
         ./modules/vmagent.nix
         ./modules/smart-home.nix
         ./modules/ups.nix
@@ -207,46 +209,8 @@
       lan = lan;
     };
 
-    services.victoriametrics = {
-      enable = true;
-      listenAddress = "127.0.0.1:8428";
-    };
-      
-    services.prometheus = {
-      exporters = {
-        node = {
-          enable = true;
-          listenAddress = "127.0.0.1";
-          port = 9100;
-          enabledCollectors = [ "systemd" ];
-        };
-      };
-    };
-    services.vmagent.scrapeConfigs.localhostNode = ''
-      - job_name: node
-        scrape_interval: 15s
-        static_configs:
-        - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
-    '';
-    services.vmagent.relabelConfigs.localhostNode = ''
-      - source_labels: [instance]
-        regex: "localhost(:.+)?"
-        target_label: instance
-        replacement: "${lan.mkFQDN(hostname)}"
-    '';
-
-    services.grafana = rec {
-      enable = true;
-      domain = "grafana.castle";
-      port = 5000;
-      addr = "127.0.0.1";
-      rootUrl = "http://${domain}";
-    };
-    services.nginx.virtualHosts.${config.services.grafana.domain} = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
-        # proxyWebsockets = true;
-      };
+    services.node-exporter = {
+      hostname = lan.mkFQDN(hostname);
     };
 
     services.vmagent = {
