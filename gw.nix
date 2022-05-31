@@ -319,9 +319,9 @@
     };
 
     services.mqtt = {
-      enable = true;
       bindAddr = local_addr;
     };
+
     virtualisation.oci-containers.containers.home-assistant = let
       configuration = pkgs.writeText "home-assistant-configuration.yaml" ''
         # Loads default set of integrations. Do not remove.

@@ -6,8 +6,6 @@ let
   cfg = config.services.mqtt;
 in {
   options.services.mqtt = {
-    enable = mkEnableOption "Enable MQTT server";
-
     bindAddr = mkOption {
       type = types.str;
       description = "Address to listen on";
