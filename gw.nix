@@ -110,16 +110,7 @@
         '';
       };
 
-      firewall = {
-        enable = true;
-        interfaces.${lan_br_if} = {
-          allowedTCPPorts = [ 80 1883 ];
-          allowedUDPPorts = [ 53 67 68 ];
-        };
-        interfaces.cni-podman0 = {
-          allowedTCPPorts = [ 1883 ];
-        };
-      };
+      firewall.enable = true;
 
       nat = {
         enable = true;
@@ -218,6 +209,7 @@
           "${builtins.concatStringsSep " " record_values}";
     in {
       enable = true;
+      interfaces = [ lan_br_if ];
       bindAddr = local_addr;
       staticHosts = map renderStaticHost lan.hosts;
     };
@@ -280,6 +272,9 @@
         - targets: [ "pc.castle:9100" ]
     '';
 
+    networking.firewall.interfaces = {
+      ${lan_br_if}.allowedTCPPorts = [ 80 ];
+    };
     services.nginx = {
       enable = true;
       #recommendedProxySettings = true;
@@ -320,6 +315,7 @@
 
     services.smart-home = {
       iotLocalAddr = local_addr;
+      iotInterface = lan_br_if;
       vhost = lan.mkFQDN("home");
     };
 

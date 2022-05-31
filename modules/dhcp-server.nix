@@ -15,6 +15,8 @@ in {
   };
 
   config = {
+    networking.firewall.interfaces.${cfg.interface}.allowedUDPPorts = [ 67 68 ];
+
     services.dhcpd4 = let
       lan = cfg.lan;
       gw_host = builtins.head lan.hosts;

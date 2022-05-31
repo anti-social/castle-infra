@@ -23,6 +23,11 @@ in {
   options.services.dns-proxy = {
     enable = mkEnableOption "Enable dns proxy";
 
+    interfaces = mkOption {
+      type = types.listOf types.str;
+      description = "Interfaces to allow in firewall";
+    };
+
     bindAddr = mkOption {
       type = types.str;
       default = "";
@@ -37,6 +42,10 @@ in {
   };
 
   config = mkIf cfg.enable {
+    networking.firewall.interfaces = lib.mkMerge (map (iface: {
+      ${iface}.allowedUDPPorts = [ 53 ];
+    }) cfg.interfaces);
+
     services.coredns = {
       enable = true;
       config = ''

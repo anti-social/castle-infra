@@ -5,8 +5,13 @@ with lib;
 let
   cfg = config.services.smart-home;
   home_assistant_version = "2022.5.5";
+  mqtt_port = 1883;
 in {
   options.services.smart-home = {
+    iotInterface = mkOption {
+      type = types.str;
+      description = "IoT network interface";
+    };
     iotLocalAddr = mkOption {
       type = types.str;
       description = "Local address for IoT";
@@ -18,6 +23,11 @@ in {
   };
 
   config = {
+    networking.firewall.interfaces = {
+      cni-podman0.allowedTCPPorts = [ mqtt_port ];
+      ${cfg.iotInterface}.allowedTCPPorts = [ mqtt_port ];
+    };
+
     virtualisation.oci-containers.containers.home-assistant = let
       configuration = pkgs.writeText "home-assistant-configuration.yaml" ''
         # Loads default set of integrations. Do not remove.
@@ -77,6 +87,7 @@ in {
       listeners = [
         {
           address = cfg.iotLocalAddr;
+          port = mqtt_port;
           acl = [ "topic readwrite #" ];
           users = {
             iot_device = {
