@@ -30,7 +30,7 @@
         ./modules/dhcp-server.nix
         ./modules/dns-proxy.nix
         ./modules/vmagent.nix
-        ./modules/mqtt.nix
+        ./modules/smart-home.nix
         ./modules/ups.nix
       ];
 
@@ -318,57 +318,9 @@
       };
     };
 
-    services.mqtt = {
-      bindAddr = local_addr;
-    };
-
-    virtualisation.oci-containers.containers.home-assistant = let
-      configuration = pkgs.writeText "home-assistant-configuration.yaml" ''
-        # Loads default set of integrations. Do not remove.
-        default_config:
-
-        http:
-          #server_host: "127.0.0.1"
-          use_x_forwarded_for: true
-          trusted_proxies:
-          - "127.0.0.1"
-          - "10.88.0.1"
-
-        # Text to speech
-        tts:
-        - platform: google_translate
-
-        automation: !include automations.yaml
-        #script: !include scripts.yaml
-        #scene: !include scenes.yaml
-      '';
-      #sonoff_lan_plugin = fetchTarball {
-      #  url = "https://github.com/AlexxIT/SonoffLAN/archive/refs/tags/v3.0.5.tar.gz";
-      #  sha256 = "146a197znmwgph3s404939wqjk2sbcmnzxifhll9xr76xn3xmjsv";
-      #};
-    in {
-      image = "ghcr.io/home-assistant/home-assistant:2022.5.5";
-      environment = {
-        TZ = config.time.timeZone;
-      };
-      volumes = [
-        "home-assistant:/config"
-        "${configuration}:/config/configuration.yaml"
-        #"${sonoff_lan_plugin}/custom_components/sonoff:/config/custom_components/sonoff"
-      ];
-      ports = [
-        "127.0.0.1:8123:8123"
-      ];
-      #extraOptions = [ "--network=host" ];
-    };
-    services.nginx.virtualHosts."home.castle" = {
-      extraConfig = ''
-        proxy_buffering off;
-      '';
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:8123";
-        proxyWebsockets = true;
-      };
+    services.smart-home = {
+      iotLocalAddr = local_addr;
+      vhost = lan.mkFQDN("home");
     };
 
     # This value determines the NixOS release from which the default
