@@ -201,18 +201,10 @@
       lan = lan;
     };
 
-    services.dns-proxy = let
-      fqdn = host: "${host}.${lan.domain}";
-      renderStaticHost = { host, ip, aliases ? [], ... }:
-        let
-          record_values = [ip] ++ [(fqdn host)] ++ (map fqdn aliases);
-        in
-          "${builtins.concatStringsSep " " record_values}";
-    in {
-      enable = true;
+    services.dns-proxy = {
       interfaces = [ lan_br_if ];
       bindAddr = local_addr;
-      staticHosts = map renderStaticHost lan.hosts;
+      lan = lan;
     };
 
     services.victoriametrics = {

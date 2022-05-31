@@ -21,8 +21,6 @@ let
   '';
 in {
   options.services.dns-proxy = {
-    enable = mkEnableOption "Enable dns proxy";
-
     interfaces = mkOption {
       type = types.listOf types.str;
       description = "Interfaces to allow in firewall";
@@ -34,19 +32,27 @@ in {
       description = "Address to listen on";
     };
 
-    staticHosts = mkOption {
-      type = types.listOf types.str;
-      default = [];
-      description = "Static hosts";
+    lan = mkOption {
+      type = types.attrsOf types.anything;
+      default = {};
+      description = "LAN configuration";
     };
   };
 
-  config = mkIf cfg.enable {
+  config = let
+    lan = cfg.lan;
+  in {
     networking.firewall.interfaces = lib.mkMerge (map (iface: {
       ${iface}.allowedUDPPorts = [ 53 ];
     }) cfg.interfaces);
 
-    services.coredns = {
+    services.coredns = let
+      renderStaticHost = { host, ip, aliases ? [], ... }:
+        let
+          record_values = [ip] ++ [(lan.mkFQDN host)] ++ (map lan.mkFQDN aliases);
+        in
+          "${builtins.concatStringsSep " " record_values}";
+    in {
       enable = true;
       config = ''
         . {
@@ -55,7 +61,7 @@ in {
           prometheus localhost:9153
 
           hosts /var/lib/hosts/hosts.blacklist {
-            ${builtins.concatStringsSep "\n    " cfg.staticHosts}
+            ${builtins.concatStringsSep "\n    " (map renderStaticHost lan.hosts)}
 
             reload 1h
             fallthrough
