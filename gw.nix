@@ -280,6 +280,7 @@
     # List packages installed in system profile. To search, run:
     # $ nix search wget
     environment.systemPackages = with pkgs; [
+      bat
       bridge-utils
       dnsutils
       ethtool
@@ -293,6 +294,7 @@
       tcpdump
       telnet
       tmux
+      unzip
       usb-modeswitch
       usb-modeswitch-data
       usbutils
