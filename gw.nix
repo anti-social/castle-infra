@@ -228,6 +228,12 @@
         static_configs:
         - targets: [ "pc.castle:9100" ]
     '';
+    services.vmagent.scrapeConfigs.oldpcNode = ''
+      - job_name: node
+        scrape_interval: 15s
+        static_configs:
+        - targets: [ "oldpc.castle:9182" ]
+    '';
 
     networking.firewall.interfaces = {
       ${lan_br_if}.allowedTCPPorts = [ 80 ];
