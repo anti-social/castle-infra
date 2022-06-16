@@ -16,9 +16,13 @@ in {
       type = types.str;
       description = "Local address for IoT";
     };
-    vhost = mkOption {
+    lanHost = mkOption {
       type = types.str;
-      description = "Virtual host domain";
+      description = "Virtual host domain for LAN";
+    };
+    extHost = mkOption {
+      type = types.str;
+      description = "External virtual host domain";
     };
   };
 
@@ -82,7 +86,19 @@ in {
       #extraOptions = [ "--network=host" ];
       #extraOptions = [ "--device=/dev/ttyUSB0" ];
     };
-    services.nginx.virtualHosts.${cfg.vhost} = {
+    services.nginx.virtualHosts.${cfg.lanHost} = {
+      extraConfig = ''
+        proxy_buffering off;
+      '';
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8123";
+        proxyWebsockets = true;
+      };
+    };
+    services.nginx.virtualHosts.${cfg.extHost} = {
+      onlySSL = true;
+      sslCertificate = "/var/lib/acme/castle.mk/cert.pem";
+      sslCertificateKey = "/var/lib/acme/castle.mk/key.pem";
       extraConfig = ''
         proxy_buffering off;
       '';

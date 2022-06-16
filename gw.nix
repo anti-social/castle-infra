@@ -151,6 +151,26 @@
       beforeService = "wireguard-wg0.service";
     };
 
+    services.secrets.templates."cloudns-credentials" = {
+      source = ''
+        CLOUDNS_AUTH_ID=''${cloudns_auth_id}
+        CLOUDNS_AUTH_PASSWORD=''${cloudns_auth_password}
+      '';
+      secretsEnvFile = ./secrets/cloudns-auth.env;
+      dest = "/etc/go-acme/cloudns-auth.env";
+      beforeService = "acme-castle.mk";
+    };
+    security.acme = {
+      acceptTerms = true;
+      email = "kovalidis@gmail.com";
+      certs."castle.mk" = {
+        dnsProvider = "cloudns";
+        dnsPropagationCheck = true;
+        credentialsFile = "/etc/go-acme/cloudns-auth.env";
+        domain = "*.castle.mk";
+      };
+    };
+
     # Define a user account. Don't forget to set a password with ‘passwd’.
     # users.mutableUsers = false;
     users.users.nixos = {
@@ -167,6 +187,7 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
       ];
     };
+    users.users.nginx.extraGroups = [ "acme" ];
 
     nixpkgs.config.allowUnfree = true;
 
@@ -213,6 +234,15 @@
       lan = lan;
     };
 
+    services.nginx.virtualHosts."\"\"" = {
+      addSSL = true;
+      sslCertificate = "/var/lib/acme/castle.mk/cert.pem";
+      sslCertificateKey = "/var/lib/acme/castle.mk/key.pem";
+      extraConfig = ''
+        return 444;
+      '';
+    };
+
     services.node-exporter = {
       hostname = lan.mkFQDN(hostname);
     };
@@ -237,7 +267,8 @@
     '';
 
     networking.firewall.interfaces = {
-      ${lan_br_if}.allowedTCPPorts = [ 80 ];
+      ${lan_br_if}.allowedTCPPorts = [ 80 443 ];
+      ${wan_if}.allowedTCPPorts = [ 443 ];
     };
     services.nginx = {
       enable = true;
@@ -258,7 +289,8 @@
     services.smart-home = {
       iotLocalAddr = local_addr;
       iotInterface = lan_br_if;
-      vhost = lan.mkFQDN("home");
+      lanHost = lan.mkFQDN "home";
+      extHost = "home.castle.mk";
     };
 
     # This value determines the NixOS release from which the default

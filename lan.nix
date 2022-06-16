@@ -13,6 +13,7 @@ rec {
       mac = "40:21:08:80:03:db";
       ip = mkAddr 1;
       aliases = [ "unifi" "grafana" "home" "mqtt" ];
+      additionalDomain = "castle.mk";
     }
     {
       host = "pc";

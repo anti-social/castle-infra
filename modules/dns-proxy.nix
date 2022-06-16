@@ -47,9 +47,11 @@ in {
     }) cfg.interfaces);
 
     services.coredns = let
-      renderStaticHost = { host, ip, aliases ? [], ... }:
+      renderStaticHost = { host, ip, aliases ? [], additionalDomain ? null, ... }:
         let
-          record_values = [ip] ++ [(lan.mkFQDN host)] ++ (map lan.mkFQDN aliases);
+          record_values = [ip] ++ [(lan.mkFQDN host)]
+                          ++ (map lan.mkFQDN aliases)
+                          ++ (lib.optionals (additionalDomain != null) (map (a: "${a}.${additionalDomain}") aliases));
         in
           "${builtins.concatStringsSep " " record_values}";
     in {
