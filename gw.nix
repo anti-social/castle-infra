@@ -40,7 +40,6 @@
     };
 
     services.secrets = {
-      secretsEnvFile = ./secrets.env;
       passwordFile = "/root/secrets.password";
     };
 

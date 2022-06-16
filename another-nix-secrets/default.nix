@@ -10,21 +10,25 @@ let
       type = types.str;
       description = "Path to a destination decrypted file";
     };
+
     owner = mkOption {
       type = types.str;
       description = "Owner of a destination file";
       default = "root";
     };
+
     group = mkOption {
       type = types.str;
       description = "Group of a destination file";
       default = "root";
     };
+
     mode = mkOption {
       type = types.str;
       description = "Destination file permissions";
       default = "0600";
     };
+
     beforeService = mkOption {
       type = types.str;
       description = "Decrypt secret before starting a service";
@@ -32,12 +36,6 @@ let
   };
 in {
   options.services.secrets = {
-    secretsEnvFile = mkOption {
-      type = types.nullOr types.path;
-      description = "Path to a local secrets file to use with templates";
-      default = null;
-    };
-
     passwordFile = mkOption {
       type = types.str;
       description = "Path to a encryption password file";
@@ -64,10 +62,17 @@ in {
             description = "Path to a local template file";
             default = null;
           };
+
           source = mkOption {
             type = types.nullOr types.str;
             description = "Template source";
             default = null;
+          };
+
+          # TODO: Make it list
+          secretsEnvFile = mkOption {
+            type = types.path;
+            description = "Path to a local secrets file to use with templates";
           };
         } // commonFileOptions;
       });
@@ -77,12 +82,12 @@ in {
   };
 
   config = let
-    secretsEnv = pkgs.writeText (toString cfg.secretsEnvFile) (builtins.readFile cfg.secretsEnvFile);
-
     opensslDecrypt = "${pkgs.openssl}/bin/openssl aes-256-cbc -d -pbkdf2 -base64 -kfile ${cfg.passwordFile}";
 
     exportSecrets = pkgs.writeShellScript "export-secrets.sh" ''
       set -euo pipefail
+
+      SECRETS_ENV_FILE=$1
 
       while IFS= read -r line; do
         if [ -z $line ]; then
@@ -92,7 +97,7 @@ in {
           ${pkgs.gawk}/bin/awk '{ sub("="," "); } 1' | \
           ${pkgs.findutils}/bin/xargs ${pkgs.bash}/bin/bash -c \
             'echo export $0="$(echo $1 | ${opensslDecrypt})"'
-      done <${secretsEnv}
+      done <$SECRETS_ENV_FILE
     '';
 
     decodeSecret = pkgs.writeShellScript "decode-secret-file.sh" ''
@@ -119,12 +124,13 @@ in {
 
       NAME=$1
       TEMPLATE=$2
-      DEST=$3
+      SECRETS_ENV_FILE=$3
+      DEST=$4
       DEST_DIR=$(dirname $DEST)
-      OWNER_GROUP=$4
-      MODE=$5
+      OWNER_GROUP=$5
+      MODE=$6
 
-      . <(${exportSecrets})
+      . <(${exportSecrets} $SECRETS_ENV_FILE)
 
       echo "Rendering $NAME secret"
       mkdir -p $DEST_DIR
@@ -135,7 +141,7 @@ in {
       mv $TMP $DEST
     '';
 
-    secretFileServices = mapAttrs' (name: secret: nameValuePair "secret-file-${name}" {
+    secretFileServices = mapAttrs' (name: secret: nameValuePair "secrets-file-${name}" {
       enable = true;
       description = "Decrypt ${name} secret";
       wantedBy = [ "multi-user.target" ];
@@ -148,8 +154,9 @@ in {
       };
     }) cfg.files;
 
-    secretTemplateServices = mapAttrs' (name: secret: nameValuePair "secret-template-${name}" (
+    secretTemplateServices = mapAttrs' (name: secret: nameValuePair "secrets-template-${name}" (
       let
+        secretsEnv = pkgs.writeText (toString secret.secretsEnvFile) (builtins.readFile secret.secretsEnvFile);
         tmpl = pkgs.writeText (toString name) (if secret.source == null then (builtins.readFile secret.template) else secret.source);
       in {
         enable = true;
@@ -160,7 +167,7 @@ in {
         };
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${renderTemplate} ${name} ${tmpl} ${secret.dest} ${secret.owner}:${secret.group} ${secret.mode}";
+          ExecStart = "${renderTemplate} ${name} ${tmpl} ${secretsEnv} ${secret.dest} ${secret.owner}:${secret.group} ${secret.mode}";
         };
       }
     )) cfg.templates;

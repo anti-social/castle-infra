@@ -61,6 +61,7 @@ in {
         #script: !include scripts.yaml
         #scene: !include scenes.yaml
       '';
+      secretsEnvFile = ../secrets/home-assistant.env;
       dest = "/etc/home-assistant/configuration.yaml";
       beforeService = "podman-home-assistant";
     };
@@ -106,6 +107,7 @@ in {
         iot_devide:''${mqtt_iot_device_password}
         zigbee2mqtt:''${mqtt_zigbee2mqtt_password}
       '';
+      secretsEnvFile = ../secrets/mosquitto-passwd.env;
       dest = "/etc/mosquitto/mosquitto.passwd";
       beforeService = "mosquitto";
     };
