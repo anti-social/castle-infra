@@ -23,12 +23,6 @@ in {
         };
       };
     };
-    services.vmagent.scrapeConfigs.localhostNode = ''
-      - job_name: node
-        scrape_interval: 15s
-        static_configs:
-        - targets: [ "localhost:${toString config.services.prometheus.exporters.node.port}" ]
-    '';
     services.vmagent.relabelConfigs.localhostNode = ''
       - source_labels: [instance]
         regex: "localhost(:.+)?"

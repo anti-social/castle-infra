@@ -28,8 +28,8 @@ in {
       ${cfg.iotInterface}.allowedTCPPorts = [ mqtt_port ];
     };
 
-    virtualisation.oci-containers.containers.home-assistant = let
-      configuration = pkgs.writeText "home-assistant-configuration.yaml" ''
+    services.secrets.templates."home-assistant-config" = {
+      source = ''
         # Loads default set of integrations. Do not remove.
         default_config:
 
@@ -40,32 +40,46 @@ in {
           - "127.0.0.1"
           - "10.88.0.1"
 
+        telegram_bot:
+        - platform: polling
+          api_key: "''${castle_alert_telegram_bot_token}"
+          allowed_chat_ids:
+          - -732670381
+
+        notify:
+        - platform: telegram
+          name: TelegramNotifier
+          chat_id: -732670381
+
         # Text to speech
         tts:
         - platform: google_translate
+
+        prometheus:
 
         automation: !include automations.yaml
         #script: !include scripts.yaml
         #scene: !include scenes.yaml
       '';
-      #sonoff_lan_plugin = fetchTarball {
-      #  url = "https://github.com/AlexxIT/SonoffLAN/archive/refs/tags/v3.0.5.tar.gz";
-      #  sha256 = "146a197znmwgph3s404939wqjk2sbcmnzxifhll9xr76xn3xmjsv";
-      #};
-    in {
+      dest = "/etc/home-assistant/configuration.yaml";
+      beforeService = "podman-home-assistant";
+    };
+    virtualisation.oci-containers.containers.home-assistant = {
       image = "ghcr.io/home-assistant/home-assistant:${home_assistant_version}";
       environment = {
         TZ = config.time.timeZone;
       };
       volumes = [
         "home-assistant:/config"
-        "${configuration}:/config/configuration.yaml"
+        "/etc/home-assistant/configuration.yaml:/config/configuration.yaml"
         #"${sonoff_lan_plugin}/custom_components/sonoff:/config/custom_components/sonoff"
       ];
+
       ports = [
         "127.0.0.1:8123:8123"
       ];
       #extraOptions = [ "--network=host" ];
+      #extraOptions = [ "--device=/dev/ttyUSB0" ];
     };
     services.nginx.virtualHosts.${cfg.vhost} = {
       extraConfig = ''
@@ -76,7 +90,25 @@ in {
         proxyWebsockets = true;
       };
     };
+    services.vmagent.scrapeConfigs.homeAssistant = ''
+      - job_name: home-assistant
+        scrape_interval: 30s
+        metrics_path: /api/prometheus
+        bearer_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmNzU1ZmVjZDBjZTA0MTc4YmNhMDBjMjc4ZjRmYjI3YiIsImlhdCI6MTY1NDI4NzQxMCwiZXhwIjoxOTY5NjQ3NDEwfQ.NG92aobj0_f5A_eNHArw_1dxOHQPdU1-SUW-KhtVXAs"
+        static_configs:
+        - targets: [ "localhost:8123" ]
+    '';
 
+    # Also store mosquitto passwords in plain text
+    services.secrets.templates."mosquitto-passwd" = {
+      source = ''
+        home:''${mqtt_home_password}
+        iot_devide:''${mqtt_iot_device_password}
+        zigbee2mqtt:''${mqtt_zigbee2mqtt_password}
+      '';
+      dest = "/etc/mosquitto/mosquitto.passwd";
+      beforeService = "mosquitto";
+    };
     services.mosquitto = {
       enable = true;
       logType = [
@@ -112,11 +144,48 @@ in {
                 "write cmnd/tasmota/#"
                 "read stat/tasmota/#"
                 "read tele/tasmota/#"
+                "readwrite zigbee2mqtt/#"
+              ];
+            };
+            zigbee2mqtt = {
+              hashedPassword = "$6$ksg1Ct4qDxuQUURN$EGnHeZ7CaBXLSC3QCcTqLm4B37+9YkBpsKqFI1Took2MT89wbnPrCAY/+9WxkxyA3QV9qfbeXqV40B76XK3O7w==";
+              acl = [
+                "readwrite #"
               ];
             };
           };
         }
       ];
+    };
+
+    services.zigbee2mqtt = {
+      enable = true;
+      settings = {
+        homeassistant = true;
+        permit_join = true;
+        serial = {
+          port = "/dev/ttyUSB0";
+        };
+        mqtt = {
+          server = "mqtt://${cfg.iotLocalAddr}:${toString mqtt_port}";
+          user = "zigbee2mqtt";
+          password = "jFmxSg3gLP";
+          include_device_information = true;
+        };
+      };
+    };
+
+    # OTA server for Sonoff devices
+    # TODO: Find out an endpoint which device accesses to after downloading a firmware
+    services.nginx.virtualHosts."dl.itead.cn" = {
+      locations."=/tasmota-lite.bin" = let
+        tasmota_lite = pkgs.fetchurl {
+          url = "http://ota.tasmota.com/tasmota/release-11.1.0/tasmota-lite.bin";
+          sha256 = "a421f9080117861b2c0dd30228779466d127269acfab34de0e2cf4fa1ed0e61b";
+        };
+      in {
+        alias = tasmota_lite;
+      };
     };
   };
 }

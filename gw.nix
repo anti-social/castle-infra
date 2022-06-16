@@ -1,8 +1,4 @@
 {
-  meta = {
-    nixpkgs = ./gw-nixpkgs;
-  };
-  
   gw = { modulesPath, config, lib, name, pkgs, stdenv, ... }: let
     lan1_if = "enp1s0";
     lan2_if = "enp2s0";
@@ -26,7 +22,7 @@
       [ # Include the results of the hardware scan.
         ./gw-hardware-configuration.nix
 
-        ./modules/secrets.nix
+        ./another-nix-secrets
         ./modules/dhcp-server.nix
         ./modules/dns-proxy.nix
         ./modules/metrics.nix
@@ -41,6 +37,11 @@
       targetHost = "gw.castle";
       targetUser = "root";
       # buildOnTarget = true;
+    };
+
+    services.secrets = {
+      secretsEnvFile = ./secrets.env;
+      passwordFile = "/root/secrets.password";
     };
 
     # Use the systemd-boot EFI boot loader.
@@ -79,6 +80,9 @@
     services.udev.extraRules = ''
       SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="12d1", ATTR{idProduct}=="1f01", \
         RUN+="${pkgs.usb-modeswitch}/bin/usb_modeswitch --huawei-new-mode -v 12d1 -p 1f01 -V 12d1 -P 14db"
+
+      SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="10c4", ATTR{idProduct}=="ea60", \
+        SYMLINK+="zigbee-bridge", MODE="0666"
     '';
 
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -142,8 +146,8 @@
         }
       ];
     };
-    services.secrets.wg0-privkey = {
-      src = "secrets/gw-wireguard-privkey.aes-256-cbc.base64";
+    services.secrets.files.wg0-privkey = {
+      file = ./secrets/gw-wireguard-privkey.aes-256-cbc.base64;
       dest = "/etc/wireguard/wg0.privkey";
       beforeService = "wireguard-wg0.service";
     };
@@ -176,13 +180,14 @@
       ethtool
       git
       htop
-      pciutils
+      inetutils
       mc
       nftables
       nmap
+      pciutils
       ripgrep
       tcpdump
-      telnet
+      #telnet
       tmux
       unzip
       usb-modeswitch
@@ -226,13 +231,10 @@
       - job_name: node
         scrape_interval: 15s
         static_configs:
-        - targets: [ "pc.castle:9100" ]
-    '';
-    services.vmagent.scrapeConfigs.oldpcNode = ''
-      - job_name: node
-        scrape_interval: 15s
-        static_configs:
-        - targets: [ "oldpc.castle:9182" ]
+        - targets:
+          - "localhost:${toString config.services.prometheus.exporters.node.port}"
+          - "pc.castle:9100"
+          - "oldpc.castle:9182"
     '';
 
     networking.firewall.interfaces = {
