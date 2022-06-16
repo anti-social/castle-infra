@@ -39,7 +39,7 @@ in {
           option broadcast-address ${lan.broadcast_addr};
           option routers ${gw_host.ip};
           interface ${cfg.interface};
-          range ${lan.mkAddr(100)} ${lan.mkAddr(200)};
+          range ${lan.mkAddr 100} ${lan.mkAddr 200};
         }
 
         ${builtins.concatStringsSep "\n" (map renderHost static_hosts)}

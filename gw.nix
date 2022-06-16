@@ -16,7 +16,7 @@
     lan = import ./lan.nix;
     hostname = (builtins.head lan.hosts).host;
     hostname_aliases = (builtins.head lan.hosts).aliases;
-    local_addr = lan.mkAddr(1);
+    local_addr = lan.mkAddr 1;
   in {
     imports =
       [ # Include the results of the hardware scan.
