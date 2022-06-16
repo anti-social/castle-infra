@@ -106,7 +106,7 @@ in {
       wantedBy = [ "timers.target" ];
       partOf = [ "hosts-blacklist.service" ];
       timerConfig = {
-	OnCalendar = "*-*-* 01:00:00";
+        OnCalendar = "*-*-* 01:00:00";
       };
     };
   };
