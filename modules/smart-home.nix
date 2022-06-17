@@ -32,7 +32,7 @@ in {
       ${cfg.iotInterface}.allowedTCPPorts = [ mqtt_port ];
     };
 
-    services.secrets.templates."home-assistant-config" = {
+    services.secrets.templates."home-assistant.yaml" = {
       source = ''
         # Loads default set of integrations. Do not remove.
         default_config:
@@ -66,7 +66,6 @@ in {
         #scene: !include scenes.yaml
       '';
       secretsEnvFile = ../secrets/home-assistant.env;
-      dest = "/etc/home-assistant/configuration.yaml";
       beforeService = "podman-home-assistant";
     };
     virtualisation.oci-containers.containers.home-assistant = {
@@ -76,8 +75,7 @@ in {
       };
       volumes = [
         "home-assistant:/config"
-        "/etc/home-assistant/configuration.yaml:/config/configuration.yaml"
-        #"${sonoff_lan_plugin}/custom_components/sonoff:/config/custom_components/sonoff"
+        "${config.secretsDestinations.templates."home-assistant.yaml"}:/config/configuration.yaml"
       ];
 
       ports = [
@@ -117,14 +115,13 @@ in {
     '';
 
     # Also store mosquitto passwords in plain text
-    services.secrets.templates."mosquitto-passwd" = {
+    services.secrets.templates."mosquitto.passwd" = {
       source = ''
         home:''${mqtt_home_password}
         iot_devide:''${mqtt_iot_device_password}
         zigbee2mqtt:''${mqtt_zigbee2mqtt_password}
       '';
       secretsEnvFile = ../secrets/mosquitto-passwd.env;
-      dest = "/etc/mosquitto/mosquitto.passwd";
       beforeService = "mosquitto";
     };
     services.mosquitto = {

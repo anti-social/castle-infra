@@ -151,22 +151,21 @@
       beforeService = "wireguard-wg0.service";
     };
 
-    services.secrets.templates."cloudns-credentials" = {
+    services.secrets.templates."cloudns-auth.env" = {
       source = ''
         CLOUDNS_AUTH_ID=''${cloudns_auth_id}
         CLOUDNS_AUTH_PASSWORD=''${cloudns_auth_password}
       '';
       secretsEnvFile = ./secrets/cloudns-auth.env;
-      dest = "/etc/go-acme/cloudns-auth.env";
       beforeService = "acme-castle.mk";
     };
     security.acme = {
       acceptTerms = true;
-      email = "kovalidis@gmail.com";
+      defaults.email = "kovalidis@gmail.com";
       certs."castle.mk" = {
         dnsProvider = "cloudns";
         dnsPropagationCheck = true;
-        credentialsFile = "/etc/go-acme/cloudns-auth.env";
+        credentialsFile = config.secretsDestinations.templates."cloudns-auth.env";
         domain = "*.castle.mk";
       };
     };

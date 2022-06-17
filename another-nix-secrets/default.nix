@@ -7,8 +7,9 @@ let
 
   commonFileOptions = {
     dest = mkOption {
-      type = types.str;
+      type = types.nullOr types.str;
       description = "Path to a destination decrypted file";
+      default = null;
     };
 
     owner = mkOption {
@@ -35,10 +36,25 @@ let
     };
   };
 in {
+  options.secretsDestinations = {
+    files = mkOption {
+      type = types.attrsOf types.str;
+      description = "Destination paths of decrypted secret files";
+      default = {};
+    };
+
+    templates = mkOption {
+      type = types.attrsOf types.str;
+      description = "Destination paths of rendered secret templates";
+      default = {};
+    };
+  };
+
+  # TODO: Option to preserve last N secrets
   options.services.secrets = {
     passwordFile = mkOption {
       type = types.str;
-      description = "Path to a encryption password file";
+      description = "Path to an encryption password file";
     };
 
     files = mkOption {
@@ -69,7 +85,7 @@ in {
             default = null;
           };
 
-          # TODO: Make it list
+          # TODO: Make a list
           secretsEnvFile = mkOption {
             type = types.path;
             description = "Path to a local secrets file to use with templates";
@@ -141,37 +157,53 @@ in {
       mv $TMP $DEST
     '';
 
-    secretFileServices = mapAttrs' (name: secret: nameValuePair "secrets-file-${name}" {
-      enable = true;
-      description = "Decrypt ${name} secret";
-      wantedBy = [ "multi-user.target" ];
-      unitConfig = {
-        Before = secret.beforeService;
-      };
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${decodeSecret} ${name} ${secret.file} ${secret.dest} ${secret.owner}:${secret.group} ${secret.mode}";
-      };
-    }) cfg.files;
+    secretFileServices = mapAttrs (name: secret: (
+      let
+        hash = builtins.hashString "sha256" secret.file;
+        dest = if (secret.dest != null) then secret.dest else "/run/secrets/${hash}-${name}";
+      in {
+        service = {
+          enable = true;
+          description = "Decrypt ${name} secret";
+          wantedBy = [ "multi-user.target" ];
+          unitConfig = {
+            Before = secret.beforeService;
+          };
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${decodeSecret} ${name} ${secret.file} ${secret.dest} ${secret.owner}:${secret.group} ${secret.mode}";
+          };
+        };
+        destination = dest;
+      }
+    )) cfg.files;
 
-    secretTemplateServices = mapAttrs' (name: secret: nameValuePair "secrets-template-${name}" (
+    secretTemplateServices = mapAttrs (name: secret: (
       let
         secretsEnv = pkgs.writeText (toString secret.secretsEnvFile) (builtins.readFile secret.secretsEnvFile);
         tmpl = pkgs.writeText (toString name) (if secret.source == null then (builtins.readFile secret.template) else secret.source);
+        hash = builtins.hashString "sha256" "${tmpl}:${secretsEnv}";
+        dest = if (secret.dest != null) then secret.dest else "/run/secrets/${hash}-${name}";
       in {
-        enable = true;
-        description = "Render ${name} config";
-        wantedBy = [ "multi-user.target" ];
-        unitConfig = {
-          Before = secret.beforeService;
+        service = {
+          enable = true;
+          description = "Render ${name} config";
+          wantedBy = [ "multi-user.target" ];
+          unitConfig = {
+            Before = secret.beforeService;
+          };
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${renderTemplate} ${name} ${tmpl} ${secretsEnv} ${dest} ${secret.owner}:${secret.group} ${secret.mode}";
+          };
         };
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${renderTemplate} ${name} ${tmpl} ${secretsEnv} ${secret.dest} ${secret.owner}:${secret.group} ${secret.mode}";
-        };
+        destination = dest;
       }
     )) cfg.templates;
   in {
-    systemd.services = secretFileServices // secretTemplateServices;
+    systemd.services = (mapAttrs' (name: value: nameValuePair "secrets-file-${name}" value.service) secretFileServices) //
+                       (mapAttrs' (name: value: nameValuePair "secrets-template-${name}" value.service) secretTemplateServices);
+    secretsDestinations.files = mapAttrs (name: value: value.destination) secretFileServices;
+    secretsDestinations.templates = mapAttrs (name: value: value.destination) secretTemplateServices;
   };
 }
