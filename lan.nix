@@ -13,7 +13,9 @@ rec {
       mac = "40:21:08:80:03:db";
       ip = mkAddr 1;
       aliases = [ "unifi" "grafana" "home" "mqtt" ];
-      additionalDomain = "castle.mk";
+      # Don't work with home assistant when it tries to reconnect after switching from home network
+      # Possibly it don't resolve dns name when reconnecting
+      # additionalDomain = "castle.mk";
     }
     {
       host = "pc";
