@@ -8,7 +8,7 @@
   in {
     imports = lib.optional (builtins.pathExists ./do-userdata.nix) ./do-userdata.nix ++ [
       (modulesPath + "/virtualisation/digital-ocean-config.nix")
-      ./modules/secrets.nix
+      ./another-nix-secrets
     ];
 
     deployment = {
@@ -18,7 +18,8 @@
 
     networking.hostName = name;
 
-    
+    services.secrets.passwordFile = "/root/secrets.password";
+
     networking.nat = {
       enable = true;
       externalInterface = wan_if;
@@ -67,8 +68,8 @@
         }
       ];
     };
-    services.secrets.wg0-privkey = {
-      src = "secrets/do-wireguard-privkey.aes-256-cbc.base64";
+    services.secrets.files.wg0-privkey = {
+      file = ./secrets/do-wireguard-privkey.aes-256-cbc.base64;
       dest = "/etc/wireguard/wg0.privkey";
       beforeService = "wireguard-wg0.service";
     };
@@ -78,5 +79,10 @@
       iptables
       tmux
     ];
+
+    virtualisation = {
+      podman.enable = true;
+      oci-containers.backend = "podman";
+    };
   };
 }
