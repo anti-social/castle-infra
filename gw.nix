@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: let
+{ config, lib, pkgs, ... }: let
   lan1_if = "enp1s0";
   lan2_if = "enp2s0";
   wlan_if = "wlp3s0b1";
@@ -115,7 +115,22 @@ in {
       '';
     };
 
-    firewall.enable = true;
+    firewall = {
+      enable = true;
+    
+      extraCommands = let
+        inetForwardChain = "inet-forward";
+        localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
+        limitedInetHosts = builtins.filter (h: builtins.hasAttr "inetActiveTime" h) lan.hosts;
+        limitInetHostRule = h: "ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime (lib.last h.inetActiveTime)} --timestop ${localToUtcTime (builtins.head h.inetActiveTime)} -j REJECT";
+      in ''
+        ip46tables -F ${inetForwardChain}
+        ip46tables -X ${inetForwardChain}
+        ip46tables -N ${inetForwardChain}
+        ip46tables -A FORWARD -j ${inetForwardChain}
+        ${lib.concatStringsSep "\n" (map limitInetHostRule limitedInetHosts)}
+      '';
+    };
 
     nat = {
       enable = true;

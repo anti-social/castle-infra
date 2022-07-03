@@ -26,6 +26,7 @@ rec {
       host = "oldpc";
       mac = "f8:32:e4:9a:87:da";
       ip = mkAddr 3;
+      inetActiveTime = ["07:00" "00:00"];
     }
     {
       host = "tv";
