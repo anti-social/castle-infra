@@ -124,9 +124,9 @@ in {
         limitedInetHosts = builtins.filter (h: builtins.hasAttr "inetActiveTime" h) lan.hosts;
         limitInetHostRule = h: "ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime (lib.last h.inetActiveTime)} --timestop ${localToUtcTime (builtins.head h.inetActiveTime)} -j REJECT";
       in ''
-        ip46tables -F ${inetForwardChain}
-        ip46tables -X ${inetForwardChain}
-        ip46tables -N ${inetForwardChain}
+        ip46tables -F ${inetForwardChain} 2>/dev/null || true
+        ip46tables -X ${inetForwardChain} 2>/dev/null || true
+        ip46tables -N ${inetForwardChain} 2>/dev/null || true
         ip46tables -A FORWARD -j ${inetForwardChain}
         ${lib.concatStringsSep "\n" (map limitInetHostRule limitedInetHosts)}
       '';
@@ -165,24 +165,28 @@ in {
     beforeService = "wireguard-wg0.service";
   };
 
-  services.secrets.templates."cloudns-auth.env" = {
-    source = ''
-      CLOUDNS_AUTH_ID=''${cloudns_auth_id}
-      CLOUDNS_AUTH_PASSWORD=''${cloudns_auth_password}
-    '';
-    secretsEnvFile = ./secrets/cloudns-auth.env;
-    beforeService = "acme-castle.mk.service";
-  };
   security.acme = {
     acceptTerms = true;
     defaults.email = "kovalidis@gmail.com";
-    certs."castle.mk" = {
-      dnsProvider = "cloudns";
-      dnsPropagationCheck = true;
-      credentialsFile = config.secretsDestinations.templates."cloudns-auth.env";
-      domain = "*.castle.mk";
-    };
   };
+
+  # Need paid account to have an access to http api
+  # security.acme.certs = {
+  #   "castle.mk" = {
+  #     dnsProvider = "cloudns";
+  #     dnsPropagationCheck = true;
+  #     credentialsFile = config.secretsDestinations.templates."cloudns-auth.env";
+  #     domain = "*.castle.mk";
+  #   };
+  # };
+  # services.secrets.templates."cloudns-auth.env" = {
+  #   source = ''
+  #     CLOUDNS_AUTH_ID=''${cloudns_auth_id}
+  #     CLOUDNS_AUTH_PASSWORD=''${cloudns_auth_password}
+  #   '';
+  #   secretsEnvFile = ./secrets/cloudns-auth.env;
+  #   beforeService = "acme-castle.mk.service";
+  # };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   # users.mutableUsers = false;
@@ -281,7 +285,7 @@ in {
 
   networking.firewall.interfaces = {
     ${lan_br_if}.allowedTCPPorts = [ 80 443 ];
-    ${wan_if}.allowedTCPPorts = [ 443 ];
+    ${wan_if}.allowedTCPPorts = [ 80 443 ];
   };
   services.nginx = {
     enable = true;

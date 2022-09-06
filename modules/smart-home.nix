@@ -66,7 +66,7 @@ in {
         #scene: !include scenes.yaml
       '';
       secretsEnvFile = ../secrets/home-assistant.env;
-      beforeService = "podman-home-assistant";
+      beforeService = "podman-home-assistant.service";
     };
     virtualisation.oci-containers.containers.home-assistant = {
       image = "ghcr.io/home-assistant/home-assistant:${home_assistant_version}";
@@ -94,9 +94,11 @@ in {
       };
     };
     services.nginx.virtualHosts.${cfg.extHost} = {
-      onlySSL = true;
-      sslCertificate = "/var/lib/acme/castle.mk/cert.pem";
-      sslCertificateKey = "/var/lib/acme/castle.mk/key.pem";
+      addSSL = true;
+      enableACME = true;
+      # onlySSL = true;
+      # sslCertificate = "/var/lib/acme/castle.mk/cert.pem";
+      # sslCertificateKey = "/var/lib/acme/castle.mk/key.pem";
       extraConfig = ''
         proxy_buffering off;
       '';
