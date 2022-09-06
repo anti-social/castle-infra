@@ -180,7 +180,7 @@ in {
 
     secretTemplateServices = mapAttrs (name: secret: (
       let
-        secretsEnv = pkgs.writeText (toString secret.secretsEnvFile) (builtins.readFile secret.secretsEnvFile);
+        secretsEnv = pkgs.writeText (builtins.baseNameOf secret.secretsEnvFile) (builtins.readFile secret.secretsEnvFile);
         tmpl = pkgs.writeText (toString name) (if secret.source == null then (builtins.readFile secret.template) else secret.source);
         hash = builtins.hashString "sha256" "${tmpl}:${secretsEnv}";
         dest = if (secret.dest != null) then secret.dest else "/run/secrets/${hash}-${name}";
