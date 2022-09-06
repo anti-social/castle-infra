@@ -112,7 +112,7 @@ in {
         echo $line | \
           ${pkgs.gawk}/bin/awk '{ sub("="," "); } 1' | \
           ${pkgs.findutils}/bin/xargs ${pkgs.bash}/bin/bash -c \
-            'echo export $0="$(echo $1 | ${opensslDecrypt})"'
+            'echo export $0=\"$(echo $1 | ${opensslDecrypt})\"'
       done <$SECRETS_ENV_FILE
     '';
 
