@@ -171,7 +171,7 @@ in {
       CLOUDNS_AUTH_PASSWORD=''${cloudns_auth_password}
     '';
     secretsEnvFile = ./secrets/cloudns-auth.env;
-    beforeService = "acme-castle.mk";
+    beforeService = "acme-castle.mk.service";
   };
   security.acme = {
     acceptTerms = true;
