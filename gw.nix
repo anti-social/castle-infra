@@ -17,6 +17,11 @@
   hostname = (builtins.head lan.hosts).host;
   hostname_aliases = (builtins.head lan.hosts).aliases;
   local_addr = lan.mkAddr 1;
+
+  vpn_if = "wg0";
+  vpn_listen_port = 51820;
+  vpn_addr_prefix = "192.168.102";
+  vpn_network = "${vpn_addr_prefix}.0/24";
 in {
   imports =
     [ # Include the results of the hardware scan.
@@ -149,23 +154,42 @@ in {
     };
   };
 
-  networking.wireguard.interfaces.wg0 = {
-    ips = [ "192.168.102.2/24" ];
-    privateKeyFile = "/etc/wireguard/wg0.privkey";
+  networking.wireguard.interfaces.${vpn_if} = {
+    ips = [ "${vpn_addr_prefix}.1/24" ];
+    listenPort = vpn_listen_port;
+    privateKeyFile = "/etc/wireguard/${vpn_if}.privkey";
 
     peers = [
+      # {
+      #   endpoint = "164.92.183.176:51820";
+      #   publicKey = "GfOnceuK9kKySxreK46KikpvLL09aFa2PY9j4+O67XE=";
+      #   allowedIPs = [ "192.168.102.0/24" ];
+      #   persistentKeepalive = 25;
+      # }
       {
-        endpoint = "164.92.183.176:51820";
-        publicKey = "GfOnceuK9kKySxreK46KikpvLL09aFa2PY9j4+O67XE=";
-        allowedIPs = [ "192.168.102.0/24" ];
+        # Alla's macbook
+        publicKey = "SR6YONkjoS5guGF/2vv8aR4GqI2UWRvkq28BSVVumVc=";
+        allowedIPs = [ "192.168.102.3/32" ];
+        persistentKeepalive = 25;
+      }
+      {
+ 	# My work laptop (Dell)
+        publicKey = "CnQF8AEr/JZwfM/mg75z/Sh9j3VHNR59dgWegbc6rl8=";
+        allowedIPs = [ "192.168.102.4/32" ];
+        persistentKeepalive = 25;
+      }
+      {
+	# My phone (Samsung Note)
+        publicKey = "5fbeSwMP1b1QK3DHxiR0jbGNOvHXEcohC7TV+hnQCDo=";
+        allowedIPs = [ "192.168.102.11/32" ];
         persistentKeepalive = 25;
       }
     ];
   };
-  services.secrets.files.wg0-privkey = {
+  services.secrets.files."${vpn_if}-privkey" = {
     file = ./secrets/gw-wireguard-privkey.aes-256-cbc.base64;
-    dest = "/etc/wireguard/wg0.privkey";
-    beforeService = "wireguard-wg0.service";
+    dest = "/etc/wireguard/${vpn_if}.privkey";
+    beforeService = "wireguard-${vpn_if}.service";
   };
 
   security.acme = {
@@ -249,7 +273,7 @@ in {
   };
 
   services.dns-proxy = {
-    interfaces = [ lan_br_if wlan_if ];
+    interfaces = [ lan_br_if wlan_if vpn_if ];
     bindAddr = local_addr;
     lan = lan;
   };
@@ -296,7 +320,10 @@ in {
   networking.firewall.interfaces = {
     ${lan_br_if}.allowedTCPPorts = [ 80 443 ];
     ${wlan_if}.allowedTCPPorts = [ 80 443 ];
-    ${wan_if}.allowedTCPPorts = [ 80 443 ];
+    ${wan_if} = {
+      allowedTCPPorts = [ 80 443 ];
+      allowedUDPPorts = [ vpn_listen_port ];
+    };
   };
   services.nginx = {
     enable = true;
