@@ -2,6 +2,7 @@
   lan1_if = "enp1s0";
   lan2_if = "enp2s0";
   wlan_if = "wlp3s0b1";
+  wlan_addr = "192.168.3.1";
 
   lan_br_if = "br0";
   lan_br_ifs = [ lan2_if ];
@@ -9,7 +10,7 @@
   wan_if = lan1_if;
   # wan_if = "enp0s21f0u2";
 
-  lan_zone = [ lan_br_if ];
+  lan_zone = [ lan_br_if wlan_if ];
   wan_zone = [ wan_if ];
 
   lan = import ./lan.nix;
@@ -105,7 +106,12 @@ in {
         ];
       };
       ${wan_if}.useDHCP = true;
-      ${wlan_if}.useDHCP = false;
+      ${wlan_if} = {
+        useDHCP = false;
+        ipv4.addresses = [
+          { address = wlan_addr; prefixLength = 24; }
+        ];
+      };
     };
 
     resolvconf = {
@@ -139,10 +145,7 @@ in {
     };
 
     wireless = {
-      enable = false;
-      networks.Castle = {
-        pskRaw = "fd4c201d618d6cd19f43d3f17f757f19505c6011d3fa3fc069761acc7d391356";
-      };
+      enable = true;
     };
   };
 
@@ -246,9 +249,16 @@ in {
   };
 
   services.dns-proxy = {
-    interfaces = [ lan_br_if ];
+    interfaces = [ lan_br_if wlan_if ];
     bindAddr = local_addr;
     lan = lan;
+  };
+
+  services.hostapd = {
+    enable = true;
+    interface = wlan_if;
+    ssid = "Castle-66";
+    wpaPassphrase = "0459796103";
   };
 
   services.nginx.virtualHosts."\"\"" = {
@@ -285,6 +295,7 @@ in {
 
   networking.firewall.interfaces = {
     ${lan_br_if}.allowedTCPPorts = [ 80 443 ];
+    ${wlan_if}.allowedTCPPorts = [ 80 443 ];
     ${wan_if}.allowedTCPPorts = [ 80 443 ];
   };
   services.nginx = {
