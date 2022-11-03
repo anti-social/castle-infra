@@ -149,9 +149,9 @@ in {
       externalInterface = wan_if;
     };
 
-    wireless = {
-      enable = true;
-    };
+    # wireless = {
+    #   enable = true;
+    # };
   };
 
   networking.wireguard.interfaces.${vpn_if} = {
