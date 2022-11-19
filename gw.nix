@@ -285,6 +285,10 @@ in {
     wpaPassphrase = "0459796103";
   };
 
+  services.ups = {
+    listenAddrs = [ "127.0.0.1" local_addr ];
+  };
+
   services.nginx.virtualHosts."\"\"" = {
     addSSL = true;
     sslCertificate = "/var/lib/acme/castle.mk/cert.pem";

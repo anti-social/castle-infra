@@ -3,6 +3,8 @@
 with lib;
 
 let
+  cfg = config.services.ups;
+
   prometheus-nut-exporter = pkgs.rustPlatform.buildRustPackage rec {
     pname = "prometheus-nut-exporter";
     version = "1.1.1";
@@ -16,6 +18,12 @@ let
     cargoSha256 = "066s2wp5pqfcqi4hry8xc5a07g42f88vpl2vvgj20dkk6an8in54";
   };
 in {
+  options.services.ups = {
+    listenAddrs = mkOption {
+      type = types.listOf types.str;
+    };
+  };
+
   config = {
     power.ups = {
       enable = true;
@@ -25,8 +33,10 @@ in {
         description = "Power Walker 3000";
       };
     };
-    environment.etc."nut/upsd.conf".text = ''
-      LISTEN 127.0.0.1 3493
+    environment.etc."nut/upsd.conf".text = let
+      listen = addr: "LISTEN ${addr}";
+    in ''
+      ${builtins.concatStringsSep "\n" (map listen cfg.listenAddrs)}
     '';
     environment.etc."nut/upsd.users".text = ''
       [upsmon]
@@ -45,6 +55,8 @@ in {
       group = "nut";
     };
     users.groups.nut.name = "nut";
+
+    networking.firewall.interfaces.br0.allowedTCPPorts = [ 3493 ];
 
     systemd.services.prometheus-nut-exporter = {
       enable = true;

@@ -28,7 +28,7 @@ in {
 
   config = {
     networking.firewall.interfaces = {
-      cni-podman0.allowedTCPPorts = [ mqtt_port ];
+      cni-podman0.allowedTCPPorts = [ mqtt_port 3493 ];
       ${cfg.iotInterface}.allowedTCPPorts = [ mqtt_port ];
     };
 
