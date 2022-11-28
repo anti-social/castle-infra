@@ -2,15 +2,14 @@
   lan1_if = "enp1s0";
   lan2_if = "enp2s0";
   wlan_if = "wlp3s0b1";
-  wlan_addr = "192.168.3.1";
 
   lan_br_if = "br0";
-  lan_br_ifs = [ lan2_if ];
+  lan_br_ifs = [ lan2_if wlan_if ];
 
   wan_if = lan1_if;
   # wan_if = "enp0s21f0u2";
 
-  lan_zone = [ lan_br_if wlan_if ];
+  lan_zone = [ lan_br_if ];
   wan_zone = [ wan_if ];
 
   lan = import ./lan.nix;
@@ -113,9 +112,6 @@ in {
       ${wan_if}.useDHCP = true;
       ${wlan_if} = {
         useDHCP = false;
-        ipv4.addresses = [
-          { address = wlan_addr; prefixLength = 24; }
-        ];
       };
     };
 
@@ -273,7 +269,7 @@ in {
   };
 
   services.dns-proxy = {
-    interfaces = [ lan_br_if wlan_if vpn_if ];
+    interfaces = [ lan_br_if vpn_if ];
     bindAddr = local_addr;
     lan = lan;
   };
@@ -323,7 +319,6 @@ in {
 
   networking.firewall.interfaces = {
     ${lan_br_if}.allowedTCPPorts = [ 80 443 ];
-    ${wlan_if}.allowedTCPPorts = [ 80 443 ];
     ${wan_if} = {
       allowedTCPPorts = [ 80 443 ];
       allowedUDPPorts = [ vpn_listen_port ];
