@@ -118,10 +118,15 @@ rec {
       ip = mkAddr 243;
     }
     {
-      host = "switch";
-      mac = "bc:67:1c:c8:f2:3d";
+      host = "cisco";
+      mac = "0:00:b4:18:02:7e";
+      ip = mkAddr 253;
+    }
+    {
+      host = "netgear";
+      mac = "bc:a5:11:22:25:58";
       ip = mkAddr 254;
-      aliases = [ "cisco" ];
+      aliases = [ "switch" ];
     }
   ];
 }
