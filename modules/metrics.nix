@@ -3,7 +3,7 @@
 with lib;
 
 let
-  grafana_version = "9.0.1";
+  grafana_version = "9.3.1";
   grafana_port = 3000;
   grafana_domain = "grafana.castle";
 in {
