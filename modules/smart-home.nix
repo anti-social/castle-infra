@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.services.smart-home;
-  home_assistant_version = "2022.5.5";
+  home_assistant_version = "2022.12.6";
   mqtt_port = 1883;
 in {
   options.services.smart-home = {
