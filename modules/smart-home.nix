@@ -53,11 +53,21 @@ in {
           api_key: "''${castle_alert_telegram_bot_token}"
           allowed_chat_ids:
           - -732670381
+          - -1001597296737
+
+        # - platform: polling
+        #   api_key: "''${novooskolska_power_telegram_bot_token}"
+        #   allowed_chat_ids:
+        #   - -1001597296737
 
         notify:
         - platform: telegram
-          name: TelegramNotifier
+          name: castle_alerts_notifier
           chat_id: -732670381
+
+        - platform: telegram
+          name: power_status_notifier
+          chat_id: -1001597296737
 
         # Text to speech
         tts:
