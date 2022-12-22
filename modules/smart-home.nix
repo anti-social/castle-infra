@@ -6,6 +6,7 @@ let
   cfg = config.services.smart-home;
   home_assistant_version = "2022.12.6";
   mqtt_port = 1883;
+  upsd_port = 3493;
 in {
   options.services.smart-home = {
     iotInterface = mkOption {
@@ -28,7 +29,7 @@ in {
 
   config = {
     networking.firewall.interfaces = {
-      cni-podman0.allowedTCPPorts = [ mqtt_port 3493 ];
+      cni-podman0.allowedTCPPorts = [ mqtt_port upsd_port ];
       ${cfg.iotInterface}.allowedTCPPorts = [ mqtt_port ];
     };
 
@@ -43,6 +44,9 @@ in {
           trusted_proxies:
           - "127.0.0.1"
           - "10.88.0.1"
+
+        shell_command:
+          shutdown_ups: touch /config/commands/shutdown_ups
 
         telegram_bot:
         - platform: polling
