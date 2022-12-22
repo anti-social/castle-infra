@@ -14,7 +14,7 @@ in {
 
   config = {
     virtualisation.oci-containers.containers.unifi = {
-      image = "docker.io/linuxserver/unifi-controller:7.2.95";
+      image = "docker.io/linuxserver/unifi-controller:7.3.76";
       environment = {
         PUID = "1000";
         PGID = "1000";
