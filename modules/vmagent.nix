@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.services.vmagent;
+  cfg = config.modules.vmagent;
 
   vmagentConfig = pkgs.writeText "vmagent.yaml" ''
     scrape_configs:
@@ -15,7 +15,7 @@ let
   '';
 in {
   options = {
-    services.vmagent = {
+    modules.vmagent = {
       enable = mkOption {
         type = types.bool;
         default = false;

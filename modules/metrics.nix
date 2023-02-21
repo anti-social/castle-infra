@@ -11,6 +11,7 @@ in {
     services.victoriametrics = {
       enable = true;
       listenAddress = "127.0.0.1:8428";
+      retentionPeriod = 24;
     };
 
     virtualisation.oci-containers.containers.grafana = {

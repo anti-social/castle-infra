@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
   };
   outputs = { nixpkgs, ... }: {
     colmena = {
@@ -12,6 +12,7 @@
       };
 
       gw = import ./gw.nix;
+      minipc = import ./minipc.nix;
       do = import ./do.nix;
     };
   };

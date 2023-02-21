@@ -3,9 +3,9 @@
 with lib;
 
 let
-  cfg = config.services.node-exporter;
+  cfg = config.modules.node-exporter;
 in {
-  options.services.node-exporter = {
+  options.modules.node-exporter = {
     hostname = mkOption {
       type = types.str;
       description = "Node hostname";
@@ -23,7 +23,7 @@ in {
         };
       };
     };
-    services.vmagent.relabelConfigs.localhostNode = ''
+    modules.vmagent.relabelConfigs.localhostNode = ''
       - source_labels: [instance]
         regex: "localhost(:.+)?"
         target_label: instance

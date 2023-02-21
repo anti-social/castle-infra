@@ -1,5 +1,6 @@
 rec {
   addr_prefix = "192.168.2";
+  prefix_length = 24;
   mkAddr = i: "${addr_prefix}.${toString i}";
   mkFQDN = name: "${name}.${domain}";
 
@@ -29,6 +30,11 @@ rec {
       mac = "f8:32:e4:9a:87:da";
       ip = mkAddr 3;
       inetActiveTime = ["07:00" "00:00"];
+    }
+    {
+      host = "minipc";
+      mac = "a6:ff:98:64:78:92";
+      ip = mkAddr 4;
     }
     {
       host = "tv";

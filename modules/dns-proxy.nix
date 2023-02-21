@@ -79,12 +79,12 @@ in {
       '';
     };
 
-    services.vmagent.scrapeConfigs.localhostCoredns = ''
-      - job_name: coredns
-        scrape_interval: 15s
-        static_configs:
-        - targets: [ "localhost:9153" ]
-    '';
+    # services.vmagent.scrapeConfigs.localhostCoredns = ''
+    #   - job_name: coredns
+    #     scrape_interval: 15s
+    #     static_configs:
+    #     - targets: [ "localhost:9153" ]
+    # '';
 
     users.users.dns-proxy = {
       isSystemUser = true;

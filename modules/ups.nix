@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.services.ups;
+  cfg = config.modules.ups;
 
   prometheus-nut-exporter = pkgs.rustPlatform.buildRustPackage rec {
     pname = "prometheus-nut-exporter";
@@ -18,7 +18,7 @@ let
     cargoSha256 = "066s2wp5pqfcqi4hry8xc5a07g42f88vpl2vvgj20dkk6an8in54";
   };
 in {
-  options.services.ups = {
+  options.modules.ups = {
     listenAddrs = mkOption {
       type = types.listOf types.str;
     };
@@ -70,7 +70,7 @@ in {
         ExecStart = "${prometheus-nut-exporter}/bin/prometheus-nut-exporter";
       };
     };
-    services.vmagent.scrapeConfigs.localhostNut = ''
+    modules.vmagent.scrapeConfigs.localhostNut = ''
       - job_name: nut
         scrape_interval: 15s
         metrics_path: /nut
@@ -84,7 +84,7 @@ in {
         - target_label: __address__
           replacement: localhost:9995
     '';
-    services.vmagent.relabelConfigs.localhostNut = ''
+    modules.vmagent.relabelConfigs.localhostNut = ''
       - source_labels: [__name__]
         regex: "network_ups_tools_(.+)"
         target_label: __name__

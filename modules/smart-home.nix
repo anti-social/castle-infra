@@ -3,12 +3,12 @@
 with lib;
 
 let
-  cfg = config.services.smart-home;
+  cfg = config.modules.smart-home;
   home_assistant_version = "2022.12.6";
   mqtt_port = 1883;
   upsd_port = 3493;
 in {
-  options.services.smart-home = {
+  options.modules.smart-home = {
     iotInterface = mkOption {
       type = types.str;
       description = "IoT network interface";
@@ -121,7 +121,7 @@ in {
         proxyWebsockets = true;
       };
     };
-    services.vmagent.scrapeConfigs.homeAssistant = ''
+    modules.vmagent.scrapeConfigs.homeAssistant = ''
       - job_name: home-assistant
         scrape_interval: 30s
         metrics_path: /api/prometheus

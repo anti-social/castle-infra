@@ -3,9 +3,9 @@
 with lib;
 
 let
-  cfg = config.services.unifi-controller;
+  cfg = config.modules.unifi-controller;
 in {
-  options.services.unifi-controller = {
+  options.modules.unifi-controller = {
     localAddr = mkOption {
       type = types.str;
       description = "Local address to listen on";
