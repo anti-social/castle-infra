@@ -37,6 +37,12 @@ rec {
       ip = mkAddr 4;
     }
     {
+      host = "rpi3";
+      mac = "b8:27:eb:0b:8d:6f";
+      ip = mkAddr 7;
+      aliases = [ "octo" "3d" ];
+    }
+    {
       host = "tv";
       mac = "c4:36:6c:06:73:3e";
       ip = mkAddr 10;
