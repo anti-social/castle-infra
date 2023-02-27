@@ -20,7 +20,7 @@ in {
     ];
 
   deployment = {
-    targetHost = "192.168.2.110";
+    targetHost = "minipc.castle";
     targetUser = "root";
     # buildOnTarget = true;
   };
@@ -162,6 +162,7 @@ in {
       firefox
       tdesktop
       turbovnc
+      zoom-us
     ];
   in
     system-utils ++ network-utils ++ apps;
