@@ -258,6 +258,11 @@ in {
     enable = true;
   };
 
+  services.tmate-ssh-server = {
+    enable = true;
+    host = "tmate.castle.mk";
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; let
@@ -285,6 +290,7 @@ in {
       iperf
       nmap
       tcpdump
+      tmate
     ];
   in system-utils ++ network-utils;
 
