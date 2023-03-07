@@ -95,6 +95,7 @@
     enable = true;
     plugins = plugins: [
       plugins.psucontrol
+      plugins.bedlevelvisualizer
     ];
   };
   users.users.octoprint = {
