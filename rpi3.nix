@@ -3,6 +3,10 @@
   deployment = {
     targetHost = "192.168.2.198";
     targetUser = "root";
+    keys."secrets.password" = {
+      destDir = "/root";
+      keyCommand = [ "cat" "secrets.password" ];
+    };
   };
 
 
@@ -14,7 +18,7 @@
 
   boot.initrd.availableKernelModules = [ "usbhid" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "bcm2835-v4l2" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
@@ -41,7 +45,19 @@
   # NixOS wants to enable GRUB by default
   boot.loader.grub.enable = false;
   # Enables the generation of /boot/extlinux/extlinux.conf
-  boot.loader.generic-extlinux-compatible.enable = true;
+  # boot.loader.generic-extlinux-compatible.enable = true;
+
+  boot.loader.raspberryPi.enable = true;
+  # Set the version depending on your raspberry pi. 
+  boot.loader.raspberryPi.version = 3;
+  # We need uboot
+  boot.loader.raspberryPi.uboot.enable = true;
+  # These two parameters are the important ones to get the
+  # camera working. These will be appended to /boot/config.txt.
+  boot.loader.raspberryPi.firmwareConfig = ''
+    start_x=1
+    gpu_mem=256
+  '';
  
   # On other boards, pick a different kernel, note that on most boards with good mainline support, default, latest and hardened should all work
   # Others might need a BSP kernel, which should be noted in their respective wiki entries
@@ -62,11 +78,16 @@
       enable = true;
       interfaces = {
         wlan0 = {
-          allowedTCPPorts = [ 5000 ];
+          allowedTCPPorts = [ 5000 8080 ];
         };
       };
     };
   };
+
+  services.udev.extraRules = ''
+    # allow access to raspi cec device for video group (and optionally register it as a systemd device, used below)
+    SUBSYSTEM=="vchiq", GROUP="video", MODE="0660", TAG+="systemd", ENV{SYSTEMD_ALIAS}="/dev/vchiq"
+  '';
 
   services.openssh.enable = true;
 
@@ -76,19 +97,25 @@
       plugins.psucontrol
     ];
   };
+  users.users.octoprint = {
+    isNormalUser = false;
+    extraGroups = [ "video" ];
+  };
 
   users.users.alexk = {
     isNormalUser  = true;
     home  = "/home/alexk";
-    extraGroups  = [ "wheel" ];
+    extraGroups  = [ "wheel" "video" ];
     openssh.authorizedKeys.keys  = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGjh0wyd1lNSvdEKWb1GkFmf5F61i5fWeCm7ENr/W0Vt kovalidis@gmail.com"
     ];
   };
   
   environment.systemPackages = with pkgs; [
+    ffmpeg
     htop
     libraspberrypi
+    mjpg-streamer
     tmux
     usbutils
   ];
