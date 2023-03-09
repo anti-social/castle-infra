@@ -22,6 +22,7 @@ in {
   deployment = {
     targetHost = "minipc.castle";
     targetUser = "root";
+    allowLocalDeployment = true;
     # buildOnTarget = true;
   };
 
@@ -134,6 +135,7 @@ in {
   environment.systemPackages = with pkgs; let
     system-utils = [
       bat
+      colmena
       git
       htop
       mc
@@ -155,6 +157,8 @@ in {
       nftables
       nmap
       tcpdump
+      tmate
+      wakeonlan
       wget
     ];
     apps = [
