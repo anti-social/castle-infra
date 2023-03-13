@@ -91,11 +91,46 @@
 
   services.openssh.enable = true;
 
+  nixpkgs.overlays = [
+    (self: super: {
+      octoprint = super.octoprint.override {
+        packageOverrides = pyself: pysuper: {
+          octoprint-prettygcode = pyself.buildPythonPackage rec {
+            pname = "PrettyGCode";
+            version = "1.2.4";
+            src = self.fetchFromGitHub {
+              owner = "Kragrathea";
+              repo = "OctoPrint-PrettyGCode";
+              rev = "v${version}";
+              sha256 = "sha256-q/B2oEy+D6L66HqmMkvKfboN+z3jhTQZqt86WVhC2vQ=";
+            };
+            propagatedBuildInputs = [ pysuper.octoprint ];
+            doCheck = false;
+          };
+          octoprint-homeassistant = pyself.buildPythonPackage rec {
+            pname = "HomeAssistant";
+            version = "3.6.2";
+            src = self.fetchFromGitHub {
+              owner = "cmroche";
+              repo = "OctoPrint-HomeAssistant";
+              rev = version;
+              sha256 = "sha256-oo9OBmHoJFNGK7u9cVouMuBuUcUxRUrY0ppRq0OS1ro=";
+            };
+            propagatedBuildInputs = [ pysuper.octoprint ];
+            doCheck = false;
+          };
+        };
+      };
+    })
+  ];
   services.octoprint = {
     enable = true;
-    plugins = plugins: [
-      plugins.psucontrol
-      plugins.bedlevelvisualizer
+    plugins = plugins: with plugins; [
+      bedlevelvisualizer
+      mqtt
+      psucontrol
+      octoprint-prettygcode
+      octoprint-homeassistant
     ];
   };
   users.users.octoprint = {

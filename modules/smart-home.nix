@@ -136,6 +136,7 @@ in {
         home:''${mqtt_home_password}
         iot_devide:''${mqtt_iot_device_password}
         zigbee2mqtt:''${mqtt_zigbee2mqtt_password}
+        octoprint:''${mqtt_octoprint_password}
       '';
       secretsEnvFile = ../secrets/mosquitto-passwd.env;
       beforeService = "mosquitto";
@@ -176,12 +177,20 @@ in {
                 "read stat/tasmota/#"
                 "read tele/tasmota/#"
                 "readwrite zigbee2mqtt/#"
+                "readwrite octoPrint/#"
               ];
             };
             zigbee2mqtt = {
               hashedPassword = "$6$ksg1Ct4qDxuQUURN$EGnHeZ7CaBXLSC3QCcTqLm4B37+9YkBpsKqFI1Took2MT89wbnPrCAY/+9WxkxyA3QV9qfbeXqV40B76XK3O7w==";
               acl = [
                 "readwrite #"
+              ];
+            };
+            octoprint = {
+              hashedPassword = "$7$101$uJeIzKlE4TcLcn8k$vV1OscD6qkSsaiWMAfckdKwxmL+a1GNjRGJu8t3HPejSsdCo/UjySWyMH4KyNf8aQxJNr8z3mA1Lr/WvPUm4Fg==";
+              acl = [
+                "write homeassistant/#"
+                "readwrite octoPrint/#"
               ];
             };
           };
