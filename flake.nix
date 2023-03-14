@@ -22,7 +22,8 @@
       gw = import ./gw.nix;
       minipc = import ./minipc.nix;
       rpi3 = import ./rpi3.nix;
-      do = import ./do.nix;
+      dell-laptop = import ./dell-laptop.nix;
+      # do = import ./do.nix;
     };
   };
 }
