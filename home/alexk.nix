@@ -8,24 +8,23 @@ let
     repo = "nix-doom-emacs";
     rev = "5a323e4a17429dbfe9f4fc5fffbe7b2fdeb368fc";
     sha256 = "lvl1ww+QSlZbqRTBKZkd5Big5MZCYXhSaZPZYkZBu0o=";
-    #url = https://github.com/nix-community/nix-doom-emacs/archive/master.tar.gz;
   }) {
     doomPrivateDir = ./doom.d;  # Directory containing your config.el, init.el
                                 # and packages.el files
-    # doomPackageDir = pkgs.linkFarm "doom-packages-dir" [
-    #   {
-    #     name = "init.el";
-    #     path = ./doom.d/init.el;
-    #   }
-    #   {
-    #     name = "packages.el";
-    #     path = ./doom.d/packages.el;
-    #   }
-    #   {
-    #     name = "config.el";
-    #     path = pkgs.emptyFile;
-    #   }
-    # ];
+    doomPackageDir = pkgs.linkFarm "doom-packages-dir" [
+      {
+        name = "init.el";
+        path = ./doom.d/init.el;
+      }
+      {
+        name = "packages.el";
+        path = ./doom.d/packages.el;
+      }
+      {
+        name = "config.el";
+        path = pkgs.emptyFile;
+      }
+    ];
   };
 in {
   # Home Manager needs a bit of information about you and the
@@ -39,6 +38,15 @@ in {
     enable = true;
     userEmail = "kovalidis@gmail.com";
     userName = "Oleksandr Koval";
+    aliases = {
+      ci = "commit";
+      co = "checkout";
+      ff = "merge --ff-only";
+      last = "log -1 HEAD";
+      meld = "difftool --dir-diff -t meld";
+      st = "status";
+      up = "pull --no-stat --ff-only";
+    };
   };
 
   programs.zsh = {
@@ -46,20 +54,55 @@ in {
     enableAutosuggestions = true;
     defaultKeymap = "emacs";
     history = {
+      expireDuplicatesFirst = true;
       save = 50000;
+      share = true;
       size = 50000;
     };
     initExtra = ''
+      # Bash like navigation
       autoload -U select-word-style && select-word-style bash
       export WORDCHARS=""
     '';
-    prezto = {
+    oh-my-zsh = {
       enable = true;
-      prompt = {
-        pwdLength = "long";
-        # showReturnVal = true;
-      };
+      plugins = [ "ssh-agent" "sudo" ];
+      theme = "agnoster";
     };
+    # prezto = {
+    #   enable = true;
+    #   prompt = {
+    #     pwdLength = "long";
+    #     # showReturnVal = true;
+    #   };
+    # };
+  };
+
+  xdg.configFile = {
+    "containers/registries.conf".text = ''
+      [registries.search]
+      registries = ["docker.io"]
+
+      [registries.insecure]
+      registries = []
+
+      [registries.block]
+      registries = []
+    '';
+    "containers/policy.json".text = ''
+      {
+        "default": [
+          {"type": "insecureAcceptAnything"}
+        ],
+        "transports": {
+          "docker-daemon": {
+            "": [
+              {"type": "insecureAcceptAnything"}
+            ]
+          }
+        }
+      }
+    '';
   };
 
   # This value determines the Home Manager release that your
