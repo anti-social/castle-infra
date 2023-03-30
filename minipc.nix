@@ -26,6 +26,13 @@ in {
     # buildOnTarget = true;
   };
 
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+
   services.secrets = {
     passwordFile = "/root/secrets.password";
   };
@@ -161,6 +168,12 @@ in {
       wakeonlan
       wget
     ];
+    dev-tools = [
+      esptool
+      minicom
+      picocom
+      tio
+    ];
     apps = [
       emacs
       firefox
@@ -169,7 +182,7 @@ in {
       zoom-us
     ];
   in
-    system-utils ++ network-utils ++ apps;
+    system-utils ++ network-utils ++ dev-tools ++ apps;
 
   ### List services that you want to enable:
 
