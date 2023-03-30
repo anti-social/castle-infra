@@ -1,0 +1,1 @@
+(setq auth-sources '("~/.authinfo"))
