@@ -138,16 +138,18 @@ in {
           allowedUDPPorts = [ vpn_listen_port ];
         };
       };
-      # extraCommands = let
-      #   inetForwardChain = "inet-forward";
-      #   localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
-      #   limitedInetHosts = builtins.filter (h: builtins.hasAttr "inetActiveTime" h) lan.hosts;
-      #   limitInetHostRule = h: "ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime (lib.last h.inetActiveTime)} --timestop ${localToUtcTime (builtins.head h.inetActiveTime)} -j REJECT";
-      # in ''
-      #   ip46tables -F ${inetForwardChain} 2>/dev/null || true
-      #   ip46tables -X ${inetForwardChain} 2>/dev/null || true
-      #   ip46tables -N ${inetForwardChain} 2>/dev/null || true
-      #   ip46tables -A FORWARD -j ${inetForwardChain}
+      extraCommands = let
+        inetForwardChain = "inet-forward";
+        localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
+        limitedInetHosts = builtins.filter (h: builtins.hasAttr "inetActiveTime" h) lan.hosts;
+        limitInetHostRule = h: ''
+          ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime h.inetActiveTime.to} --timestop ${localToUtcTime h.inetActiveTime.from} -j REJECT
+        '';
+      in ''
+        ip46tables -F ${inetForwardChain} 2>/dev/null || true
+        ip46tables -X ${inetForwardChain} 2>/dev/null || true
+        ip46tables -N ${inetForwardChain} 2>/dev/null || true
+        ip46tables -A FORWARD -j ${inetForwardChain}
       #   ${lib.concatStringsSep "\n" (map limitInetHostRule limitedInetHosts)}
       # '';
     };
