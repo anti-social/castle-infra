@@ -23,7 +23,7 @@
 
       gw = import ./gw.nix;
       pc = import ./pc.nix;
-      # oldpc = import ./oldpc.nix;
+      oldpc = import ./oldpc.nix;
       minipc = import ./minipc.nix;
       rpi3 = import ./rpi3.nix;
       dell-laptop = import ./dell-laptop.nix;
