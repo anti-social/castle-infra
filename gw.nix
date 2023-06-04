@@ -330,7 +330,7 @@ in {
       - targets:
         - "localhost:${toString config.services.prometheus.exporters.node.port}"
         - "pc.castle:9100"
-        - "oldpc.castle:9100"
+        - "oldpc.castle:9182"
   '';
 
   modules.node-exporter = {
