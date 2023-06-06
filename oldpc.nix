@@ -5,6 +5,11 @@
 { config, pkgs, lib, modulesPath, ... }:
 
 {
+  deployment = {
+    targetHost = "oldpc.castle";
+    targetUser = "root";
+  };
+
   imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
@@ -134,6 +139,8 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+
+  security.polkit.enable = true;
 
   # List services that you want to enable:
 
