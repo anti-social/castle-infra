@@ -171,8 +171,7 @@
   nixpkgs.overlays = [
     (self: super: {
       turbovnc = super.turbovnc.overrideAttrs (old:
-        let
-        in rec {
+        rec {
           version = "3.0.3";
           src = pkgs.fetchFromGitHub {
             owner = "TurboVNC";
@@ -184,15 +183,25 @@
           nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkgconfig ];
         }
       );
-      qemu = super.qemu.overrideAttrs (old:
-        let
-        in rec {
+
+      qemu = super.qemu.overrideAttrs (
+        old: rec {
           version = "8.0.2";
           src = pkgs.fetchurl {
             url = "https://download.qemu.org/qemu-${version}.tar.xz";
             sha256 = "8GCr1DX75nlBJeLDmFaP/Dz6VABCWWkHqLGO3KNM9qU=";
           };
           patches = old.patches ++ [ ./qemu/qemu-anti-cheat-8.0.2.patch ];
+        }
+      );
+
+      ktlint = super.ktlint.overrideAttrs (
+        old: rec {
+          version = "0.49.1";
+          src = pkgs.fetchurl {
+            url = "https://github.com/pinterest/ktlint/releases/download/${version}/ktlint";
+            sha256 = "Kz9vZ0qUTSW7jSg8NTmUe76GB0eTASkJpV3kt3H3S8w=";
+          };
         }
       );
     })
@@ -267,12 +276,14 @@
       gcc
       gnumake
       gradle
+      grpc
       ktlint
       kubectl
       libtool  # to compile emacs libvterm module
       libxcrypt
       multimarkdown
       nodejs
+      patchelf
       protobuf
       python311Full
       rustup
