@@ -23,6 +23,10 @@
         system = "x86_64-linux"; # Set your desired system here
         overlays = [];
       };
+      meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-05 {
+        system = "x86_64-linux"; # Set your desired system here
+        overlays = [];
+      };
 
       gw = import ./gw.nix;
       pc = import ./pc.nix;

@@ -254,8 +254,8 @@
     kate
 
     # (pkgs.callPackage ./pkgs/hello {})
-    (pkgs.callPackage /home/alexk/projects/nix/hello {})
-    (pkgs.callPackage /home/alexk/projects/nix/vagga {})
+    # (pkgs.callPackage /home/alexk/projects/nix/hello {})
+    # (pkgs.callPackage /home/alexk/projects/nix/vagga {})
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -286,7 +286,10 @@
     checkReversePath = false;
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    # trusted-users = [ "alexk" ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
