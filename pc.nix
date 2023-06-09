@@ -3,8 +3,9 @@
 # and in the NixOS manual (accessible by running `nixos-help`).
 
 { config, lib, pkgs, modulesPath, ... }:
-
-{
+let
+  lanIf = "enp11s0";
+in {
   deployment = {
     targetHost = "pc";
     allowLocalDeployment = true;
@@ -77,21 +78,25 @@
 
     useDHCP = lib.mkDefault true;
 
-    interfaces.enp11s0.wakeOnLan.enable = true;
+    interfaces.${lanIf}.wakeOnLan.enable = true;
 
     firewall = {
       enable = true;
       connectionTrackingModules = [ "ftp" ];
       interfaces = {
-        enp11s0 = {
+        ${lanIf} = {
          allowedTCPPorts = [
             21
             5201  # iperf
             5901  # vnc
             9100  # node exporter
+            139 445  # samba
           ];
           allowedTCPPortRanges = [
-            { from = 10090; to = 11000; }
+            { from = 10090; to = 11000; }  # ftp
+          ];
+          allowedUDPPorts = [
+            137 138  # samba
           ];
         };
       };
@@ -176,6 +181,11 @@
 
   users.users.game = {
     uid = 1003;
+    isNormalUser = true;
+    shell = pkgs.zsh;
+  };
+  users.users.alla = {
+    uid = 1004;
     isNormalUser = true;
     shell = pkgs.zsh;
   };
@@ -421,31 +431,56 @@
 
   services.samba = {
     enable = true;
-    openFirewall = true;
+    openFirewall = false;
     securityType = "user";
     extraConfig = ''
-      workgroup = WORKGROUP
-      server string = pc
+      workgroup = CASTLE
+      server string = PC
       netbios name = pc
       security = user
-      #use sendfile = yes
-      #max protocol = smb2
+
+      use sendfile = yes
+
+      # max protocol = smb2
+      server min protocol = SMB2_10
+      client min protocol = SMB2
+      client max protocol = SMB3
+
       # note: localhost is the ipv6 localhost ::1
-      hosts allow = 192.168.2. 127.0.0.1 localhost
+      hosts allow = 192.168.2. 192.168.102. 127.0.0.1 localhost
       hosts deny = 0.0.0.0/0
       guest account = nobody
       map to guest = bad user
     '';
     shares = {
-      images = {
-        path = "/media/data/libvirt";
-        browseable = "yes";
-        "read only" = "yes";
-        "guest ok" = "yes";
-        "create mask" = "0644";
-        "directory mask" = "0755";
-        "force user" = "nobody";
-        "force group" = "nogroup";
+      # images = {
+      #   path = "/media/data/libvirt";
+      #   browseable = "yes";
+      #   "read only" = "yes";
+      #   "guest ok" = "yes";
+      #   "create mask" = "0644";
+      #   "directory mask" = "0755";
+      #   "force user" = "nobody";
+      #   "force group" = "nogroup";
+      # };
+      data = {
+        path = "/media/data";
+        comment = "Media share";
+        public = "yes";
+        writable = "no";
+        "guest ok" = "no";
+      };
+      alexk = {
+        path = "/media/important_data/alexk";
+        public = "no";
+        writable = "yes";
+        "guest ok" = "no";
+      };
+      alla = {
+        path = "/media/important_data/alla";
+        public = "no";
+        writable = "yes";
+        "guest ok" = "no";
       };
     };
   };
