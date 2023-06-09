@@ -36,6 +36,7 @@ in {
     targetHost = "192.168.2.1";
     targetUser = "root";
     # buildOnTarget = true;
+    allowLocalDeployment = true;
   };
 
   services.secrets = {
