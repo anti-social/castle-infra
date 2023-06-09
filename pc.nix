@@ -77,13 +77,13 @@
 
     useDHCP = lib.mkDefault true;
 
-    interfaces.eno1.wakeOnLan.enable = true;
+    interfaces.enp11s0.wakeOnLan.enable = true;
 
     firewall = {
       enable = true;
       connectionTrackingModules = [ "ftp" ];
       interfaces = {
-        eno1 = {
+        enp11s0 = {
          allowedTCPPorts = [
             21
             5201  # iperf

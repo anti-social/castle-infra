@@ -20,9 +20,9 @@ rec {
     }
     {
       host = "pc";
-      mac = "18:c0:4d:a4:67:97";
-      # It wal bridge interface
-      # mac = "36:01:ca:37:a7:10";
+      # Previous address
+      # mac = "18:c0:4d:a4:67:97";
+      mac = "74:56:3c:43:9a:36";
       ip = mkAddr 2;
     }
     {
