@@ -52,6 +52,7 @@
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" ];
   boot.initrd.kernelModules = [ "amdgpu" "dm-snapshot" "dm-raid" ];
   boot.kernelModules = [ "kvm-amd" ];
+  # boot.kernelParams = [ "drm.edid_firmware=HDMI-A-1:/root/lgtv-edid.bin" ];
   boot.extraModulePackages = [ ];
 
   # Use the systemd-boot EFI boot loader.
@@ -112,15 +113,30 @@
   #   useXkbConfig = true; # use xkbOptions in tty.
   # };
 
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+  };
+
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
+    videoDrivers = [ "amdgpu" ];
+    # monitorSection = ''
+    #   DisplaySize 1920 1080
+    # '';
+
     displayManager = {
       sddm.enable = true;
+      # gdm = {
+      #   enable = true;
+      #   wayland = true;
+      # };
       autoLogin = {
         enable = true;
         user = "game";
       };
+      # defaultSession = "plasmawayland";
     };
     desktopManager.plasma5.enable = true;
   };
@@ -311,10 +327,12 @@
       mc
       nix-index
       pciutils
+      read-edid
       ripgrep
       tmux
       update-systemd-resolved
       usbutils
+      vulkan-tools
       wget
     ];
   in apps ++ dev ++ i3wm ++ tools;
