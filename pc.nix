@@ -87,10 +87,11 @@ in {
         ${lanIf} = {
          allowedTCPPorts = [
             21
+            139 445  # samba
+            2342  # photoprism
             5201  # iperf
             5901  # vnc
             9100  # node exporter
-            139 445  # samba
           ];
           allowedTCPPortRanges = [
             { from = 10090; to = 11000; }  # ftp
@@ -485,6 +486,58 @@ in {
       };
     };
   };
+
+  services.mysql = {
+    enable = true;
+    # dataDir = "/var/lib/mariadb";
+    package = pkgs.mariadb;
+    settings = {
+      mysqld = {
+        bind = "localhost";
+      };
+    };
+    ensureDatabases = [ "photoprism" ];
+    ensureUsers = [
+      {
+        name = "photoprism";
+        ensurePermissions = {
+          "photoprism.*" = "ALL PRIVILEGES";
+        };
+      }
+    ];
+  };
+  users.groups.photoprism = {
+    gid = 500;
+  };
+  users.users.photoprism = {
+    uid = 500;
+    isNormalUser = false;
+    group = "photoprism";
+    home = "/media/important_data/photoprism";
+  };
+  virtualisation.oci-containers.containers.photoprism = {
+    image = "docker.io/photoprism/photoprism:230607";
+    environment = {
+      PHOTOPRISM_DATABASE_DRIVER = "mysql";
+      PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";
+      PHOTOPRISM_DATABASE_NAME = "photoprism";
+      PHOTOPRISM_DATABASE_USER = "photoprism";
+      PHOTOPRISM_ADMIN_PASSWORD = "insecure";
+      PHOTOPRISM_SITE_URL = "https://photos.castle.mk";
+      PHOTOPRISM_UPLOAD_NSFW = "true";
+    };
+    volumes = [
+      "/run/mysqld/mysqld.sock:/run/mysqld/mysqld.sock"
+      "/media/important_data/photoprism:/photoprism"
+    ];
+    user = "500:500";
+
+    # ports = [
+    #   "2342:2342"
+    # ];
+    extraOptions = [ "--network=host" ];
+  };
+  # systemd.services.podman-photoprism.serviceConfig.User = "photoprism";
 
   virtualisation = {
     podman = {

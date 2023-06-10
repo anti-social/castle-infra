@@ -317,6 +317,19 @@ in {
     defaults.email = "kovalidis@gmail.com";
   };
 
+  services.nginx.virtualHosts."photos.castle.mk" = {
+      forceSSL = true;
+      enableACME = true;
+      extraConfig = ''
+        client_max_body_size 4g;
+        proxy_buffering off;
+      '';
+      locations."/" = {
+        proxyPass = "http://pc.castle:2342";
+        proxyWebsockets = true;
+      };
+    };
+
   modules.vmagent = {
     enable = true;
   };
