@@ -271,6 +271,8 @@ in {
   environment.systemPackages = with pkgs; let
     system-utils = [
       bat
+      colmena
+      git
       htop
       iperf
       mc
