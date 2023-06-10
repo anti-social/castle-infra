@@ -418,17 +418,17 @@ in {
       };
   };
 
-  services.vsftpd = {
-    enable = true;
-    anonymousUser = true;
-    anonymousUserNoPassword = true;
-    anonymousUserHome = "/media/data/libvirt";
-    extraConfig = ''
-      pasv_enable=Yes
-      pasv_min_port=10090
-      pasv_max_port=11000
-    '';
-  };
+  # services.vsftpd = {
+  #   enable = true;
+  #   anonymousUser = true;
+  #   anonymousUserNoPassword = true;
+  #   anonymousUserHome = "/media/data/libvirt";
+  #   extraConfig = ''
+  #     pasv_enable=Yes
+  #     pasv_min_port=10090
+  #     pasv_max_port=11000
+  #   '';
+  # };
 
   services.samba = {
     enable = true;
