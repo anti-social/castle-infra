@@ -298,6 +298,7 @@ in {
       wireshark
     ];
     dev = [
+      ansible
       async-profiler
       cmake
       gcc
