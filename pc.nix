@@ -318,6 +318,7 @@ in {
       rustup
       (pkgs.callPackage rye {})
       shellcheck
+      wasmtime
     ];
     tools = [
       awscli2
