@@ -240,13 +240,13 @@ in {
     rye = ({ lib, fetchFromGithub, rustPlatform, pkgconfig, openssl, libiconv, git }:
       rustPlatform.buildRustPackage rec {
         pname = "rye";
-        version = "0.5.0";
+        version = "0.7.0";
 
         src = fetchFromGitHub {
           owner = "mitsuhiko";
           repo = pname;
           rev = version;
-          sha256 = "fMGWxOSMd1q+S6Gm2U+ncPosAk0bdbaEG/0QgzuS5J0=";
+          sha256 = "m4vJOwcxVTC+oglcpsE5+wip5EJEv7vlhyYbcBZeXQo=";
         };
 
         cargoLock = {
@@ -255,8 +255,6 @@ in {
             "dialoguer-0.10.4" = "sha256-WDqUKOu7Y0HElpPxf2T8EpzAY3mY8sSn9lf0V0jyAFc=";
           };
         };
-
-        patches = [ ./rye/0001-offline-licenses.patch ];
 
         buildInputs = [
           openssl
