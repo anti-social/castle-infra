@@ -300,6 +300,7 @@ in {
       ansible
       async-profiler
       cmake
+      diesel-cli
       gcc
       gnumake
       gradle
