@@ -477,16 +477,16 @@ in {
         "guest ok" = "no";
       };
       alexk = {
-        path = "/media/important_data/alexk";
+        path = "/media/home/alexk";
         public = "no";
         writable = "yes";
-        "guest ok" = "no";
+        "valid users" = "alexk";
       };
       alla = {
-        path = "/media/important_data/alla";
+        path = "/media/home/alla";
         public = "no";
         writable = "yes";
-        "guest ok" = "no";
+        "valid users" = "alla";
       };
     };
   };
