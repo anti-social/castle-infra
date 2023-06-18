@@ -55,6 +55,8 @@ in {
   boot.kernelModules = [ "kvm-amd" ];
   # boot.kernelParams = [ "drm.edid_firmware=HDMI-A-1:/root/lgtv-edid.bin" ];
   boot.extraModulePackages = [ ];
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -71,6 +73,7 @@ in {
 
   systemd.network.enable = true;
   networking = {
+    hostId = "b5695485";
     hostName = "pc"; # Define your hostname.
     # Pick only one of the below networking options.
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
