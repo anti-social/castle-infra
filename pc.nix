@@ -57,6 +57,9 @@ in {
   boot.extraModulePackages = [ ];
   boot.supportedFilesystems = [ "zfs" ];
   boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
+  boot.extraModprobeConfig = ''
+    options zfs zfs_arc_max=2147483648
+  '';
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
