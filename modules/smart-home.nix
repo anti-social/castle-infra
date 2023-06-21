@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.modules.smart-home;
-  home_assistant_version = "2022.12.6";
+  home_assistant_version = "2023.6.2";
   mqtt_port = 1883;
   upsd_port = 3493;
 in {
@@ -29,7 +29,7 @@ in {
 
   config = {
     networking.firewall.interfaces = {
-      cni-podman0.allowedTCPPorts = [ mqtt_port upsd_port ];
+      podman0.allowedTCPPorts = [ mqtt_port upsd_port ];
       ${cfg.iotInterface}.allowedTCPPorts = [ mqtt_port ];
     };
 
