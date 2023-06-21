@@ -37,6 +37,11 @@ rec {
       ip = mkAddr 4;
     }
     {
+      host = "newpc";
+      mac = "18:C0:4d:a4:67:97";
+      ip = mkAddr 5;
+    }
+    {
       host = "rpi3";
       mac = "b8:27:eb:0b:8d:6f";
       ip = mkAddr 7;
