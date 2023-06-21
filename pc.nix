@@ -60,6 +60,7 @@ in {
   boot.extraModprobeConfig = ''
     options zfs zfs_arc_max=2147483648
   '';
+  boot.zfs.extraPools = [ "storage" ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
