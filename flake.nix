@@ -15,16 +15,20 @@
 
       };
 
+      meta.nodeNixpkgs.gw = import nixpkgs-23-05 {
+        system = "x86_64-linux";
+        overlays = [];
+      };
       meta.nodeNixpkgs.pc = import nixpkgs-23-05 {
-        system = "x86_64-linux"; # Set your desired system here
+        system = "x86_64-linux";
         overlays = [];
       };
       meta.nodeNixpkgs.oldpc = import nixpkgs-23-05 {
-        system = "x86_64-linux"; # Set your desired system here
+        system = "x86_64-linux";
         overlays = [];
       };
       meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-05 {
-        system = "x86_64-linux"; # Set your desired system here
+        system = "x86_64-linux";
         overlays = [];
       };
 
