@@ -301,6 +301,7 @@ in {
       firefox
       telegram-desktop
       virt-manager
+      vlc
       wireshark
     ];
     dev = [
