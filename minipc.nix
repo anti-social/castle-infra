@@ -200,6 +200,12 @@ in {
 
   virtualisation = {
     podman.enable = true;
+
+    docker.rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+
     oci-containers.backend = "podman";
   };
 
