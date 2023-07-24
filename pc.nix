@@ -176,7 +176,7 @@ in {
   users.users.alexk = {
     uid = 1000;
     isNormalUser = true;
-    extraGroups = [ "wheel" "libvirtd" ];
+    extraGroups = [ "libvirtd" "wheel" "wireshark" ];
     shell = pkgs.zsh;
   };
   # home-manager.users.alexk = { pkgs, ... }: {
@@ -363,6 +363,8 @@ in {
   programs.gnupg = {
     agent.enable = true;
   };
+
+  programs.wireshark.enable = true;
 
   programs.java = {
     enable = true;
