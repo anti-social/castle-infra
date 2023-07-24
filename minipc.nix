@@ -113,13 +113,17 @@ in {
     # };
   };
 
+  security.pam.loginLimits = [
+    {
+      domain = "*";
+      type = "-";
+      item = "nofile";
+      value = "65536";
+    }
+  ];
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   # users.mutableUsers = false;
-  users.users.nixos = {
-    uid = 999;
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-  };
   users.users.alexk = {
     uid = 1000;
     isNormalUser = true;
@@ -136,6 +140,10 @@ in {
   services.xserver.desktopManager.plasma5.enable = true;
   
   nixpkgs.config.allowUnfree = true;
+
+  programs.zsh = {
+    enable = true;
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -204,3 +212,4 @@ in {
   system.stateVersion = "21.11"; # Did you read the comment?
 
 }
+

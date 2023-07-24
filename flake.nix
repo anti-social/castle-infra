@@ -23,6 +23,10 @@
         system = "x86_64-linux";
         overlays = [];
       };
+      meta.nodeNixpkgs.minipc = import nixpkgs-23-05 {
+        system = "x86_64-linux";
+        overlays = [];
+      };
       meta.nodeNixpkgs.oldpc = import nixpkgs-23-05 {
         system = "x86_64-linux";
         overlays = [];
