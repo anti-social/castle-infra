@@ -76,7 +76,7 @@ in {
         prometheus:
 
         automation: !include automations.yaml
-        #script: !include scripts.yaml
+        script: !include scripts.yaml
         #scene: !include scenes.yaml
       '';
       secretsEnvFile = ../secrets/home-assistant.env;
