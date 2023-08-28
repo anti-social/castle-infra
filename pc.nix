@@ -339,9 +339,12 @@ in {
     dev = [
       ansible
       async-profiler
+      cargo-outdated
       cmake
       debootstrap
       diesel-cli
+      dive
+      docker-compose
       gcc
       gnumake
       gradle
@@ -385,6 +388,7 @@ in {
       read-edid
       ripgrep
       tmux
+      unzip
       update-systemd-resolved
       usbutils
       vulkan-tools
