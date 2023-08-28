@@ -75,6 +75,11 @@ in {
     efiSysMountPoint = "/efi";
   };
 
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+    "vm.max_map_count" = 262144;
+  };
+
   systemd.network.enable = true;
   networking = {
     hostId = "b5695485";
@@ -106,6 +111,11 @@ in {
           allowedUDPPorts = [
             137 138  # samba
           ];
+        };
+
+        # Allow DHCP for systemd-nspawn containers
+        "ve-+" = {
+          allowedUDPPorts = [ 67 ];
         };
       };
     };
@@ -308,6 +318,7 @@ in {
       ansible
       async-profiler
       cmake
+      debootstrap
       diesel-cli
       gcc
       gnumake
