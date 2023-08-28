@@ -113,6 +113,11 @@ in {
           ];
         };
 
+        # https://github.com/NixOS/nixpkgs/issues/226365#issuecomment-1599540111
+        "podman0" = {
+          allowedUDPPorts = [ 53 ];
+        };
+
         # Allow DHCP for systemd-nspawn containers
         "ve-+" = {
           allowedUDPPorts = [ 67 ];
