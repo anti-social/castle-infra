@@ -254,6 +254,27 @@ in {
 
   # List packages installed in system profile. To search, run: $ nix search wget
   environment.systemPackages = with pkgs; let
+    lets = ({}:
+      buildGoModule rec {
+        pname = "lets";
+        version = "0.0.52";
+
+        src = fetchFromGitHub {
+          owner = "lets-cli";
+          repo = "lets";
+          rev = "v${version}";
+          hash = "sha256-iYjakrzZ2l00ph2T1gjxPJLI8zXlc5TCMpY4j2oEVzM=";
+        };
+
+        vendorHash = "sha256-tIRXQB/gbG8zrZht6RJQ26m4mJQeWb0AxlS1UYNe8V0=";
+
+        meta = with lib; {
+          description = "Simple command-line snippet manager, written in Go";
+          homepage = "https://github.com/lets-cli/lets";
+          license = licenses.mit;
+          maintainers = with maintainers; [ maintainers.anti-social ];
+        };
+      });
     rye = ({ lib, fetchFromGithub, rustPlatform, pkgconfig, openssl, libiconv, git }:
       rustPlatform.buildRustPackage rec {
         pname = "rye";
@@ -326,6 +347,7 @@ in {
       grpc
       ktlint
       kubectl
+      (pkgs.callPackage lets {})
       libtool  # to compile emacs libvterm module
       libxcrypt
       multimarkdown
