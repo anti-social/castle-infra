@@ -344,6 +344,7 @@ in {
     dev = [
       ansible
       async-profiler
+      buildah
       cargo-outdated
       cmake
       debootstrap
@@ -356,6 +357,7 @@ in {
       grpc
       ktlint
       kubectl
+      kubelogin-oidc
       (pkgs.callPackage lets {})
       libtool  # to compile emacs libvterm module
       libxcrypt
@@ -389,6 +391,7 @@ in {
       lm_sensors
       mc
       nix-index
+      nmap
       pciutils
       read-edid
       ripgrep
