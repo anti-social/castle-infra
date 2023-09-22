@@ -531,6 +531,12 @@ in {
         writable = "no";
         "guest ok" = "no";
       };
+      pictures = {
+        path = "/media/important_data/Images";
+        public = "no";
+        writable = "no";
+        "valid users" = "alexk alla";
+      };
       alexk = {
         path = "/media/home/alexk";
         public = "no";
