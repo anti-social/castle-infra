@@ -414,7 +414,7 @@ in {
 
   programs.java = {
     enable = true;
-    package = pkgs.openjdk17;
+    package = pkgs.openjdk;
   };
 
   programs.steam = {
