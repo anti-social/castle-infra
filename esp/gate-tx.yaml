@@ -1,0 +1,18 @@
+---
+- name: Gate TX
+  hosts: gate-tx
+  gather_facts: no
+  roles:
+  - tobias_richter.tasmota
+  vars:
+    tasmota_commands:
+    - command: Template
+      value:
+        NAME: "Gate TX"
+        GPIO: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1120,1,0,0,0,0,4768,1,1,1,1,0,0,1]
+        FLAG: 0
+        BASE: 1
+    - command: Module
+      value: 0
+    - command: TelePeriod
+      value: 30

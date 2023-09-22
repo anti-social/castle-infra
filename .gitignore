@@ -2,6 +2,9 @@ secrets.password
 
 result
 
+# Python
+__pycache__/
+
 # Emacs
 *~
 \#*\#

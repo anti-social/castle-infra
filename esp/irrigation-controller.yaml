@@ -1,0 +1,49 @@
+---
+- name: Setup irrigation controller
+  hosts: irrigation-controller
+  gather_facts: no
+  vars:
+    pulse_time: 2
+    repeat_delay: 50
+    tasmota_commands:
+    - command: Template
+      value:
+        NAME: "Irrigation Controller"
+        GPIO: [1,1,1,1,1,1,1,1,225,226,228,1,224,227,230,233,0,1,1,1,0,231,232,229,0,0,0,0,234,235,1,1,1,0,0,1]
+        FLAG: 0
+        BASE: 1
+    - command: Module
+      value: 0
+    - command: TelePeriod
+      value: 30
+    - command: PowerOnState
+      value: 0
+    - command: PulseTime2
+      value: "{{ pulse_time }}"
+    - command: PulseTime3
+      value: "{{ pulse_time }}"
+    - command: PulseTime5
+      value: "{{ pulse_time }}"
+    - command: PulseTime6
+      value: "{{ pulse_time }}"
+    - command: PulseTime8
+      value: "{{ pulse_time }}"
+    - command: PulseTime9
+      value: "{{ pulse_time }}"
+    - command: PulseTime11
+      value: "{{ pulse_time }}"
+    - command: PulseTime12
+      value: "{{ pulse_time }}"
+    - command: Rule1
+      value: >-
+        ON System#Boot DO Backlog Power3 on; Power6 on; Power9 on; Power12 on ENDON
+        ON Power1#state=1 DO Power2 on ENDON
+        ON Power1#state=0 DO Backlog Power3 on; Delay {{ repeat_delay }}; Power3 on ENDON
+        ON Power4#state=1 DO Power5 on ENDON
+        ON Power4#state=0 DO Backlog Power6 on; Delay {{ repeat_delay }}; Power6 on ENDON
+        ON Power7#state=1 DO Power8 on ENDON
+        ON Power7#state=0 DO Backlog Power9 on; Delay {{ repeat_delay }}; Power9 on ENDON
+        ON Power10#state=1 DO Power11 on ENDON
+        ON Power10#state=0 DO Backlog Power12 on; Delay {{ repeat_delay }}; Power12 on ENDON
+  roles:
+  - tobias_richter.tasmota

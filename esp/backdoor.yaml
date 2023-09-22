@@ -1,0 +1,24 @@
+---
+- name: Backdoor controller
+  hosts: backdoor
+  gather_facts: no
+  roles:
+  - tasmota
+  # roles:
+  # - tobias_richter.tasmota
+  vars:
+    tasmota_commands:
+    - command: Template
+      value:
+        NAME: "Backdoor"
+        GPIO: [1,1,1,1,224,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1]
+        FLAG: 0
+        BASE: 1
+    - command: Module
+      value: 0
+    - command: TelePeriod
+      value: 30
+    - command: PowerOnState
+      value: 0
+    - command: PulseTime1
+      value: 5
