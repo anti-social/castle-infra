@@ -283,13 +283,13 @@ in {
     rye = ({ lib, fetchFromGithub, rustPlatform, pkgconfig, openssl, libiconv, git }:
       rustPlatform.buildRustPackage rec {
         pname = "rye";
-        version = "0.11.0";
+        version = "0.13.0";
 
         src = fetchFromGitHub {
           owner = "mitsuhiko";
           repo = pname;
           rev = version;
-          sha256 = "00Q+qvK1fq9CGb6umtCiUJZZ1M5LMxiSIM3/s7eOumM=";
+          sha256 = "B53oTAgy+y+FWk7y+unJPt7Mc7m4nwnTX+5wqL6AX+4=";
         };
 
         cargoLock = {
