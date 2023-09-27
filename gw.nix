@@ -162,6 +162,10 @@ in {
     };
   };
 
+  services.fail2ban = {
+    enable = true;
+  };
+
   environment.etc = {
     "systemd/network/30-br0.network" = {
       text = ''
