@@ -164,6 +164,17 @@ in {
 
   services.fail2ban = {
     enable = true;
+    ignoreIP = [
+      lan.network
+      vpn_network
+    ];
+    bantime-increment = {
+      enable = true;
+    };
+    banaction = "iptables-ipset-proto6-allports";
+    extraPackages = [
+      pkgs.ipset
+    ];
   };
 
   environment.etc = {

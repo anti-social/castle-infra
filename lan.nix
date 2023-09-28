@@ -5,6 +5,7 @@ rec {
   mkFQDN = name: "${name}.${domain}";
 
   domain = "castle";
+  network = "${net_addr}/${toString prefix_length}";
   net_mask = "255.255.255.0";
   net_addr = mkAddr 0;
   broadcast_addr = mkAddr 255;
