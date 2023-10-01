@@ -31,7 +31,7 @@
         system = "x86_64-linux";
         overlays = [];
       };
-      meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-05 {
+      meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-05-new {
         system = "x86_64-linux";
         overlays = [];
       };
