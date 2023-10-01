@@ -14,7 +14,7 @@
 in {
   imports =
     [ # Include the results of the hardware scan.
-      ./gw-hardware-configuration.nix
+      ./minipc-hardware-configuration.nix
 
       ./another-nix-secrets
     ];

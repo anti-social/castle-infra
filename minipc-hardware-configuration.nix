@@ -14,6 +14,8 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
+  boot.supportedFilesystems = [ "ntfs" ];
+
   fileSystems."/" =
     { device = "/dev/sda2";
       fsType = "btrfs";
