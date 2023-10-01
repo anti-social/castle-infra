@@ -222,7 +222,7 @@ in {
     (self: super: {
       turbovnc = super.turbovnc.overrideAttrs (old:
         rec {
-          version = "3.0.3";
+          version = "3.0.91";
           src = pkgs.fetchFromGitHub {
             owner = "TurboVNC";
             repo = "turbovnc";
@@ -234,20 +234,20 @@ in {
         }
       );
 
-      qemu = super.qemu.overrideAttrs (
-        old: rec {
-          version = "8.0.2";
-          src = pkgs.fetchurl {
-            url = "https://download.qemu.org/qemu-${version}.tar.xz";
-            sha256 = "8GCr1DX75nlBJeLDmFaP/Dz6VABCWWkHqLGO3KNM9qU=";
-          };
-          patches = old.patches ++ [ ./qemu/qemu-anti-cheat-8.0.2.patch ];
-        }
-      );
+      # qemu = super.qemu.overrideAttrs (
+      #   old: rec {
+      #     version = "8.0.2";
+      #     src = pkgs.fetchurl {
+      #       url = "https://download.qemu.org/qemu-${version}.tar.xz";
+      #       sha256 = "8GCr1DX75nlBJeLDmFaP/Dz6VABCWWkHqLGO3KNM9qU=";
+      #     };
+      #     patches = old.patches ++ [ ./qemu/qemu-anti-cheat-8.0.2.patch ];
+      #   }
+      # );
 
       ktlint = super.ktlint.overrideAttrs (
         old: rec {
-          version = "0.49.1";
+          version = "1.0.0";
           src = pkgs.fetchurl {
             url = "https://github.com/pinterest/ktlint/releases/download/${version}/ktlint";
             sha256 = "Kz9vZ0qUTSW7jSg8NTmUe76GB0eTASkJpV3kt3H3S8w=";
