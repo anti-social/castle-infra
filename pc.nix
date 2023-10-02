@@ -386,6 +386,7 @@ in {
       libxcrypt
       multimarkdown
       nodejs
+      openssl
       patchelf
       podman-compose
       protobuf
