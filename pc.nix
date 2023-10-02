@@ -80,17 +80,38 @@ in {
     "vm.max_map_count" = 262144;
   };
 
-  systemd.network.enable = true;
+  systemd.network = {
+    enable = true;
+
+    links = {
+      lan = {
+        matchConfig = {
+          OriginalName = lanIf;
+        };
+        linkConfig = {
+          WakeOnLan = "magic";
+        };
+      };
+    };
+
+    networks = {
+      lan = {
+        matchConfig = {
+          Name = lanIf;
+        };
+        networkConfig = {
+          DHCP = "ipv4";
+        };
+      };
+    };
+  };
+
   networking = {
     hostId = "b5695485";
     hostName = "pc"; # Define your hostname.
     # Pick only one of the below networking options.
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     # networkmanager.enable = true;  # Easiest to use and most distros use this by default.
-
-    useDHCP = lib.mkDefault true;
-
-    interfaces.${lanIf}.wakeOnLan.enable = true;
 
     firewall = {
       enable = true;
