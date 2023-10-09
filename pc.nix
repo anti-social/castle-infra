@@ -275,6 +275,35 @@ in {
           };
         }
       );
+
+      python310 = super.python310.override {
+        packageOverrides = pyself: pysuper: {
+          ansible = pysuper.ansible.overrideAttrs (
+            old: rec {
+              version = "8.3.0";
+              src = pkgs.fetchPypi {
+                pname = "ansible";
+                version = "8.3.0";
+                hash = "sha256-XlgAHX1twz5dFWyjQ4g7YT7JiPaTZLCkP3Ek/ktb4vI=";
+              };
+            }
+          );
+          ansible-core = pysuper.ansible-core.overrideAttrs (
+            old: rec {
+              version = "2.15.4";
+              src = pkgs.fetchPypi {
+                pname = "ansible-core";
+                version = "2.15.4";
+                hash = "sha256-waiq7emF955ZMrohY2OTeffYAlv9myg3jbFkmk71Qe0=";
+              };
+              postPatch = "";
+            }
+          );
+          uvloop = pysuper.uvloop.overrideAttrs (_: {
+            doCheck = false;
+          });
+        };
+      };
     })
   ];
 
