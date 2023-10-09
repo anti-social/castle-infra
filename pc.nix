@@ -278,6 +278,11 @@ in {
     })
   ];
 
+  environment.sessionVariables = {
+    PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.zlib.dev}/lib/pkgconfig";
+    LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
+  };
+
   # List packages installed in system profile. To search, run: $ nix search wget
   environment.systemPackages = with pkgs; let
     lets = ({}:
@@ -382,16 +387,21 @@ in {
       libtool  # to compile emacs libvterm module
       libxcrypt
       multimarkdown
+      ninja
       nodejs
       openssl
+      openssl.dev
       patchelf
+      pkg-config
       podman-compose
       protobuf
       python311Full
+      python311Packages.pip-tools
       rustup
       (pkgs.callPackage rye {})
       shellcheck
       wasmtime
+      zlib
     ];
     tools = [
       awscli2
@@ -453,7 +463,10 @@ in {
       ubuntu_font_family
       proggyfonts
       dejavu_fonts
+      dina-font
       input-fonts
+      emacs-all-the-icons-fonts
+      nerdfonts
     ];
 
     # enableDefaultFonts = true;
@@ -644,6 +657,14 @@ in {
       enable = true;
     };
   };
+
+  # Hack to be able to run third-party binaries
+  # https://github.com/google/protobuf-gradle-plugin/issues/426#issuecomment-771740235
+  system.activationScripts.ldso = lib.stringAfter [ "usrbinenv" ] ''
+    mkdir -m 0755 -p /lib64
+    ln -sfn ${pkgs.glibc.out}/lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2.tmp
+    mv -f /lib64/ld-linux-x86-64.so.2.tmp /lib64/ld-linux-x86-64.so.2
+  '';
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
