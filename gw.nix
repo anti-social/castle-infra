@@ -18,6 +18,54 @@
   vpn_network = "${vpn_addr_prefix}.0/24";
 
   iperf_ports = [ 5201 5202 ];
+
+  cockpitModule = { config, ... }: {
+    config = {
+      services.cockpit = {
+        enable = true;
+      };
+      networking.firewall.interfaces.${lan_if}.allowedTCPPorts = [ 9090 ];
+    };
+  };
+
+  webModule = { config, ... }: {
+    config = {
+      networking.firewall.interfaces.${lan_if}.allowedTCPPorts = [ 80 443 ];
+      networking.firewall.interfaces.${wan_if}.allowedTCPPorts = [ 80 443 ];
+
+      users.users.nginx.extraGroups = [ "acme" ];
+
+      services.nginx = {
+        enable = true;
+        #recommendedProxySettings = true;
+      };
+      services.nginx.virtualHosts."\"\"" = {
+        # addSSL = true;
+        # sslCertificate = "/var/lib/acme/castle.mk/cert.pem";
+        # sslCertificateKey = "/var/lib/acme/castle.mk/key.pem";
+        extraConfig = ''
+          return 444;
+        '';
+      };
+      security.acme = {
+        acceptTerms = true;
+        defaults.email = "kovalidis@gmail.com";
+      };
+
+      services.nginx.virtualHosts."photos.castle.mk" = {
+        forceSSL = true;
+        enableACME = true;
+        extraConfig = ''
+          client_max_body_size 4g;
+          proxy_buffering off;
+        '';
+        locations."/" = {
+          proxyPass = "http://pc.castle:2342";
+          proxyWebsockets = true;
+        };
+      };
+    };
+  };
 in {
   imports =
     [
@@ -30,6 +78,8 @@ in {
       ./modules/smart-home.nix
       ./modules/ups.nix
       ./modules/unifi-controller.nix
+      cockpitModule
+      webModule
     ];
 
   deployment = {
@@ -133,9 +183,8 @@ in {
     firewall = {
       enable = true;
       interfaces = {
-        ${lan_if}.allowedTCPPorts = [ 80 443 ] ++ iperf_ports;
+        ${lan_if}.allowedTCPPorts = iperf_ports;
         ${wan_if} = {
-          allowedTCPPorts = [ 80 443 ];
           allowedUDPPorts = [ vpn_listen_port ];
         };
       };
@@ -313,37 +362,6 @@ in {
       tmate
     ];
   in system-utils ++ network-utils;
-
-  users.users.nginx.extraGroups = [ "acme" ];
-  services.nginx = {
-    enable = true;
-    #recommendedProxySettings = true;
-  };
-  services.nginx.virtualHosts."\"\"" = {
-    # addSSL = true;
-    # sslCertificate = "/var/lib/acme/castle.mk/cert.pem";
-    # sslCertificateKey = "/var/lib/acme/castle.mk/key.pem";
-    extraConfig = ''
-      return 444;
-    '';
-  };
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "kovalidis@gmail.com";
-  };
-
-  services.nginx.virtualHosts."photos.castle.mk" = {
-      forceSSL = true;
-      enableACME = true;
-      extraConfig = ''
-        client_max_body_size 4g;
-        proxy_buffering off;
-      '';
-      locations."/" = {
-        proxyPass = "http://pc.castle:2342";
-        proxyWebsockets = true;
-      };
-    };
 
   modules.vmagent = {
     enable = true;
