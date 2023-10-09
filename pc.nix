@@ -366,9 +366,6 @@ in {
       ansible
       async-profiler
       buildah
-      cargo
-      cargo-cross
-      cargo-outdated
       cmake
       debootstrap
       diesel-cli
