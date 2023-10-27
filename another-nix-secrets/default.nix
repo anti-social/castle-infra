@@ -159,7 +159,8 @@ in {
 
     secretFileServices = mapAttrs (name: secret: (
       let
-        hash = builtins.hashString "sha256" secret.file;
+        file = pkgs.writeText (toString name) (builtins.readFile secret.file);
+        hash = builtins.hashString "sha256" (toString file);
         dest = if (secret.dest != null) then secret.dest else "/run/secrets/${hash}-${name}";
       in {
         service = {
@@ -171,7 +172,7 @@ in {
           };
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = "${decodeSecret} ${name} ${secret.file} ${secret.dest} ${secret.owner}:${secret.group} ${secret.mode}";
+            ExecStart = "${decodeSecret} ${name} ${secret.file} ${dest} ${secret.owner}:${secret.group} ${secret.mode}";
           };
         };
         destination = dest;
