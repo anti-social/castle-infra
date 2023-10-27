@@ -151,6 +151,11 @@ in {
     beforeService = "sys-subsystem-net-devices-wg-bagspace.device";
   };
 
+  services.resolved = {
+    enable = true;
+    dnssec = "false";
+  };
+
   networking = {
     hostId = "b5695485";
     hostName = "pc"; # Define your hostname.
