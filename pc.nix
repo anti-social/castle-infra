@@ -14,6 +14,7 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       (modulesPath + "/installer/scan/not-detected.nix")
+      ./another-nix-secrets
       # <home-manager/nixos>
     ];
 
@@ -80,6 +81,10 @@ in {
     "vm.max_map_count" = 262144;
   };
 
+  services.secrets = {
+    passwordFile = "/root/secrets.password";
+  };
+
   systemd.network = {
     enable = true;
 
@@ -94,6 +99,27 @@ in {
       };
     };
 
+    netdevs = {
+      "10-wg-bagspace" = {
+        netdevConfig = {
+          Kind = "wireguard";
+          Name = "wg-bagspace";
+        };
+        # See also man systemd.netdev (also contains info on the permissions of the key files)
+        wireguardConfig = {
+          # Don't use a file from the Nix store as these are world readable.
+          PrivateKeyFile = "${config.secretsDestinations.files.wg-bagspace-privkey}";
+        };
+        wireguardPeers = [{
+          wireguardPeerConfig = {
+            PublicKey = "J5OIl0Q3QiWuxfEDYIrJ45rLqlxIdJLMKg5V5XEblgA=";
+            AllowedIPs = [ "192.168.51.1" ];
+            Endpoint = "api.bagspace.ua:51820";
+          };
+        }];
+      };
+    };
+
     networks = {
       lan = {
         matchConfig = {
@@ -103,7 +129,26 @@ in {
           DHCP = "ipv4";
         };
       };
+      wg-bagspace = {
+        matchConfig.Name = "wg-bagspace";
+        # IP addresses the client interface will have
+        address = [
+          "192.168.51.5/24"
+        ];
+        DHCP = "no";
+        dns = [ "192.168.51.1" ];
+        domains = [ "bagspace.vpn" ];
+        networkConfig = {
+          IPv6AcceptRA = false;
+        };
+      };
     };
+  };
+  services.secrets.files."wg-bagspace-privkey" = {
+    file = ./secrets/wg-bagspace-privkey.aes-256-cbc.base64;
+    group = "systemd-network";
+    mode = "0660";
+    beforeService = "sys-subsystem-net-devices-wg-bagspace.device";
   };
 
   networking = {
