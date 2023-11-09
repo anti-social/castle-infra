@@ -204,7 +204,7 @@ in {
         homeassistant = true;
         permit_join = true;
         serial = {
-          port = "/dev/ttyUSB0";
+          port = "/dev/ttyUSB1";
         };
         mqtt = {
           server = "mqtt://${cfg.iotLocalAddr}:${toString mqtt_port}";
