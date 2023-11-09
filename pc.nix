@@ -441,6 +441,7 @@ in {
       chromium
       emacs
       firefox
+      qbittorrent
       telegram-desktop
       virt-manager
       vlc
