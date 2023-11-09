@@ -503,6 +503,7 @@ in {
       nix-index
       nmap
       pciutils
+      radeontop
       read-edid
       ripgrep
       tmux
