@@ -258,13 +258,13 @@ in {
         persistentKeepalive = 25;
       }
       {
- 	      # My work laptop (Dell)
+        # My work laptop (Dell)
         publicKey = "CnQF8AEr/JZwfM/mg75z/Sh9j3VHNR59dgWegbc6rl8=";
         allowedIPs = [ "192.168.102.4/32" ];
         persistentKeepalive = 25;
       }
       {
-	      # My phone (Samsung Note)
+        # My phone (Samsung Note)
         publicKey = "5fbeSwMP1b1QK3DHxiR0jbGNOvHXEcohC7TV+hnQCDo=";
         allowedIPs = [ "192.168.102.11/32" ];
         persistentKeepalive = 25;
