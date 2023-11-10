@@ -90,6 +90,7 @@
 
   services.resolved = {
     enable = true;
+    dnssec = "false";
   };
 
   # Select internationalisation properties.
