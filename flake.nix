@@ -3,9 +3,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/7076110064c09f0b3942f609f2134c1358ef2e50";
     nixpkgs-23-05.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs-23-05-new.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = { nixpkgs, nixpkgs-23-05, nixpkgs-23-05-new, ... }: {
+  outputs = { nixpkgs, nixpkgs-23-05, nixpkgs-23-05-new, nixpkgs-23-11, ... }: {
     colmena = {
       meta = {
         nixpkgs = import nixpkgs {
@@ -31,7 +32,7 @@
         system = "x86_64-linux";
         overlays = [];
       };
-      meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-05-new {
+      meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-11 {
         system = "x86_64-linux";
         overlays = [];
       };

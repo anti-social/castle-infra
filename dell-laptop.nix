@@ -171,7 +171,7 @@
     bat
     blender
     bottom
-    # chromium
+    chromium
     cloud-init
     cloud-utils
     colmena
@@ -183,14 +183,14 @@
     emacs
     esptool
     ethtool
-    exa
+    eza
     fd
     file
     firefox
     gcc
     git
     glxinfo
-    graalvm17-ce
+    graalvm-ce
     graphviz
     grex
     home-manager
@@ -210,7 +210,7 @@
     nix-du
     nix-index
     nmap
-    nomachine-client
+    # nomachine-client
     nushell
     okular
     openvpn
@@ -219,8 +219,8 @@
     podman-compose
     procs
     prusa-slicer
-    python310
-    python310Packages.ipython
+    python311
+    python311Packages.ipython
     qbittorrent
     ripgrep
     ripgrep-all
@@ -237,9 +237,9 @@
     unzip
     usbutils
     vim
-    virtmanager
+    virt-manager
     vlc
-    # vscode
+    vscode
     vulkan-tools
     wakeonlan
     wget
