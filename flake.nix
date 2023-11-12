@@ -20,7 +20,7 @@
         system = "x86_64-linux";
         overlays = [];
       };
-      meta.nodeNixpkgs.pc = import nixpkgs-23-05-new {
+      meta.nodeNixpkgs.pc = import nixpkgs-23-11 {
         system = "x86_64-linux";
         overlays = [];
       };

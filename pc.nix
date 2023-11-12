@@ -4,7 +4,7 @@
 
 { config, lib, pkgs, modulesPath, ... }:
 let
-  lanIf = "enp11s0";
+  lanIf = "enp13s0";
 in {
   deployment = {
     targetHost = "pc";
@@ -163,6 +163,8 @@ in {
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     # networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
+    useDHCP = false;
+
     firewall = {
       enable = true;
       connectionTrackingModules = [ "ftp" ];
@@ -301,20 +303,9 @@ in {
             sha256 = "sha256-akkkbDb5ZHTG5GEEeDm1ns60GedQ+DnFXgVMZumRQHc=";
           };
 
-          nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkgconfig ];
+          nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkg-config ];
         }
       );
-
-      # qemu = super.qemu.overrideAttrs (
-      #   old: rec {
-      #     version = "8.0.2";
-      #     src = pkgs.fetchurl {
-      #       url = "https://download.qemu.org/qemu-${version}.tar.xz";
-      #       sha256 = "8GCr1DX75nlBJeLDmFaP/Dz6VABCWWkHqLGO3KNM9qU=";
-      #     };
-      #     patches = old.patches ++ [ ./qemu/qemu-anti-cheat-8.0.2.patch ];
-      #   }
-      # );
 
       ktlint = super.ktlint.overrideAttrs (
         old: rec {
@@ -326,7 +317,7 @@ in {
         }
       );
 
-      python310 = super.python310.override {
+      python311 = super.python311.override {
         packageOverrides = pyself: pysuper: {
           ansible = pysuper.ansible.overrideAttrs (
             old: rec {
@@ -385,7 +376,7 @@ in {
           maintainers = with maintainers; [ maintainers.anti-social ];
         };
       });
-    rye = ({ lib, fetchFromGithub, rustPlatform, pkgconfig, openssl, libiconv, git }:
+    rye = ({ lib, fetchFromGithub, rustPlatform, pkg-config, openssl, libiconv, git }:
       rustPlatform.buildRustPackage rec {
         pname = "rye";
         version = "0.13.0";
@@ -409,7 +400,7 @@ in {
           openssl
         ];
         nativeBuildInputs = [
-          pkgconfig
+          pkg-config
           git
         ];
 
@@ -534,7 +525,7 @@ in {
   };
 
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       noto-fonts
       noto-fonts-cjk
       noto-fonts-emoji
