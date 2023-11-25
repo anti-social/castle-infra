@@ -211,6 +211,12 @@ in {
     };
   };
 
+  # Ignore lan interfaces to be online
+  systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = [
+    "" # clear old command
+    "${config.systemd.package}/lib/systemd/systemd-networkd-wait-online --timeout 30 --ignore enp3s0 --ignore enp4s0 --ignore enp5s0 --ignore enp6s0 --ignore enp7s0"
+  ];
+
   services.fail2ban = {
     enable = true;
     ignoreIP = [
