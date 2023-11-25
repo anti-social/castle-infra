@@ -1,9 +1,12 @@
-backdoor:
+energy:
   hosts:
-    192.168.2.181:
+    192.168.2.129:
 gate_tx:
   hosts:
     192.168.2.175:
 irrigation_controller:
   hosts:
     192.168.2.176:
+backdoor:
+  hosts:
+    192.168.2.181:

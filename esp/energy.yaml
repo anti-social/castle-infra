@@ -1,0 +1,59 @@
+---
+- name: Energy controller
+  hosts: energy
+  gather_facts: no
+  roles:
+  - tasmota
+  # roles:
+  # - tobias_richter.tasmota
+  vars:
+    tasmota_mqtt_host: mqtt.castle
+    tasmota_mqtt_client: "tasmota_%06X"
+    tasmota_mqtt_user: iot_device
+    tasmota_mqtt_password: "3yGs7FZiXV"
+    tasmota_mqtt_topic: "tasmota/tasmota_%06X"
+    tasmota_commands:
+    - command: DeviceName
+      value: Energy
+    - command: FriendlyName1
+      value: Energy
+    - command: Template
+      value:
+        NAME: "Energy"
+        GPIO: [1,1,608,1,640,0,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1536,1472]
+        FLAG: 0
+        BASE: 1
+    - command: Module
+      value: 0
+    - command: TelePeriod
+      value: 30
+    # Display settings
+    - command: DisplayAddress
+      value: 0x3c
+    - command: DisplayModel
+      value: 2
+    - command: DisplayWidth
+      value: 128
+    - command: DisplayHeight
+      value: 64
+    - command: DisplayRotate
+      value: 2
+    # Display energy information:
+    # - var2 - voltage
+    # - var3 - frequency
+    # - var4 - power
+    - command: Rule1
+      value: >-
+        ON Power1#boot DO RuleTimer1 1 ENDON
+        ON Rules#Timer=1 DO Backlog DisplayText [z] [x0y0s2]%var2%V %var3%Hz [x0y37s3]%var4% W; RuleTimer1 2 ENDON
+    # Set information to display
+    - command: Rule2
+      value: >-
+        ON ENERGY#Voltage DO var2 %value% ENDON
+        ON ENERGY#Frequency DO var3 %value% ENDON
+        ON ENERGY#Power DO var4 %value% ENDON
+    # Turn off display when electricity is missing
+    - command: Rule3
+      value: >-
+        ON ENERGY#Frequency<1 DO DisplayText [o] ENDON
+        ON ENERGY#Frequency>=1 DO DisplayText [O] ENDON
