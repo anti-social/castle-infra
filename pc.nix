@@ -54,7 +54,10 @@ in {
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" ];
   boot.initrd.kernelModules = [ "amdgpu" "dm-snapshot" "dm-raid" ];
   boot.kernelModules = [ "kvm-amd" ];
-  # boot.kernelParams = [ "drm.edid_firmware=HDMI-A-1:/root/lgtv-edid.bin" ];
+  boot.kernelParams = [
+    "amdgpu.runpm=0"
+    # "drm.edid_firmware=HDMI-A-1:/root/lgtv-edid.bin"
+  ];
   boot.extraModulePackages = [ ];
   boot.supportedFilesystems = [ "zfs" ];
   boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
@@ -221,6 +224,10 @@ in {
   hardware.opengl = {
     enable = true;
     driSupport = true;
+    extraPackages = with pkgs; [
+      rocm-opencl-icd
+      rocm-opencl-runtime
+    ];
   };
 
   # Enable the X11 windowing system.
@@ -447,12 +454,14 @@ in {
       ansible
       async-profiler
       buildah
+      clinfo
       cmake
       debootstrap
       diesel-cli
       dive
       docker-compose
       gcc
+      gdb
       gnumake
       gradle
       grpc
@@ -488,6 +497,7 @@ in {
       dnsutils
       ethtool
       fd
+      ffmpeg
       git
       grpcurl
       hdparm
