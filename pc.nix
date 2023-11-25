@@ -180,9 +180,13 @@ in {
           ];
           allowedTCPPortRanges = [
             { from = 10090; to = 11000; }  # ftp
+            { from = 1714; to = 1764; } # kdeconnect
           ];
           allowedUDPPorts = [
             137 138  # samba
+          ];
+          allowedUDPPortRanges = [
+            { from = 1714; to = 1764; } # kdeconnect
           ];
         };
 
@@ -432,6 +436,7 @@ in {
       chromium
       emacs
       firefox
+      kdeconnect
       qbittorrent
       telegram-desktop
       virt-manager
