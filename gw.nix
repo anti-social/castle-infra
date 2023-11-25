@@ -226,6 +226,30 @@ in {
     ];
   };
 
+  services.ntfy-sh = {
+    enable = true;
+    settings = {
+      base-url = "https://ntfy.castle.mk";
+      listen-http = "localhost:10080";
+      auth-default-access = "deny-all";
+      auth-file = "/var/lib/ntfy-sh/auth.db";
+      cache-file = "/var/lib/ntfy-sh/cache.db";
+      attachment-cache-dir = "/var/lib/ntfy-sh/attachemnts";
+    };
+  };
+  services.nginx.virtualHosts."ntfy.castle.mk" = {
+    forceSSL = true;
+    enableACME = true;
+    extraConfig = ''
+      client_max_body_size 10m;
+      proxy_buffering off;
+    '';
+    locations."/" = {
+      proxyPass = "http://localhost:10080";
+      proxyWebsockets = true;
+    };
+  };
+
   environment.etc = {
     "systemd/network/30-br0.network" = {
       text = ''
