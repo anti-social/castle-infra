@@ -1,6 +1,9 @@
 energy:
   hosts:
     192.168.2.129:
+thermostat:
+  hosts:
+    192.168.2.145
 gate_tx:
   hosts:
     192.168.2.175:
