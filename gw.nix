@@ -358,7 +358,30 @@ in {
   services.tmate-ssh-server = {
     enable = true;
     host = "tmate.castle.mk";
+    openFirewall = true;
   };
+  # TODO: generate client config after server is started
+  services.nginx.virtualHosts."tmate.castle.mk" = let
+    tmateClientConfig = lib.concatStringsSep ''\n'' [
+      ''set -g tmate-server-host "tmate.castle.mk"''
+      ''set -g tmate-server-port "2222"''
+      ''set -g tmate-server-rsa-fingerprint "SHA256:mFK4HoEmxHoWYrvN0keywG9NIcFLmK8cdURpJcdEb3Q"''
+      ''set -g tmate-server-ed25519-fingerprint "SHA256:npoNVFEx3g+T1qRmgI1SkQ3HD/TYx/1pYpsHnA+Zh4w"''
+    ];
+  in {
+    forceSSL = true;
+    enableACME = true;
+    extraConfig = ''
+      proxy_buffering off;
+    '';
+    locations."/" = {
+      return = "200 '${tmateClientConfig}'";
+      extraConfig = ''
+        add_header Content-type text/plain;
+      '';
+    };
+  };
+
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
