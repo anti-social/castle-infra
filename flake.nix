@@ -3,7 +3,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/7076110064c09f0b3942f609f2134c1358ef2e50";
     nixpkgs-23-05.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs-23-05-new.url = "github:NixOS/nixpkgs/nixos-23.05";
-    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
 
   outputs = { nixpkgs, nixpkgs-23-05, nixpkgs-23-05-new, nixpkgs-23-11, ... }: {
