@@ -382,6 +382,22 @@ in {
     };
   };
 
+  services.nginx.virtualHosts."mono.castle.mk" = {
+    forceSSL = true;
+    enableACME = true;
+    extraConfig = ''
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_buffering off;
+    '';
+
+    locations."/" = {
+      proxyPass = "http://localhost:10081";
+      # return = "200";
+      # extraConfig = ''
+      #   add_header Content-type text/plain;
+      # '';
+    };
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
