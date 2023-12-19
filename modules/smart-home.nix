@@ -45,6 +45,17 @@ in {
           - "127.0.0.1"
           - "10.88.0.1"
 
+        climate:
+        - platform: generic_thermostat
+          unique_id: climate.home_heater
+          name: Home Heater
+          heater: switch.thermostat
+          target_sensor: sensor.0x00124b00254dcaf8_temperature
+          target_temp: 21
+          min_temp: 16
+          max_temp: 25
+          min_cycle_duration: "00:30:00"
+
         shell_command:
           shutdown_ups: touch /config/commands/shutdown_ups
 
