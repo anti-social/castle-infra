@@ -179,6 +179,7 @@ in {
             2342  # photoprism
             5201  # iperf
             5901  # vnc
+            8080  # home projects
             9100  # node exporter
           ];
           allowedTCPPortRanges = [
