@@ -1,40 +1,39 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/7076110064c09f0b3942f609f2134c1358ef2e50";
     nixpkgs-23-05.url = "github:NixOS/nixpkgs/nixos-23.05";
-    nixpkgs-23-05-new.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
 
-  outputs = { nixpkgs, nixpkgs-23-05, nixpkgs-23-05-new, nixpkgs-23-11, ... }: {
+  outputs = { nixpkgs-23-05, nixpkgs-23-11, ... }: {
     colmena = {
       meta = {
-        nixpkgs = import nixpkgs {
+        nixpkgs = import nixpkgs-23-05 {
           system = "x86_64-linux";
           overlays = [];
         };
 
-      };
-
-      meta.nodeNixpkgs.gw = import nixpkgs-23-05 {
-        system = "x86_64-linux";
-        overlays = [];
-      };
-      meta.nodeNixpkgs.pc = import nixpkgs-23-11 {
-        system = "x86_64-linux";
-        overlays = [];
-      };
-      meta.nodeNixpkgs.minipc = import nixpkgs-23-05 {
-        system = "x86_64-linux";
-        overlays = [];
-      };
-      meta.nodeNixpkgs.oldpc = import nixpkgs-23-05 {
-        system = "x86_64-linux";
-        overlays = [];
-      };
-      meta.nodeNixpkgs.dell-laptop = import nixpkgs-23-11 {
-        system = "x86_64-linux";
-        overlays = [];
+        nodeNixpkgs = {
+          gw = import nixpkgs-23-05 {
+            system = "x86_64-linux";
+            overlays = [];
+          };
+          pc = import nixpkgs-23-11 {
+            system = "x86_64-linux";
+            overlays = [];
+          };
+          minipc = import nixpkgs-23-05 {
+            system = "x86_64-linux";
+            overlays = [];
+          };
+          oldpc = import nixpkgs-23-05 {
+            system = "x86_64-linux";
+            overlays = [];
+          };
+          dell-laptop = import nixpkgs-23-11 {
+            system = "x86_64-linux";
+            overlays = [];
+          };
+        };
       };
 
       gw = import ./gw.nix;
