@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, lib, pkgs, modulesPath, specialArgs, ... }:
 let
   lanIf = "enp13s0";
 in {
@@ -15,6 +15,7 @@ in {
     [ # Include the results of the hardware scan.
       (modulesPath + "/installer/scan/not-detected.nix")
       ./another-nix-secrets
+      ./modules/common.nix
       # <home-manager/nixos>
     ];
 

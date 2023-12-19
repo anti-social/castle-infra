@@ -70,6 +70,7 @@ in {
   imports =
     [
       ./another-nix-secrets
+      ./modules/common.nix
       ./modules/dhcp-server.nix
       ./modules/dns-proxy.nix
       ./modules/metrics.nix
