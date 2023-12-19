@@ -515,19 +515,20 @@ in {
 
   fonts = {
     packages = with pkgs; [
+      dejavu_fonts
+      dina-font
+      emacs-all-the-icons-fonts
+      fira-code
+      fira-code-symbols
+      input-fonts
+      liberation_ttf
+      nerdfonts
       noto-fonts
       noto-fonts-cjk
       noto-fonts-emoji
-      liberation_ttf
-      fira-code
-      fira-code-symbols
-      ubuntu_font_family
+      openmoji-color
       proggyfonts
-      dejavu_fonts
-      dina-font
-      input-fonts
-      emacs-all-the-icons-fonts
-      nerdfonts
+      ubuntu_font_family
     ];
 
     # enableDefaultFonts = true;
