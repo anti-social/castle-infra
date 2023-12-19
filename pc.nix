@@ -485,11 +485,13 @@ in {
       radeontop
       read-edid
       ripgrep
+      tmate
       tmux
       unzip
       update-systemd-resolved
       usbutils
       vulkan-tools
+      watchman
       wget
     ];
   in apps ++ dev ++ i3wm ++ tools;
