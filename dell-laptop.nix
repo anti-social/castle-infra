@@ -2,7 +2,7 @@
 
 {
   deployment = {
-    targetHost = "laptop-wifi";
+    targetHost = "dell-laptop";
     allowLocalDeployment = true;
   };
 
@@ -85,7 +85,7 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   networking.extraHosts = ''
-    192.168.122.50 app.example.com
+    # 192.168.122.50 app.example.com
   '';
 
   services.resolved = {
@@ -169,14 +169,14 @@
     appimage-run
     # bandwich
     bat
-    blender
+    # blender
     bottom
     chromium
     cloud-init
     cloud-utils
     colmena
-    cura
-    darktable
+    # cura
+    # darktable
     delta
     dnsutils
     du-dust
@@ -190,7 +190,7 @@
     gcc
     git
     glxinfo
-    graalvm-ce
+    # graalvm-ce
     graphviz
     grex
     home-manager
@@ -239,11 +239,11 @@
     vim
     virt-manager
     vlc
-    vscode
+    # vscode
     vulkan-tools
     wakeonlan
     wget
-    wine
+    # wine
     wireguard-tools
     wireshark
     xorg.xdpyinfo
