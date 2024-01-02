@@ -1,0 +1,34 @@
+---
+- name: ESP32 DevKit
+  hosts: esp32-devkit
+  gather_facts: no
+  roles:
+  - tobias_richter.tasmota
+  vars:
+    tasmota_commands:
+    - command: Timezone
+      value: 99
+    - command: TimeStd
+      value: "0,0,10,1,4,120"
+    - command: TimeDst
+      value: "0,0,3,1,3,180"
+    - command: Timers
+      value: 1
+    - command: Timer1
+      value:
+        enable: 1
+        mode: 0
+        time: "23:15"
+        days: "SMTWTFS"
+        repeat: 1
+        output: 1
+        action: 1
+    - command: Timer2
+      value:
+        enable: 1
+        mode: 0
+        time: "06:45"
+        days: "SMTWTFS"
+        repeat: 1
+        output: 1
+        action: 0

@@ -1,3 +1,6 @@
+esp32-devkit:
+  hosts:
+    192.168.2.113:
 energy:
   hosts:
     192.168.2.129:
