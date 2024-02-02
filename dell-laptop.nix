@@ -170,6 +170,7 @@
     appimage-run
     # bandwich
     bat
+    betaflight-configurator
     # blender
     bottom
     chromium
