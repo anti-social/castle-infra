@@ -6,7 +6,7 @@
 
   outputs = { self, nixpkgs-23-05, nixpkgs-23-11 }: let
     nodes = {
-      gw = nixpkgs-23-05;
+      gw = nixpkgs-23-11;
       pc = nixpkgs-23-11;
       minipc = nixpkgs-23-05;
       dell-laptop = nixpkgs-23-11;

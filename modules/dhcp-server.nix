@@ -17,33 +17,58 @@ in {
   config = {
     networking.firewall.interfaces.${cfg.interface}.allowedUDPPorts = [ 67 68 ];
 
-    services.dhcpd4 = let
+    services.kea.dhcp4 = let
       lan = cfg.lan;
       gw_host = builtins.head lan.hosts;
       static_hosts = builtins.tail lan.hosts;
-      renderHost = { host, mac, ip, ... }: ''
-        host ${host} {
-          hardware ethernet ${mac};
-          fixed-address ${ip};
-        }
-      '';
     in {
       enable = true;
-      interfaces = [ cfg.interface ];
-      extraConfig = ''
-        option domain-name-servers ${gw_host.ip};
-        option domain-name ${lan.domain};
-        option subnet-mask ${lan.net_mask};
-        
-        subnet ${lan.net_addr} netmask ${lan.net_mask} {
-          option broadcast-address ${lan.broadcast_addr};
-          option routers ${gw_host.ip};
-          interface ${cfg.interface};
-          range ${lan.mkAddr 100} ${lan.mkAddr 200};
-        }
-
-        ${builtins.concatStringsSep "\n" (map renderHost static_hosts)}
-      '';
+      settings = {
+        interfaces-config = {
+          interfaces = [ cfg.interface ];
+        };
+        lease-database = {
+          name = "/var/lib/kea/dhcp4.leases";
+          persist = true;
+          type = "memfile";
+        };
+        subnet4 = [
+          {
+            subnet = lan.network;
+                option-data = [
+                  {
+                    name = "broadcast-address";
+                    data = lan.broadcast_addr;
+                  }
+                  {
+                    name = "routers";
+                    data = gw_host.ip;
+                  }
+                  {
+                    name = "domain-name-servers";
+                    data = gw_host.ip;
+                  }
+                  {
+                    name = "domain-name";
+                    data = lan.domain;
+                  }
+                ];
+            pools = [
+              {
+                pool = "${lan.mkAddr 100} - ${lan.mkAddr 200}";
+              }
+            ];
+            reservations = map ({ host, mac, ip, ... }: {
+              hw-address = mac;
+              ip-address = ip;
+              hostname = host;
+            }) static_hosts;
+          }
+        ];
+        rebind-timer = 1800;
+        renew-timer = 600;
+        valid-lifetime = 3600;
+      };
     };
   };
 }
