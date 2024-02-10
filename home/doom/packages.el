@@ -51,6 +51,22 @@
 
 (package! rg)
 
-(package! restclient)
+;;(package! restclient)
+
+;(package! selectrum)
+; (package! selectrum-prescient)
 
 (package! nix-mode)
+
+(package! ob-grpc
+  :recipe (:host github :repo "anti-social/ob-grpc"))
+
+(package! protobuf-mode)
+
+(package! magit-delta)
+
+(package! ssh-agency)
+
+(package! kubernetes)
+
+;;(package! multiple-cursors)

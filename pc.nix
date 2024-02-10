@@ -1,8 +1,4 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running `nixos-help`).
-
-{ config, lib, pkgs, modulesPath, specialArgs, ... }:
+args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
 let
   lanIf = "enp13s0";
 in {
@@ -14,9 +10,9 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       (modulesPath + "/installer/scan/not-detected.nix")
+      home-manager.nixosModules.home-manager
       ./another-nix-secrets
       ./modules/common.nix
-      # <home-manager/nixos>
     ];
 
   fileSystems."/" =
@@ -280,13 +276,7 @@ in {
     extraGroups = [ "libvirtd" "wheel" "wireshark" ];
     shell = pkgs.zsh;
   };
-  # home-manager.users.alexk = { pkgs, ... }: {
-  #   # home.packages = [ pkgs.atool pkgs.httpie ];
-  #   # programs.bash.enable = true;
-  #   programs.home-manager.enable = true;
-
-  #   home.stateVersion = "23.05";
-  # };
+  home-manager.users.alexk = (import ./home/alexk.nix) args;
 
   users.users.game = {
     uid = 1003;

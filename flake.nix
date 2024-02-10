@@ -45,7 +45,10 @@
 
         nodeSpecialArgs = {
           gw.nixpkgs = nodes.gw;
-          pc.nixpkgs = nodes.pc;
+          pc = {
+            nixpkgs = nodes.pc;
+            home-manager = home-manager-23-11;
+          };
           minipc.nixpkgs = nodes.minipc;
           dell-laptop = {
             nixpkgs = nodes.dell-laptop;

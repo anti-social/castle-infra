@@ -19,8 +19,8 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
+(setq doom-font (font-spec :family "Liberation Mono" :size 14)
+      doom-variable-pitch-font (font-spec :family "Ubuntu" :size 14))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -35,6 +35,8 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+;; (after! doom-modeline
+;;   (setq doom-modeline-persp-name t))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -67,13 +69,22 @@
  )
 (put 'downcase-region 'disabled nil)
 
+(setq doom-unreal-buffer-functions '(minibufferp))
+
+;; Never create a new workspace on project switch.
+(setq +workspaces-on-switch-project-behavior nil)
+
 (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
 (setq exec-path (append exec-path '("~/.cargo/bin")))
 
-;;(setq lsp-clients-kotlin-server-executable "/home/alexk/projects/kotlin-language-server/server/build/install/server/bin/kotlin-language-server")
+(setq lsp-clients-kotlin-server-executable
+      "/home/alexk/projects/kotlin-language-server/server/build/install/server/bin/kotlin-language-server")
 
 ;; Camel case words
 (global-subword-mode 1)
+
+;; so-long-minor-mode for compilation buffers
+(add-hook 'compilation-mode 'so-long-minor-mode)
 
 ;; Window management
 ;; (setq display-buffer-base-action
@@ -89,7 +100,40 @@
 (define-key compilation-mode-map (kbd "C-o") nil)
 (global-set-key (kbd "C-o") 'next-window-any-frame)
 
-;; Magit
-;;(use-package! forge
-;;  :after magit)
-(add-hook 'magit-mode-hook 'magit-todos-mode)
+;; (let ((ctrl-j-shortcut (if (display-graphic-p) "C-j" "Ctrl+J")))
+;;         (map! :after company-box
+;;               :map company-active-map
+;;               ctrl-j-shortcut #'company-complete-selection
+;;               "<return>" nil)
+;; )
+
+;; (use-package! forge
+;;   :after magit)
+
+;; Magit Forge
+(setq
+ forge-alist
+ '(("gitlab.evo.dev" "gitlab.evo.dev/api/v4" "gitlab.evo.dev" forge-gitlab-repository)
+   ("github.com" "api.github.com" "github.com" forge-github-repository)
+   ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository))
+ )
+
+;; Code review
+(setq code-review-gitlab-host "gitlab.evo.dev/api")
+(setq code-review-gitlab-graphql-host "gitlab.evo.dev/api")
+
+;; Vterm
+(setq vterm-toggle-fullscreen-p nil)
+;; (add-to-list 'display-buffer-alist
+;;              '((lambda (buffer-or-name _)
+;;                    (let ((buffer (get-buffer buffer-or-name)))
+;;                      (with-current-buffer buffer
+;;                        (or (equal major-mode 'vterm-mode)
+;;                            (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+;;                 (display-buffer-reuse-window display-buffer-at-bottom)
+;;                 ;;(display-buffer-reuse-window display-buffer-in-direction)
+;;                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+;;                 ;;(direction . bottom)
+;;                 ;;(dedicated . t) ;dedicated is supported in emacs27
+;;                 (reusable-frames . visible)
+;;                 (window-height . 0.3)))
