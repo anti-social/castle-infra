@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, lib, pkgs, modulesPath, home-manager, ... }:
 
 {
   deployment = {
@@ -10,6 +10,7 @@
 
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
+    home-manager.nixosModules.home-manager
     ./modules/common.nix
   ];
 
@@ -162,6 +163,76 @@
     extraGroups = [ "wheel" "audio" "networkmanager" "libvirtd" "dialout" ];
   };
 
+  home-manager.users.alexk = {
+    /* The home.stateVersion option does not have a default and must be set */
+    home.stateVersion = "23.11";
+
+    programs.zsh = {
+      enable = true;
+      enableAutosuggestions = true;
+      enableCompletion = true;
+      history = {
+        expireDuplicatesFirst = true;
+        share = true;
+        size = 10000;
+      };
+      initExtra = ''
+        # Bash like navigation
+        autoload -U select-word-style
+        select-word-style bash
+      '';
+      oh-my-zsh = {
+        enable = true;
+        plugins = [ "ssh-agent" "sudo" ];
+        theme = "agnoster";
+      };
+    };
+
+    programs.git = {
+      enable = true;
+      aliases = {
+        ci = "commit";
+        co = "checkout";
+        ff = "merge --ff-only";
+        last = "log -1 HEAD";
+        meld = "difftool --dir-diff -t meld";
+        st = "status";
+        up = "pull --no-stat --ff-only";
+      };
+      userName = "Alexander Koval";
+      userEmail = "kovalidis@gmail.com";
+    };
+
+    xdg.configFile = {
+      "containers/registries.conf".text = ''
+        [registries.search]
+        registries = ["docker.io"]
+
+        [registries.insecure]
+        registries = []
+
+        [registries.block]
+        registries = []
+      '';
+      "containers/policy.json".text = ''
+        {
+          "default": [
+            {"type": "insecureAcceptAnything"}
+          ],
+          "transports": {
+            "docker-daemon": {
+              "": [
+                {"type": "insecureAcceptAnything"}
+              ]
+            }
+          }
+        }
+      '';
+    };
+
+    # Here goes the rest of your home-manager config, e.g. home.packages = [ pkgs.foo ];
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   nixpkgs.config.allowUnfree = true;
@@ -195,7 +266,6 @@
     # graalvm-ce
     graphviz
     grex
-    home-manager
     ht-rust
     htop
     inetutils

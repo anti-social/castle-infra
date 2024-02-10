@@ -2,9 +2,14 @@
   inputs = {
     nixpkgs-23-05.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
+    home-manager-23-11 = {
+      url = "github:nix-community/home-manager/release-23.11";
+      # Use system packages list where available
+      inputs.nixpkgs.follows = "nixpkgs-23-11";
+    };
   };
 
-  outputs = { self, nixpkgs-23-05, nixpkgs-23-11 }: let
+  outputs = { self, nixpkgs-23-05, nixpkgs-23-11, home-manager-23-11 }: let
     nodes = {
       gw = nixpkgs-23-11;
       pc = nixpkgs-23-11;
@@ -42,16 +47,19 @@
           gw.nixpkgs = nodes.gw;
           pc.nixpkgs = nodes.pc;
           minipc.nixpkgs = nodes.minipc;
-          dell-laptop.nixpkgs = nodes.dell-laptop;
+          dell-laptop = {
+            nixpkgs = nodes.dell-laptop;
+            home-manager = home-manager-23-11;
+          };
         };
       };
 
       gw = import ./gw.nix;
       pc = import ./pc.nix;
-      # oldpc = import ./oldpc.nix;
       minipc = import ./minipc.nix;
       rpi3 = import ./rpi3.nix;
       dell-laptop = import ./dell-laptop.nix;
+      # dell-laptop = (import ./dell-laptop.nix) { home-manager = home-manager-23-11; };
       # do = import ./do.nix;
     };
   };
