@@ -168,7 +168,13 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   nixpkgs.config.allowUnfree = true;
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; let
+    build-essentials = [
+      cmake
+      gnumake
+      libtool  # to compile emacs libvterm module
+    ];
+  in build-essentials ++ [
     ansible
     appimage-run
     # bandwich
@@ -263,6 +269,26 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
     # (pkgs.callPackage /home/alexk/projects/nix/hello {})
     # (pkgs.callPackage /home/alexk/projects/nix/vagga {})
   ];
+
+  fonts = {
+    packages = with pkgs; [
+      dejavu_fonts
+      liberation_ttf
+      noto-fonts
+      noto-fonts-cjk
+      noto-fonts-emoji
+      ubuntu_font_family
+    ];
+
+    # enableDefaultFonts = true;
+    fontconfig = {
+      defaultFonts = {
+        serif = [ "Noto Sans" ];
+        sansSerif = [ "Noto Sans" ];
+        monospace = [ "Noto Sans Mono" ];
+      };
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
