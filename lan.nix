@@ -43,10 +43,15 @@ rec {
       ip = mkAddr 5;
     }
     {
+      host = "nanopc";
+      mac = "c2:92:26:00:ec:f6";
+      ip = mkAddr 6;
+      aliases = [ "octo"];
+    }
+    {
       host = "rpi3";
       mac = "b8:27:eb:0b:8d:6f";
       ip = mkAddr 7;
-      aliases = [ "octo" "3d" ];
     }
     {
       host = "tv";

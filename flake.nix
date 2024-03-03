@@ -15,6 +15,7 @@
       pc = nixpkgs-23-11;
       minipc = nixpkgs-23-05;
       dell-laptop = nixpkgs-23-11;
+      nanopc = nixpkgs-23-11;
     };
   in {
     colmena = rec {
@@ -41,6 +42,10 @@
             system = "x86_64-linux";
             overlays = [];
           };
+          nanopc = import nodes.nanopc {
+            system = "aarch64-linux";
+            overlays = [];
+          };
         };
 
         nodeSpecialArgs = {
@@ -54,6 +59,7 @@
             nixpkgs = nodes.dell-laptop;
             home-manager = home-manager-23-11;
           };
+          nanopc.nixpkgs = nodes.nanopc;
         };
       };
 
@@ -62,6 +68,7 @@
       minipc = import ./minipc.nix;
       rpi3 = import ./rpi3.nix;
       dell-laptop = import ./dell-laptop.nix;
+      nanopc = import ./nanopc.nix;
       # dell-laptop = (import ./dell-laptop.nix) { home-manager = home-manager-23-11; };
       # do = import ./do.nix;
     };
