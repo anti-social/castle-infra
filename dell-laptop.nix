@@ -97,7 +97,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   };
 
   # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
   # console = {
   #   font = "Lat2-Terminus16";
   #   keyMap = "us";
@@ -247,6 +247,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
     krdc
     kubectl
     libguestfs
+    linuxPackages.usbip
     lm_sensors
     mc
     meld
@@ -342,14 +343,35 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  systemd.services.usbipd = {
+    enable = true;
+    description = "Exports USB devices";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      Restart = "on-failure";
+      RestartSec = 1;
+      ExecStart = "${pkgs.linuxPackages.usbip}/bin/usbipd";
+    };
+  };
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  networking.firewall = {
-    checkReversePath = false;
+  networking = {
+    nftables.enable = true;
+
+    firewall = {
+      checkReversePath = false;
+
+      extraInputRules = ''
+        # Allow usbip devices attaching
+        tcp dport 3240 ether saddr == 74:56:3c:43:9a:36 accept
+      '';
+    };
   };
 
   nix.settings = {
