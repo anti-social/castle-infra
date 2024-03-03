@@ -59,12 +59,12 @@ rec {
       ip = mkAddr 10;
     }
     {
-      host = "laptop";
+      host = "dell-laptop-lan";
       mac = "8c:47:be:32:67:10";
       ip = mkAddr 11;
     }
     {
-      host = "laptop-wifi";
+      host = "dell-laptop";
       mac = "cc:d9:ac:d8:60:7b";
       ip = mkAddr 12;
     }
