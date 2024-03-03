@@ -155,7 +155,10 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  virtualisation.libvirtd.enable = true;
+  virtualisation.libvirtd = {
+    enable = true;
+  };
+  programs.virt-manager.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.alexk = {
