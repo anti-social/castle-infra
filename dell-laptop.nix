@@ -12,6 +12,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
     (modulesPath + "/installer/scan/not-detected.nix")
     home-manager.nixosModules.home-manager
     ./modules/common.nix
+    ./modules/ld-linux.nix
   ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];

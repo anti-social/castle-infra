@@ -13,6 +13,7 @@ in {
       home-manager.nixosModules.home-manager
       ./another-nix-secrets
       ./modules/common.nix
+      ./modules/ld-linux.nix
     ];
 
   fileSystems."/" =
@@ -345,6 +346,7 @@ in {
 
         meta = with lib; {
           description = "Simple command-line snippet manager, written in Go";
+
           homepage = "https://github.com/lets-cli/lets";
           license = licenses.mit;
           maintainers = with maintainers; [ maintainers.anti-social ];
@@ -710,14 +712,6 @@ in {
       enable = true;
     };
   };
-
-  # Hack to be able to run third-party binaries
-  # https://github.com/google/protobuf-gradle-plugin/issues/426#issuecomment-771740235
-  system.activationScripts.ldso = lib.stringAfter [ "usrbinenv" ] ''
-    mkdir -m 0755 -p /lib64
-    ln -sfn ${pkgs.glibc.out}/lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2.tmp
-    mv -f /lib64/ld-linux-x86-64.so.2.tmp /lib64/ld-linux-x86-64.so.2
-  '';
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
