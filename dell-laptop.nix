@@ -285,6 +285,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
     virt-manager
     vlc
     # vscode
+    vscodium
     vulkan-tools
     wakeonlan
     wget
