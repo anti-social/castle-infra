@@ -198,7 +198,7 @@ in {
               ];
             };
             octoprint = {
-              hashedPassword = "$7$101$uJeIzKlE4TcLcn8k$vV1OscD6qkSsaiWMAfckdKwxmL+a1GNjRGJu8t3HPejSsdCo/UjySWyMH4KyNf8aQxJNr8z3mA1Lr/WvPUm4Fg==";
+              hashedPassword = "$7$101$pFdvWTU2Pdo2Yoc9$Jh+LYkyObNEgnngs1NIAH98WlqgOoNiZ/DY8jPH5DjiZuSTpH3+LGt8qs5H8u6Ek12K1LRlzxzVynqlIdApD/w==";
               acl = [
                 "write homeassistant/#"
                 "readwrite octoPrint/#"
