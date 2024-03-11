@@ -405,11 +405,13 @@ in {
     ];
     apps = [
       alacritty
+      betaflight-configurator
       chromium
       emacs
       firefox
       kdeconnect
       qbittorrent
+      stm32cubemx
       telegram-desktop
       virt-manager
       vlc
