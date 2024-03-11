@@ -169,6 +169,7 @@ in {
       ethtool
       inetutils
       iperf
+      linuxPackages.usbip
       nftables
       nmap
       tcpdump

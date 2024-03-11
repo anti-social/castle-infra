@@ -472,6 +472,7 @@ in {
       inetutils
       jq
       iperf
+      linuxPackages.usbip
       lm_sensors
       mc
       nix-index
