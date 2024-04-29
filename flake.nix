@@ -1,26 +1,45 @@
 {
   inputs = {
-    nixpkgs-23-05.url = "github:NixOS/nixpkgs/nixos-23.05";
-    nixpkgs-23-11.url = "github:NixOS/nixpkgs/nixos-23.11";
-    home-manager-23-11 = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-gw.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-23.11";
+    home-manager-pc = {
       url = "github:nix-community/home-manager/release-23.11";
       # Use system packages list where available
-      inputs.nixpkgs.follows = "nixpkgs-23-11";
+      inputs.nixpkgs.follows = "nixpkgs-pc";
     };
+    nixpkgs-dell-laptop.url = "github:NixOS/nixpkgs/nixos-23.11";
+    home-manager-dell-laptop = {
+      url = "github:nix-community/home-manager/release-23.11";
+      # Use system packages list where available
+      inputs.nixpkgs.follows = "nixpkgs-dell-laptop";
+    };
+    nixpkgs-minipc.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-nanopc.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
 
-  outputs = { self, nixpkgs-23-05, nixpkgs-23-11, home-manager-23-11 }: let
+  outputs = {
+    self,
+    nixpkgs,
+    nixpkgs-gw,
+    nixpkgs-pc,
+    home-manager-pc,
+    nixpkgs-dell-laptop,
+    home-manager-dell-laptop,
+    nixpkgs-minipc,
+    nixpkgs-nanopc
+  }: let
     nodes = {
-      gw = nixpkgs-23-11;
-      pc = nixpkgs-23-11;
-      minipc = nixpkgs-23-05;
-      dell-laptop = nixpkgs-23-11;
-      nanopc = nixpkgs-23-11;
+      gw = nixpkgs-gw;
+      pc = nixpkgs-pc;
+      minipc = nixpkgs-minipc;
+      dell-laptop = nixpkgs-dell-laptop;
+      nanopc = nixpkgs-nanopc;
     };
   in {
     colmena = rec {
       meta = {
-        nixpkgs = import nixpkgs-23-05 {
+        nixpkgs = import nixpkgs {
           system = "x86_64-linux";
           overlays = [];
         };
@@ -52,12 +71,12 @@
           gw.nixpkgs = nodes.gw;
           pc = {
             nixpkgs = nodes.pc;
-            home-manager = home-manager-23-11;
+            home-manager = home-manager-pc;
           };
           minipc.nixpkgs = nodes.minipc;
           dell-laptop = {
             nixpkgs = nodes.dell-laptop;
-            home-manager = home-manager-23-11;
+            home-manager = home-manager-dell-laptop;
           };
           nanopc.nixpkgs = nodes.nanopc;
         };
@@ -69,8 +88,6 @@
       rpi3 = import ./rpi3.nix;
       dell-laptop = import ./dell-laptop.nix;
       nanopc = import ./nanopc.nix;
-      # dell-laptop = (import ./dell-laptop.nix) { home-manager = home-manager-23-11; };
-      # do = import ./do.nix;
     };
   };
 }
