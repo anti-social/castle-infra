@@ -466,7 +466,7 @@ in {
       dnsutils
       ethtool
       fd
-      ffmpeg
+      ffmpeg-full
       git
       grpcurl
       hdparm
