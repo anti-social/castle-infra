@@ -414,6 +414,7 @@ in {
       qbittorrent
       stm32cubemx
       telegram-desktop
+      signal-desktop
       virt-manager
       vlc
       wireshark
