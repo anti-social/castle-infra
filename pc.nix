@@ -173,6 +173,7 @@ in {
         ${lanIf} = {
          allowedTCPPorts = [
             21
+            80
             139 445  # samba
             2342  # photoprism
             5201  # iperf
@@ -640,6 +641,25 @@ in {
         public = "no";
         writable = "yes";
         "valid users" = "alla";
+      };
+    };
+  };
+
+  services.nginx = {
+    enable = true;
+    virtualHosts.drive = {
+      locations."~ /drive/(.+)" = {
+        root = "/media/share";
+        extraConfig = ''
+          charset UTF-8;
+          autoindex on;
+
+          rewrite ^/drive/(.*)$ /$1;
+          if (-e /media/home/alla/public$uri) {
+            root /media/home/alla/public;
+          }
+          break;
+        '';
       };
     };
   };

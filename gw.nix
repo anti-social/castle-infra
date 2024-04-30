@@ -64,6 +64,18 @@
           proxyWebsockets = true;
         };
       };
+
+      services.nginx.virtualHosts."drive.castle.mk" = {
+        forceSSL = true;
+        enableACME = true;
+        extraConfig = ''
+          client_max_body_size 100m;
+          proxy_buffering off;
+        '';
+        locations."/" = {
+          proxyPass = "http://pc.castle:80/drive/";
+        };
+      };
     };
   };
 in {
