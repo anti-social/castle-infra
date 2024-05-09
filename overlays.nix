@@ -47,12 +47,12 @@
 
       turbovnc = super.turbovnc.overrideAttrs (old:
         rec {
-          version = "3.0.91";
+          version = "3.1.1";
           src = pkgs.fetchFromGitHub {
             owner = "TurboVNC";
             repo = "turbovnc";
             rev = version;
-            sha256 = "sha256-akkkbDb5ZHTG5GEEeDm1ns60GedQ+DnFXgVMZumRQHc=";
+            sha256 = "sha256-7dft5Wp9LvRy3FM/cZ5F6qUIesu7mzd/Ww8P3xsSvyI=";
           };
 
           nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkg-config ];
