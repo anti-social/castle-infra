@@ -275,7 +275,7 @@ in {
   users.users.alexk = {
     uid = 1000;
     isNormalUser = true;
-    extraGroups = [ "libvirtd" "wheel" "wireshark" ];
+    extraGroups = [ "dialout" "libvirtd" "video" "wheel" "wireshark" ];
     shell = pkgs.zsh;
   };
   home-manager.users.alexk = (import ./home/alexk.nix) args;

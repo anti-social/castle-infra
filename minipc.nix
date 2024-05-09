@@ -127,7 +127,7 @@ in {
   users.users.alexk = {
     uid = 1000;
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "dialout" "networkmanager" "wheel" "video" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ7H4F04bIi5au15Wo/IX8Cn1X49OR024MdOo735ew4h kovalidis@gmail.com"
@@ -186,6 +186,7 @@ in {
       tio
     ];
     apps = [
+      betaflight-configurator
       emacs
       firefox
       tdesktop

@@ -164,7 +164,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   users.users.alexk = {
     isNormalUser = true;
     shell = pkgs.zsh;
-    extraGroups = [ "wheel" "audio" "networkmanager" "libvirtd" "dialout" ];
+    extraGroups = [ "audio" "dialout" "networkmanager" "libvirtd" "video" "wheel" ];
   };
 
   home-manager.users.alexk = (import ./home/alexk.nix) args;
