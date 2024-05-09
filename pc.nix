@@ -296,33 +296,7 @@ in {
     input-fonts.acceptLicense = true;
   };
 
-  nixpkgs.overlays = [
-    (self: super: {
-      turbovnc = super.turbovnc.overrideAttrs (old:
-        rec {
-          version = "3.0.91";
-          src = pkgs.fetchFromGitHub {
-            owner = "TurboVNC";
-            repo = "turbovnc";
-            rev = version;
-            sha256 = "sha256-akkkbDb5ZHTG5GEEeDm1ns60GedQ+DnFXgVMZumRQHc=";
-          };
-
-          nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkg-config ];
-        }
-      );
-
-      ktlint = super.ktlint.overrideAttrs (
-        old: rec {
-          version = "1.0.0";
-          src = pkgs.fetchurl {
-            url = "https://github.com/pinterest/ktlint/releases/download/${version}/ktlint";
-            sha256 = "Kz9vZ0qUTSW7jSg8NTmUe76GB0eTASkJpV3kt3H3S8w=";
-          };
-        }
-      );
-    })
-  ];
+  nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
 
   environment.sessionVariables = {
     PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.zlib.dev}/lib/pkgconfig";

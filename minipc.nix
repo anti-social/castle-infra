@@ -145,6 +145,8 @@ in {
     enable = true;
   };
 
+  nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; let

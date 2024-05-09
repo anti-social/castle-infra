@@ -169,34 +169,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
 
   home-manager.users.alexk = (import ./home/alexk.nix) args;
 
-  nixpkgs.overlays = [
-    (self: super: {
-      inav-configurator = super.inav-configurator.overrideAttrs (old:
-        rec {
-          version = "7.0.1";
-          src = pkgs.fetchurl {
-            url = "https://github.com/iNavFlight/inav-configurator/releases/download/${version}/INAV-Configurator_linux64_${version}.tar.gz";
-            sha256 = "sha256-ryd2ojkfoHS62+8Br1DMMFCu0K5pBRCVn8rcAbIF+og=";
-          };
-
-          installPhase = ''
-              runHook preInstall
-
-              mkdir -p $out/bin \
-                       $out/opt/${old.pname}
-
-              cp -r . $out/opt/${old.pname}/
-              install -m 444 -D $icon $out/share/icons/hicolor/128x128/apps/${old.pname}.png
-
-              chmod +x $out/opt/inav-configurator/inav-configurator
-              makeWrapper ${pkgs.nwjs}/bin/nw $out/bin/${old.pname} --add-flags $out/opt/${old.pname}
-
-              runHook postInstall
-            '';
-        }
-      );
-    })
-  ];
+  nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
