@@ -403,6 +403,7 @@ in {
       diesel-cli
       dive
       docker-compose
+      esptool
       gcc
       gdb
       gnumake
