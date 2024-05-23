@@ -230,6 +230,10 @@ in {
     ];
   };
 
+  services.udev.extraRules = ''
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", MODE="660", GROUP="wheel"
+  '';
+
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
