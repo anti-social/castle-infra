@@ -281,6 +281,7 @@ in {
     isNormalUser = true;
     extraGroups = [ "dialout" "libvirtd" "video" "wheel" "wireshark" ];
     shell = pkgs.zsh;
+    linger = true;
   };
   home-manager.users.alexk = (import ./home/alexk.nix) args;
 
