@@ -36,7 +36,7 @@ in {
 
       writeUrl = mkOption {
         type = types.str;
-	default = "http://${config.services.victoriametrics.listenAddress}/api/v1/write";
+        default = "http://${config.services.victoriametrics.listenAddress}/api/v1/write";
         description = "Endpoint to send metrics";
       };
 

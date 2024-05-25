@@ -13,6 +13,7 @@ in {
       home-manager.nixosModules.home-manager
       ./another-nix-secrets
       ./modules/common.nix
+      ./modules/udev.nix
       ./modules/ld-linux.nix
     ];
 
@@ -230,10 +231,6 @@ in {
     ];
   };
 
-  services.udev.extraRules = ''
-    SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", MODE="660", GROUP="wheel"
-  '';
-
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
@@ -276,13 +273,7 @@ in {
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.alexk = {
-    uid = 1000;
-    isNormalUser = true;
-    extraGroups = [ "dialout" "libvirtd" "video" "wheel" "wireshark" ];
-    shell = pkgs.zsh;
-    linger = true;
-  };
+  users.users.alexk = ((import ./users.nix) { pkgs = pkgs; }).alexk;
   home-manager.users.alexk = (import ./home/alexk.nix) args;
 
   users.users.game = {

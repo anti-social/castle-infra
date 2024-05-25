@@ -12,6 +12,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
     (modulesPath + "/installer/scan/not-detected.nix")
     home-manager.nixosModules.home-manager
     ./modules/common.nix
+    ./modules/udev.nix
     ./modules/ld-linux.nix
   ];
 
@@ -167,12 +168,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   programs.virt-manager.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.alexk = {
-    isNormalUser = true;
-    shell = pkgs.zsh;
-    extraGroups = [ "audio" "dialout" "networkmanager" "libvirtd" "video" "wheel" ];
-  };
-
+  users.users.alexk = ((import ./users.nix) { pkgs = pkgs; }).alexk;
   home-manager.users.alexk = (import ./home/alexk.nix) args;
 
   nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
