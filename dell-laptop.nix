@@ -14,6 +14,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
     ./modules/common.nix
     ./modules/udev.nix
     ./modules/ld-linux.nix
+    ./modules/overlays.nix
   ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
@@ -170,8 +171,6 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.alexk = ((import ./users.nix) { pkgs = pkgs; }).alexk;
   home-manager.users.alexk = (import ./home/alexk.nix) args;
-
-  nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

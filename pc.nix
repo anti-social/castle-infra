@@ -15,6 +15,7 @@ in {
       ./modules/common.nix
       ./modules/udev.nix
       ./modules/ld-linux.nix
+      ./modules/overlays.nix
     ];
 
   fileSystems."/" =
@@ -291,8 +292,6 @@ in {
     allowUnfree = true;
     input-fonts.acceptLicense = true;
   };
-
-  nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
 
   environment.sessionVariables = {
     PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.zlib.dev}/lib/pkgconfig";
