@@ -8,8 +8,8 @@
   wan_zone = [ wan_if ];
 
   lan = import ./lan.nix;
-  hostname = (builtins.head lan.hosts).host;
-  hostname_aliases = (builtins.head lan.hosts).aliases;
+  hostname = "gw";
+  hostname_aliases = lan.hosts.gw.aliases;
   local_addr = lan.mkAddr 1;
 
   vpn_if = "wg0";
@@ -173,7 +173,7 @@ in {
       ${wan_if} = {
         useDHCP = true;
         macAddress = "40:21:08:80:03:da";
-        
+
       };
       ${lan_if} = {
         ipv4.addresses = [
@@ -201,20 +201,20 @@ in {
           allowedUDPPorts = [ vpn_listen_port ];
         };
       };
-      extraCommands = let
-        inetForwardChain = "inet-forward";
-        localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
-        limitedInetHosts = builtins.filter (h: builtins.hasAttr "inetActiveTime" h) lan.hosts;
-        limitInetHostRule = h: ''
-          ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime h.inetActiveTime.to} --timestop ${localToUtcTime h.inetActiveTime.from} -j REJECT
-        '';
-      in ''
-        ip46tables -F ${inetForwardChain} 2>/dev/null || true
-        ip46tables -X ${inetForwardChain} 2>/dev/null || true
-        ip46tables -N ${inetForwardChain} 2>/dev/null || true
-        ip46tables -A FORWARD -j ${inetForwardChain}
-      #   ${lib.concatStringsSep "\n" (map limitInetHostRule limitedInetHosts)}
-      # '';
+      # extraCommands = let
+      #   inetForwardChain = "inet-forward";
+      #   localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
+      #   limitedInetHosts = lib.attrsets.filterAttrs (n: v: builtins.hasAttr "inetActiveTime" v) lan.hosts;
+      #   limitInetHostRule = h: ''
+      #     ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime h.inetActiveTime.to} --timestop ${localToUtcTime h.inetActiveTime.from} -j REJECT
+      #   '';
+      # in ''
+      #   ip46tables -F ${inetForwardChain} 2>/dev/null || true
+      #   ip46tables -X ${inetForwardChain} 2>/dev/null || true
+      #   ip46tables -N ${inetForwardChain} 2>/dev/null || true
+      #   ip46tables -A FORWARD -j ${inetForwardChain}
+      # #   ${lib.concatStringsSep "\n" (map limitInetHostRule limitedInetHosts)}
+      # # '';
     };
 
     nat = {
@@ -283,7 +283,7 @@ in {
         DHCP=no
         IPv6PrivacyExtensions=kernel
         Address=${local_addr}/${toString lan.prefix_length}
-        ConfigureWithoutCarrier=yes
+  #       ConfigureWithoutCarrier=yes
       '';
     };
   };
@@ -507,7 +507,7 @@ in {
 
   #   firewall = {
   #     enable = true;
-    
+
   #     extraCommands = let
   #       inetForwardChain = "inet-forward";
   #       localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";

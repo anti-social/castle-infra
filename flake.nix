@@ -68,7 +68,9 @@
         };
 
         nodeSpecialArgs = {
-          gw.nixpkgs = nodes.gw;
+          gw = {
+            nixpkgs = nodes.gw;
+          };
           pc = {
             nixpkgs = nodes.pc;
             home-manager = home-manager-pc;

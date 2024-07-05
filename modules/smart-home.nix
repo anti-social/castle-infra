@@ -209,13 +209,18 @@ in {
       ];
     };
 
+    services.udev.extraRules = ''
+      SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="zigbee-bridge"
+
+      SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="23a3", SYMLINK+="bms"
+    '';
     services.zigbee2mqtt = {
       enable = true;
       settings = {
         homeassistant = true;
         permit_join = true;
         serial = {
-          port = "/dev/ttyUSB1";
+          port = "/dev/zigbee-bridge";
         };
         mqtt = {
           server = "mqtt://${cfg.iotLocalAddr}:${toString mqtt_port}";

@@ -171,6 +171,9 @@ in {
     firewall = {
       enable = true;
       connectionTrackingModules = [ "ftp" ];
+      allowedUDPPorts = [
+        53
+      ];
       interfaces = {
         ${lanIf} = {
          allowedTCPPorts = [
@@ -368,7 +371,10 @@ in {
       i3
       i3status
       i3blocks
+      maim
       turbovnc
+      xclip
+      xdotool
       xorg.xkill
       xorg.xsetroot
       xterm
@@ -380,6 +386,7 @@ in {
       emacs
       firefox
       kdeconnect
+      kicad
       qbittorrent
       stm32cubemx
       telegram-desktop
@@ -700,10 +707,17 @@ in {
     docker.rootless = {
       enable = true;
       setSocketVariable = true;
+      package = pkgs.docker_24;
+      daemon.settings = {
+        dns = [ "192.168.10.17" "192.168.2.1" ];
+      };
     };
 
     libvirtd = {
       enable = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+      };
     };
   };
 

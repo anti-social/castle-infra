@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }: let
   hostname = "minipc";
 
+  lan = import ./lan.nix;
+
   lan1_if = "enp1s0";
   lan2_if = "enp2s0";
   wlan_if = "wlp3s0b1";
@@ -106,6 +108,11 @@ in {
 
     firewall = {
       enable = true;
+
+      extraInputRules = ''
+        # Allow usbip devices attaching
+        tcp dport 3240 ether saddr == ${lan.pc.mac} accept
+      '';
     };
 
     # wireless = {

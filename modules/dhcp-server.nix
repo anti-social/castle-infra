@@ -19,8 +19,8 @@ in {
 
     services.kea.dhcp4 = let
       lan = cfg.lan;
-      gw_host = builtins.head lan.hosts;
-      static_hosts = builtins.tail lan.hosts;
+      gw_host = lan.hosts.gw;
+      static_hosts = lib.attrsets.filterAttrs (k: v: k != "gw") lan.hosts;
     in {
       enable = true;
       settings = {
@@ -58,7 +58,7 @@ in {
                 pool = "${lan.mkAddr 100} - ${lan.mkAddr 200}";
               }
             ];
-            reservations = map ({ host, mac, ip, ... }: {
+            reservations = lib.attrsets.mapAttrsToList (host: { mac, ip, ... }: {
               hw-address = mac;
               ip-address = ip;
               hostname = host;

@@ -47,7 +47,7 @@ in {
     }) cfg.interfaces);
 
     services.coredns = let
-      renderStaticHost = { host, ip, aliases ? [], additionalDomain ? null, ... }:
+      renderStaticHost = host: {ip, aliases ? [], additionalDomain ? null, ... }:
         let
           record_values = [ip] ++ [(lan.mkFQDN host)]
                           ++ (map lan.mkFQDN aliases)
@@ -63,7 +63,7 @@ in {
           prometheus localhost:9153
 
           hosts /var/lib/hosts/hosts.blacklist {
-            ${builtins.concatStringsSep "\n    " (map renderStaticHost lan.hosts)}
+            ${builtins.concatStringsSep "\n    " (lib.attrsets.mapAttrsToList renderStaticHost lan.hosts)}
 
             reload 1h
             fallthrough

@@ -1,6 +1,6 @@
-args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
-
-{
+args @ { config, lib, pkgs, modulesPath, home-manager, ... }: let
+  lan = import ./lan.nix;
+in {
   deployment = {
     targetHost = "dell-laptop";
     allowLocalDeployment = true;
@@ -344,7 +344,7 @@ args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
 
       extraInputRules = ''
         # Allow usbip devices attaching
-        tcp dport 3240 ether saddr == 74:56:3c:43:9a:36 accept
+        tcp dport 3240 ether saddr == ${lan.pc.mac} accept
       '';
     };
   };
