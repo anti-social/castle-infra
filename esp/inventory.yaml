@@ -7,12 +7,12 @@ energy:
 thermostat:
   hosts:
     192.168.2.145
-gate_tx:
+gate-tx:
   hosts:
-    192.168.2.175:
-irrigation_controller:
+    192.168.2.136:
+irrigation-controller:
   hosts:
-    192.168.2.176:
+    192.168.2.106:
 backdoor:
   hosts:
     192.168.2.181:

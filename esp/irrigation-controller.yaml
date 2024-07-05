@@ -14,6 +14,24 @@
         BASE: 1
     - command: Module
       value: 0
+    - command: DeviceName
+      value: Irrigation Controller
+    - command: FriendlyName1
+      value: Switch 1
+    - command: FriendlyName2
+      value: Switch 2
+    - command: FriendlyName3
+      value: Switch 3
+    - command: FriendlyName4
+      value: Switch 4
+    - command: FriendlyName5
+      value: Switch 5
+    - command: FriendlyName6
+      value: Switch 6
+    - command: FriendlyName7
+      value: Switch 7
+    - command: FriendlyName8
+      value: Switch 8
     - command: TelePeriod
       value: 30
     - command: PowerOnState
