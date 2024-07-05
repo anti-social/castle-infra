@@ -344,7 +344,7 @@ in {
 
       extraInputRules = ''
         # Allow usbip devices attaching
-        tcp dport 3240 ether saddr == ${lan.pc.mac} accept
+        tcp dport 3240 ether saddr == ${lan.hosts.pc.mac} accept
       '';
     };
   };
