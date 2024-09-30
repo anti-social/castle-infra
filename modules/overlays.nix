@@ -63,10 +63,10 @@
 
         signal-desktop = super.signal-desktop.overrideAttrs (old:
           rec {
-            version = "7.14.0";
+            version = "7.26.0";
             src = pkgs.fetchurl {
               url = "https://updates.signal.org/desktop/apt/pool/s/signal-desktop/signal-desktop_${version}_amd64.deb";
-              hash = "sha256-nRvGpAKRIPgXStrVu4qSMoW01SACV/wW/c05lLncCW8=";
+              hash = "sha256-FO9tkSW43qx3zzc+qUpCllsHxIKInE3gu1hMgXK7sxQ=";
             };
           }
         );
