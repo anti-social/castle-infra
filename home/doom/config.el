@@ -80,11 +80,20 @@
 (setq lsp-clients-kotlin-server-executable
       "/home/alexk/projects/kotlin-language-server/server/build/install/server/bin/kotlin-language-server")
 
+;; Render column indicator
+(global-display-fill-column-indicator-mode 1)
+(add-hook 'vterm-mode-hook (lambda () (display-fill-column-indicator-mode -1)))
+
 ;; Camel case words
 (global-subword-mode 1)
 
 ;; so-long-minor-mode for compilation buffers
-(add-hook 'compilation-mode 'so-long-minor-mode)
+;;(add-hook 'compilation-mode 'so-long-minor-mode)
+
+(+global-word-wrap-mode +1)
+
+;; Use // to comment code block
+(add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
 
 ;; Window management
 ;; (setq display-buffer-base-action
