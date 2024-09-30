@@ -398,10 +398,14 @@ in {
     dev = [
       ansible
       async-profiler
+      bear  # generates compile_commands.json for C/C++ projects: bear -- make
       buildah
+      ccls
+      clang-tools
       clinfo
       cmake
       debootstrap
+      delta
       diesel-cli
       dive
       docker-compose
@@ -417,6 +421,7 @@ in {
       (pkgs.callPackage lets {})
       libtool  # to compile emacs libvterm module
       libxcrypt
+      llvmPackages.libclang
       multimarkdown
       ninja
       nodejs
@@ -426,11 +431,13 @@ in {
       pkg-config
       podman-compose
       protobuf
+      pyright
       python311Full
       python311Packages.pip-tools
       rustup
       (pkgs.callPackage rye {})
       shellcheck
+      stm32flash
       wasmtime
       zlib
     ];
