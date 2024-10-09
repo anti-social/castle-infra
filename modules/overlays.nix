@@ -81,6 +81,17 @@
           }
         );
 
+        ghidra = super.ghidra.overrideAttrs (
+          old: rec {
+            version = "11.1.1";
+            versiondate = "20240614";
+            rc = pkgs.fetchzip {
+              url = "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_${version}_build/ghidra_${version}_PUBLIC_${versiondate}.zip";
+              hash = "sha256-VwbAqpq6fpPGE+5q+idOxpBAqwXR8oKwHJkJFm1J6ok=";
+            };
+          }
+        );
+
         turbovnc = super.turbovnc.overrideAttrs (old:
           rec {
             version = "3.1.1";
