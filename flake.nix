@@ -14,7 +14,7 @@
       # Use system packages list where available
       inputs.nixpkgs.follows = "nixpkgs-dell-laptop";
     };
-    nixpkgs-minipc.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-minipc.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-nanopc.url = "github:NixOS/nixpkgs/nixos-23.11";
   };
 

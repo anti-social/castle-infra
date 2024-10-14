@@ -63,10 +63,10 @@ in {
     keyMap = "us";
   };
 
-  boot.kernelParams = [ "systemd.debug-shell=1" ];
-  systemd.additionalUpstreamSystemUnits = [
-    "debug-shell.service"
-  ];
+  #boot.kernelParams = [ "systemd.debug-shell=1" ];
+  # systemd.additionalUpstreamSystemUnits = [
+  #   "debug-shell.service"
+  # ];
   #systemd.services.debug-shell.enable = true;
 
   # TODO: find out why it does not work
@@ -142,17 +142,17 @@ in {
   };
 
   services.xserver.enable = true;
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.displayManager.defaultSession = "plasmawayland";
   services.xserver.desktopManager.plasma5.enable = true;
-  
+  services.displayManager.sddm.enable = true;
+  services.displayManager.defaultSession = "plasmawayland";
+
   nixpkgs.config.allowUnfree = true;
 
   programs.zsh = {
     enable = true;
   };
 
-  nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
+  # nixpkgs.overlays = (import ./overlays.nix) { pkgs = pkgs; };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
