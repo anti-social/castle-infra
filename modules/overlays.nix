@@ -4,6 +4,13 @@
   config = {
     nixpkgs.overlays = [
       (self: super: {
+        nwjs = super.nwjs.overrideAttrs {
+          version = "0.84.0";
+          src = super.fetchurl {
+            url = "https://dl.nwjs.io/v0.84.0/nwjs-v0.84.0-linux-x64.tar.gz";
+            hash = "sha256-VIygMzCPTKzLr47bG1DYy/zj0OxsjGcms0G1BkI/TEI=";
+          };
+        };
         betaflight-configurator = super.betaflight-configurator.overrideAttrs (old:
           rec {
             version = "10.10.0";
