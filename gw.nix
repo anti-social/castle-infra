@@ -108,7 +108,6 @@ in {
       ./modules/node-exporter.nix
       ./modules/vmagent.nix
       ./modules/smart-home.nix
-      ./modules/ups.nix
       ./modules/unifi-controller.nix
       cockpitModule
       webModule
@@ -486,10 +485,6 @@ in {
 
   modules.node-exporter = {
     hostname = lan.mkFQDN(hostname);
-  };
-
-  modules.ups = {
-    listenAddrs = [ "127.0.0.1" local_addr ];
   };
 
   modules.unifi-controller = {
