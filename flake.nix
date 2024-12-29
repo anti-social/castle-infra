@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
-    nixpkgs-gw.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-gw.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-23.11";
     home-manager-pc = {
       url = "github:nix-community/home-manager/release-23.11";
