@@ -52,6 +52,25 @@
         defaults.email = "kovalidis@gmail.com";
       };
 
+      services.nginx.virtualHosts."olx.castle.mk" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          return = ''
+            200 '
+            <body style="display: table; width: 100%; height: 100%; margin: 0; padding: 0;">
+              <h1 style="display: table-cell; text-align: center; vertical-align: middle">
+                <i>Пішов на хуй, довбойоб!</i>
+              </h1>
+            </body>'
+          '';
+          extraConfig = ''
+            default_type text/html;
+            charset utf-8;
+          '';
+        };
+      };
+
       services.nginx.virtualHosts."photos.castle.mk" = {
         forceSSL = true;
         enableACME = true;
