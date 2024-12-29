@@ -176,16 +176,72 @@ in {
   #     SYMLINK+="zigbee-bridge", MODE="0666"
   # '';
 
+  systemd.network = {
+    netdevs = {
+      "20-br0" = {
+        netdevConfig = {
+          Kind = "bridge";
+          Name = "br0";
+        };
+        # bridgeConfig = {};
+      };
+    };
+
+    networks = {
+      "30-enp3s0" = {
+        matchConfig.Name = "enp3s0";
+        networkConfig.Bridge = "br0";
+        linkConfig.RequiredForOnline = "enslaved";
+      };
+      "30-enp4s0" = {
+        matchConfig.Name = "enp4s0";
+        networkConfig.Bridge = "br0";
+        linkConfig.RequiredForOnline = "enslaved";
+      };
+      "30-enp5s0" = {
+        matchConfig.Name = "enp5s0";
+        networkConfig.Bridge = "br0";
+        linkConfig.RequiredForOnline = "enslaved";
+      };
+      "30-enp6s0" = {
+        matchConfig.Name = "enp6s0";
+        networkConfig.Bridge = "br0";
+        linkConfig.RequiredForOnline = "enslaved";
+      };
+      "30-enp7s0" = {
+        matchConfig.Name = "enp7s0";
+        networkConfig.Bridge = "br0";
+        linkConfig.RequiredForOnline = "enslaved";
+      };
+
+      "40-br0" = {
+        matchConfig.Name = "br0";
+        bridgeConfig = {};
+        linkConfig.RequiredForOnline = "carrier";
+        address = [
+          local_addr
+        ];
+      };
+    };
+  };
+
   networking = {
     hostName = "gw";
     useNetworkd = true;
     useDHCP = false;
 
-    bridges = {
-      ${lan_if} = {
-        interfaces = lan_br_ifs;
-      };
-    };
+    # bridges = {
+    #   ${lan_if} = {
+    #     interfaces = lan_br_ifs;
+    #   };
+    # };
+
+    # vlans = {
+    #   ${guest_if} = {
+    #     id = 3;
+    #     interface = "br0";
+    #   };
+    # };
 
     interfaces = {
       ${wan_if} = {
@@ -193,14 +249,22 @@ in {
         macAddress = "40:21:08:80:03:da";
 
       };
-      ${lan_if} = {
-        ipv4.addresses = [
-          {
-            address = local_addr;
-            prefixLength = lan.prefix_length;
-          }
-        ];
-      };
+      # ${lan_if} = {
+      #   ipv4.addresses = [
+      #     {
+      #       address = local_addr;
+      #       prefixLength = lan.prefix_length;
+      #     }
+      #   ];
+      # };
+      # ${guest_if} = {
+      #   ipv4.addresses = [
+      #     {
+      #       address = guest_addr;
+      #       prefixLength = guest_network_length;
+      #     }
+      #   ];
+      # };
     };
 
     nameservers = [ "127.0.0.1" ];
