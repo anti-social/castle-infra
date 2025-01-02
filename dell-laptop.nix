@@ -342,6 +342,9 @@ in {
     firewall = {
       checkReversePath = false;
 
+      allowedUDPPorts = [
+        24892
+      ];
       extraInputRules = ''
         # Allow usbip devices attaching
         tcp dport 3240 ether saddr == ${lan.hosts.pc.mac} accept
