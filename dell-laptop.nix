@@ -261,6 +261,7 @@ in {
     # vscode
     vscodium
     vulkan-tools
+    uv
     wakeonlan
     wget
     # wine
