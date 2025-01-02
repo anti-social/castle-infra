@@ -181,6 +181,7 @@ in {
   in build-essentials ++ [
     ansible
     appimage-run
+    bambu-studio
     # bandwich
     bat
     betaflight-configurator
