@@ -144,18 +144,15 @@ in {
     pkgs.hplipWithPlugin
   ];
 
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-  # security.rtkit.enable = true;
-  # services.pipewire = {
-  #   enable = true;
-  #   alsa.enable = true;
-  #   alsa.support32Bit = true;
-  #   pulse.enable = true;
-  #   # If you want to use JACK applications, uncomment this
-  #   #jack.enable = true;
-  # };
+  # Sound configuration
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+  };
 
   # Enable bluetooth.
   hardware.bluetooth.enable = true;
@@ -211,7 +208,6 @@ in {
     # graalvm-ce
     graphviz
     grex
-    ht-rust
     htop
     inav-configurator
     inetutils
@@ -267,6 +263,7 @@ in {
     # wine
     wireguard-tools
     wireshark
+    xh
     xorg.xdpyinfo
     xorg.xkill
     zoom-us
@@ -286,7 +283,7 @@ in {
       dejavu_fonts
       liberation_ttf
       noto-fonts
-      noto-fonts-cjk
+      noto-fonts-cjk-sans
       noto-fonts-emoji
       ubuntu_font_family
     ];
