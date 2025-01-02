@@ -120,7 +120,7 @@ in {
 
 
   # Enable the Plasma 5 Desktop Environment.
-  services.xserver.displayManager = {
+  services.displayManager = {
     sddm.enable = true;
     autoLogin = {
       enable = true;
