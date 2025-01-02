@@ -327,6 +327,7 @@ in {
     #   '';
     # };
 
+    nftables.enable = true;
     firewall = {
       enable = true;
       interfaces = {
@@ -335,9 +336,11 @@ in {
           allowedUDPPorts = [ vpn_listen_port ];
         };
       };
-      extraCommands = ''
-        ip46tables -A FORWARD -i guest -o br0 -j REJECT
+      filterForward = true;
+      extraForwardRules = ''
+        iifname "${vpn_if}" oifname "${lan_if}" accept
       '';
+
       # extraCommands = let
       #   inetForwardChain = "inet-forward";
       #   localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
