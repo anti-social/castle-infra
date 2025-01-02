@@ -4,7 +4,11 @@
   lan_if = "br0";
   lan_br_ifs = [ "enp3s0" "enp4s0" "enp5s0" "enp6s0" "enp7s0" ];
 
-  lan_zone = [ lan_if ];
+  guest_if = "guest";
+  guest_addr = "192.168.3.1";
+  guest_network_length = 24;
+
+  lan_zone = [ lan_if guest_if ];
   wan_zone = [ wan_if ];
 
   lan = import ./lan.nix;
@@ -95,6 +99,8 @@
           proxyPass = "http://pc.castle:80/drive/";
         };
       };
+
+      systemd.services.nginx.after = [ "coredns.service" ];
     };
   };
 in {
@@ -169,7 +175,7 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
 
   # services.udev.extraRules = ''
-  #   SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="12d1", ATTR{idProduct}=="1f01", \
+  #   1SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="12d1", ATTR{idProduct}=="1f01", \
   #     RUN+="${pkgs.usb-modeswitch}/bin/usb_modeswitch --huawei-new-mode -v 12d1 -p 1f01 -V 12d1 -P 14db"
 
   #   SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="10c4", ATTR{idProduct}=="ea60", \
@@ -183,7 +189,20 @@ in {
           Kind = "bridge";
           Name = "br0";
         };
-        # bridgeConfig = {};
+        bridgeConfig = {
+        #   DefaultPVID = "1";
+        #   VLANFiltering = true;
+        };
+      };
+
+      "20-${guest_if}" = {
+        netdevConfig = {
+          Kind = "vlan";
+          Name = guest_if;
+        };
+        vlanConfig = {
+          Id = 3;
+        };
       };
     };
 
@@ -191,39 +210,72 @@ in {
       "30-enp3s0" = {
         matchConfig.Name = "enp3s0";
         networkConfig.Bridge = "br0";
-        linkConfig.RequiredForOnline = "enslaved";
+        # linkConfig.RequiredForOnline = "enslaved";
       };
       "30-enp4s0" = {
         matchConfig.Name = "enp4s0";
         networkConfig.Bridge = "br0";
-        linkConfig.RequiredForOnline = "enslaved";
+        # linkConfig.RequiredForOnline = "enslaved";
       };
       "30-enp5s0" = {
         matchConfig.Name = "enp5s0";
         networkConfig.Bridge = "br0";
-        linkConfig.RequiredForOnline = "enslaved";
+        # linkConfig.RequiredForOnline = "enslaved";
       };
       "30-enp6s0" = {
         matchConfig.Name = "enp6s0";
         networkConfig.Bridge = "br0";
-        linkConfig.RequiredForOnline = "enslaved";
+        # linkConfig.RequiredForOnline = "enslaved";
       };
       "30-enp7s0" = {
         matchConfig.Name = "enp7s0";
         networkConfig.Bridge = "br0";
-        linkConfig.RequiredForOnline = "enslaved";
+        # linkConfig.RequiredForOnline = "enslaved";
       };
 
       "40-br0" = {
         matchConfig.Name = "br0";
-        bridgeConfig = {};
-        linkConfig.RequiredForOnline = "carrier";
+        linkConfig = {
+          # ActivationPolicy = "always-up";
+          RequiredForOnline = "degraded";
+        };
+        networkConfig = {
+          DHCP = "no";
+          IPv6PrivacyExtensions = "kernel";
+        };
         address = [
-          local_addr
+          "${local_addr}/${toString lan.prefix_length}"
+        ];
+        vlan = [ guest_if ];
+      };
+
+      "40-${guest_if}" = {
+        matchConfig.Name = guest_if;
+        address = [
+          "${guest_addr}/${toString guest_network_length}"
         ];
       };
     };
   };
+
+  # environment.etc = {
+  #   "systemd/network/30-br0.network" = {
+  #     text = ''
+  #       [Match]
+  #       Name=${lan_if}
+
+  #       [Link]
+  #       ActivationPolicy=always-up
+  #       RequiredForOnline=no
+
+  #       [Network]
+  #       DHCP=no
+  #       IPv6PrivacyExtensions=kernel
+  #       Address=${local_addr}/${toString lan.prefix_length}
+  # #       ConfigureWithoutCarrier=yes
+  #     '';
+  #   };
+  # };
 
   networking = {
     hostName = "gw";
@@ -283,6 +335,9 @@ in {
           allowedUDPPorts = [ vpn_listen_port ];
         };
       };
+      extraCommands = ''
+        ip46tables -A FORWARD -i guest -o br0 -j REJECT
+      '';
       # extraCommands = let
       #   inetForwardChain = "inet-forward";
       #   localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
@@ -307,10 +362,10 @@ in {
   };
 
   # Ignore lan interfaces to be online
-  systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = [
-    "" # clear old command
-    "${config.systemd.package}/lib/systemd/systemd-networkd-wait-online --timeout 30 --ignore enp3s0 --ignore enp4s0 --ignore enp5s0 --ignore enp6s0 --ignore enp7s0"
-  ];
+  # systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = [
+  #   "" # clear old command
+  #   "${config.systemd.package}/lib/systemd/systemd-networkd-wait-online --timeout 30 --ignore enp3s0 --ignore enp4s0 --ignore enp5s0 --ignore enp6s0 --ignore enp7s0"
+  # ];
 
   services.fail2ban = {
     enable = true;
@@ -348,25 +403,6 @@ in {
     locations."/" = {
       proxyPass = "http://localhost:10080";
       proxyWebsockets = true;
-    };
-  };
-
-  environment.etc = {
-    "systemd/network/30-br0.network" = {
-      text = ''
-        [Match]
-        Name=${lan_if}
-
-        [Link]
-        ActivationPolicy=always-up
-        RequiredForOnline=no
-
-        [Network]
-        DHCP=no
-        IPv6PrivacyExtensions=kernel
-        Address=${local_addr}/${toString lan.prefix_length}
-  #       ConfigureWithoutCarrier=yes
-      '';
     };
   };
 

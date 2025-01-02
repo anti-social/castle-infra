@@ -79,6 +79,8 @@ in {
       '';
     };
 
+    systemd.services.coredns.after = [ "network-online.target" ];
+
     # services.vmagent.scrapeConfigs.localhostCoredns = ''
     #   - job_name: coredns
     #     scrape_interval: 15s
