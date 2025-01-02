@@ -8,9 +8,9 @@
       # Use system packages list where available
       inputs.nixpkgs.follows = "nixpkgs-pc";
     };
-    nixpkgs-dell-laptop.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-dell-laptop.url = "github:NixOS/nixpkgs/nixos-24.05";
     home-manager-dell-laptop = {
-      url = "github:nix-community/home-manager/release-23.11";
+      url = "github:nix-community/home-manager/release-24.05";
       # Use system packages list where available
       inputs.nixpkgs.follows = "nixpkgs-dell-laptop";
     };
