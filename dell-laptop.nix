@@ -346,8 +346,10 @@ in {
         24892
       ];
       extraInputRules = ''
-        # Allow usbip devices attaching
+        # Usbip devices attaching
         tcp dport 3240 ether saddr == ${lan.hosts.pc.mac} accept
+        # Bambu-studio
+        udp dport 2021 ip saddr == 192.168.2.0/24 accept
       '';
     };
   };
