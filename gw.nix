@@ -1,12 +1,15 @@
 { config, lib, pkgs, ... }: let
   wan_if = "enp2s0";
+  wan_mac = "40:21:08:80:03:da";
 
   lan_if = "br0";
   lan_br_ifs = [ "enp3s0" "enp4s0" "enp5s0" "enp6s0" "enp7s0" ];
 
   guest_if = "guest";
-  guest_addr = "192.168.3.1";
+  guest_addr_prefix = "192.168.3";
+  guest_addr = "${guest_addr_prefix}.1";
   guest_network_length = 24;
+  guest_network = "${guest_addr_prefix}.0/${toString guest_network_length}";
 
   lan_zone = [ lan_if guest_if ];
   wan_zone = [ wan_if ];
@@ -206,35 +209,25 @@ in {
       };
     };
 
-    networks = {
-      "30-enp3s0" = {
-        matchConfig.Name = "enp3s0";
-        networkConfig.Bridge = "br0";
-        # linkConfig.RequiredForOnline = "enslaved";
-      };
-      "30-enp4s0" = {
-        matchConfig.Name = "enp4s0";
-        networkConfig.Bridge = "br0";
-        # linkConfig.RequiredForOnline = "enslaved";
-      };
-      "30-enp5s0" = {
-        matchConfig.Name = "enp5s0";
-        networkConfig.Bridge = "br0";
-        # linkConfig.RequiredForOnline = "enslaved";
-      };
-      "30-enp6s0" = {
-        matchConfig.Name = "enp6s0";
-        networkConfig.Bridge = "br0";
-        # linkConfig.RequiredForOnline = "enslaved";
-      };
-      "30-enp7s0" = {
-        matchConfig.Name = "enp7s0";
-        networkConfig.Bridge = "br0";
-        # linkConfig.RequiredForOnline = "enslaved";
+    networks = let
+      bridge_lan_networks = builtins.listToAttrs (map (ifname:
+        {
+          name = "30-${ifname}";
+          value = {
+            matchConfig.Name = ifname;
+            networkConfig.Bridge = lan_if;
+          };
+        }
+      ) lan_br_ifs);
+    in bridge_lan_networks // {
+      "30-${wan_if}" = {
+        matchConfig.Name = wan_if;
+        linkConfig.MACAddress = wan_mac;
+        networkConfig.DHCP = "yes";
       };
 
-      "40-br0" = {
-        matchConfig.Name = "br0";
+      "40-${lan_if}" = {
+        matchConfig.Name = lan_if;
         linkConfig = {
           # ActivationPolicy = "always-up";
           RequiredForOnline = "degraded";
@@ -258,66 +251,10 @@ in {
     };
   };
 
-  # environment.etc = {
-  #   "systemd/network/30-br0.network" = {
-  #     text = ''
-  #       [Match]
-  #       Name=${lan_if}
-
-  #       [Link]
-  #       ActivationPolicy=always-up
-  #       RequiredForOnline=no
-
-  #       [Network]
-  #       DHCP=no
-  #       IPv6PrivacyExtensions=kernel
-  #       Address=${local_addr}/${toString lan.prefix_length}
-  # #       ConfigureWithoutCarrier=yes
-  #     '';
-  #   };
-  # };
-
   networking = {
     hostName = "gw";
     useNetworkd = true;
     useDHCP = false;
-
-    # bridges = {
-    #   ${lan_if} = {
-    #     interfaces = lan_br_ifs;
-    #   };
-    # };
-
-    # vlans = {
-    #   ${guest_if} = {
-    #     id = 3;
-    #     interface = "br0";
-    #   };
-    # };
-
-    interfaces = {
-      ${wan_if} = {
-        useDHCP = true;
-        macAddress = "40:21:08:80:03:da";
-
-      };
-      # ${lan_if} = {
-      #   ipv4.addresses = [
-      #     {
-      #       address = local_addr;
-      #       prefixLength = lan.prefix_length;
-      #     }
-      #   ];
-      # };
-      # ${guest_if} = {
-      #   ipv4.addresses = [
-      #     {
-      #       address = guest_addr;
-      #       prefixLength = guest_network_length;
-      #     }
-      #   ];
-      # };
-    };
 
     nameservers = [ "127.0.0.1" ];
     # resolvconf = {
@@ -327,7 +264,25 @@ in {
     #   '';
     # };
 
-    nftables.enable = true;
+    nftables = {
+      enable = true;
+      tables = {
+        guest-fw = {
+          family = "inet";
+          content = ''
+            chain input {
+              type filter hook input priority filter + 10;
+
+              iifname "${guest_if}" ip daddr 192.168.2.1 tcp dport 22 accept
+
+              iifname "${guest_if}" ip daddr 192.168.0.0/16 drop
+              iifname "${guest_if}" ip daddr 172.16.0.0/12 drop
+              iifname "${guest_if}" ip daddr 10.0.0.0/8 drop
+            }
+          '';
+        };
+      };
+    };
     firewall = {
       enable = true;
       interfaces = {
@@ -374,6 +329,7 @@ in {
     enable = true;
     ignoreIP = [
       lan.network
+      guest_network
       vpn_network
     ];
     bantime-increment = {
@@ -448,8 +404,14 @@ in {
   };
 
   services.dhcp-server = {
-    interface = lan_if;
+    interfaces = [ lan_if guest_if ];
     lan = lan;
+    guest = {
+      network = guest_network;
+      broadcast_addr = "${guest_addr_prefix}.255";
+      gw = guest_addr;
+      range = "${guest_addr_prefix}.100 - ${guest_addr_prefix}.200";
+    };
   };
 
   services.dns-proxy = {

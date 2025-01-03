@@ -6,26 +6,32 @@ let
   cfg = config.services.dhcp-server;
 in {
   options.services.dhcp-server = {
-    interface = mkOption {
-      type = types.str;
+    interfaces = mkOption {
+      type = types.listOf types.str;
     };
     lan = mkOption {
+      type = types.attrsOf types.anything;
+    };
+    guest = mkOption {
       type = types.attrsOf types.anything;
     };
   };
 
   config = {
-    networking.firewall.interfaces.${cfg.interface}.allowedUDPPorts = [ 67 68 ];
+    networking.firewall.interfaces = lib.mkMerge (map (iface: {
+      ${iface}.allowedUDPPorts = [ 67 68 ];
+    }) cfg.interfaces);
 
     services.kea.dhcp4 = let
       lan = cfg.lan;
       gw_host = lan.hosts.gw;
       static_hosts = lib.attrsets.filterAttrs (k: v: k != "gw") lan.hosts;
+      guest = cfg.guest;
     in {
       enable = true;
       settings = {
         interfaces-config = {
-          interfaces = [ cfg.interface ];
+          interfaces = cfg.interfaces;
         };
         lease-database = {
           name = "/var/lib/kea/dhcp4.leases";
@@ -34,25 +40,47 @@ in {
         };
         subnet4 = [
           {
+            subnet = guest.network;
+            option-data = [
+              {
+                name = "broadcast-address";
+                data = guest.broadcast_addr;
+              }
+              {
+                name = "routers";
+                data = guest.gw;
+              }
+              {
+                name = "domain-name-servers";
+                data = "1.1.1.1";
+              }
+            ];
+            pools = [
+              {
+                pool = guest.range;
+              }
+            ];
+          }
+          {
             subnet = lan.network;
-                option-data = [
-                  {
-                    name = "broadcast-address";
-                    data = lan.broadcast_addr;
-                  }
-                  {
-                    name = "routers";
-                    data = gw_host.ip;
-                  }
-                  {
-                    name = "domain-name-servers";
-                    data = gw_host.ip;
-                  }
-                  {
-                    name = "domain-name";
-                    data = lan.domain;
-                  }
-                ];
+            option-data = [
+              {
+                name = "broadcast-address";
+                data = lan.broadcast_addr;
+              }
+              {
+                name = "routers";
+                data = gw_host.ip;
+              }
+              {
+                name = "domain-name-servers";
+                data = gw_host.ip;
+              }
+              {
+                name = "domain-name";
+                data = lan.domain;
+              }
+            ];
             pools = [
               {
                 pool = "${lan.mkAddr 100} - ${lan.mkAddr 200}";
