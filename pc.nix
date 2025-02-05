@@ -60,7 +60,6 @@ in {
   ];
   boot.extraModulePackages = [ ];
   boot.supportedFilesystems = [ "zfs" ];
-  boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
   boot.extraModprobeConfig = ''
     options zfs zfs_arc_max=2147483648
   '';
@@ -114,11 +113,9 @@ in {
           PrivateKeyFile = "${config.secretsDestinations.files.wg-bagspace-privkey}";
         };
         wireguardPeers = [{
-          wireguardPeerConfig = {
             PublicKey = "J5OIl0Q3QiWuxfEDYIrJ45rLqlxIdJLMKg5V5XEblgA=";
             AllowedIPs = [ "192.168.51.1" ];
             Endpoint = "api.bagspace.ua:51820";
-          };
         }];
       };
     };
@@ -231,12 +228,11 @@ in {
   #   useXkbConfig = true; # use xkbOptions in tty.
   # };
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
     extraPackages = with pkgs; [
-      rocm-opencl-icd
-      rocm-opencl-runtime
+      rocmPackages.clr.icd
+      # rocm-opencl-runtime
     ];
   };
 
@@ -265,6 +261,7 @@ in {
   };
 
   security.polkit.enable = true;
+  security.rtkit.enable = true;
 
   # Configure keymap in X11
   # services.xserver.layout = "us";
@@ -274,8 +271,11 @@ in {
   # services.printing.enable = true;
 
   # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+  };
 
   hardware.bluetooth.enable = true;
 
@@ -330,48 +330,8 @@ in {
           license = licenses.mit;
           maintainers = with maintainers; [ maintainers.anti-social ];
         };
-      });
-    rye = ({ lib, fetchFromGithub, rustPlatform, pkg-config, openssl, libiconv, git }:
-      rustPlatform.buildRustPackage rec {
-        pname = "rye";
-        version = "0.15.2";
-
-        src = fetchFromGitHub {
-          owner = "mitsuhiko";
-          repo = pname;
-          rev = version;
-          sha256 = "q7/obBE16aKb8BHf5ycXSgXTMLWAFwxSnJ3qV35TdL8=";
-        };
-
-        cargoLock = {
-          lockFile = ./rye/Cargo.lock;
-          outputHashes = {
-            "dialoguer-0.10.4" = "sha256-WDqUKOu7Y0HElpPxf2T8EpzAY3mY8sSn9lf0V0jyAFc=";
-            "monotrail-utils-0.0.1" = "sha256-4x5jnXczXnToU0QXpFalpG5A+7jeyaEBt8vBwxbFCKQ=";
-          };
-        };
-
-        buildInputs = [
-          openssl
-        ];
-        nativeBuildInputs = [
-          pkg-config
-          git
-        ];
-
-        env = {
-          OPENSSL_NO_VENDOR = 1;
-        };
-
-        doCheck = false;
-
-        meta = with lib; {
-          description = "Yet another python packages manager";
-          homepage = "https://github.com/mitsuhiko/rye";
-          license = licenses.unlicense;
-          maintainers = [ maintainers.tailhook ];
-        };
-      });
+      }
+    );
     i3wm = [
       dmenu
       i3
@@ -391,8 +351,8 @@ in {
       chromium
       emacs
       firefox
-      kdeconnect
       kicad
+      plasma5Packages.kdeconnect-kde
       # qbittorrent
       stm32cubemx
       telegram-desktop
@@ -441,7 +401,6 @@ in {
       python312Full
       python312Packages.pip-tools
       rustup
-      (pkgs.callPackage rye {})
       shellcheck
       stm32flash
       wasmtime
@@ -450,6 +409,7 @@ in {
     tools = [
       awscli2
       bat
+      clinfo
       colmena
       curl
       dmidecode
@@ -519,7 +479,6 @@ in {
       liberation_ttf
       nerdfonts
       noto-fonts
-      noto-fonts-cjk
       noto-fonts-emoji
       openmoji-color
       proggyfonts
@@ -584,37 +543,26 @@ in {
   services.samba = {
     enable = true;
     openFirewall = false;
-    securityType = "user";
-    extraConfig = ''
-      workgroup = CASTLE
-      server string = PC
-      netbios name = pc
-      security = user
+    settings = {
+      global = {
+        "workgroup" = "CASTLE";
+        "server string" = "PC";
+        "netbios name" = "pc";
+        "security" = "user";
 
-      use sendfile = yes
+        "use sendfile" = "yes";
 
-      # max protocol = smb2
-      server min protocol = SMB2_10
-      client min protocol = SMB2
-      client max protocol = SMB3
+        # "max protocol" = "smb2";
+        "server min protocol" = "SMB2_10";
+        "client min protocol" = "SMB2";
+        "client max protocol" = "SMB3";
 
-      # note: localhost is the ipv6 localhost ::1
-      hosts allow = 192.168.2. 192.168.102. 127.0.0.1 localhost
-      hosts deny = 0.0.0.0/0
-      guest account = nobody
-      map to guest = bad user
-    '';
-    shares = {
-      # images = {
-      #   path = "/media/data/libvirt";
-      #   browseable = "yes";
-      #   "read only" = "yes";
-      #   "guest ok" = "yes";
-      #   "create mask" = "0644";
-      #   "directory mask" = "0755";
-      #   "force user" = "nobody";
-      #   "force group" = "nogroup";
-      # };
+        # note: localhost is the ipv6 localhost ::1
+        "hosts allow" = "192.168.2. 192.168.102. 127.0.0.1 localhost";
+        "hosts deny" = "0.0.0.0/0";
+        "guest account" = "nobody";
+        "map to guest" = "bad user";
+      };
       data = {
         path = "/media/data";
         comment = "Media share";
