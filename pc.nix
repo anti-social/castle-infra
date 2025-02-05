@@ -15,7 +15,7 @@ in {
       ./modules/common.nix
       ./modules/udev.nix
       ./modules/ld-linux.nix
-      ./modules/overlays.nix
+      # ./modules/overlays.nix
     ];
 
   fileSystems."/" =
@@ -168,11 +168,16 @@ in {
 
     useDHCP = false;
 
+    extraHosts = ''
+      127.0.0.1 hdfs-namenode-ceph-service
+    '';
+
     firewall = {
       enable = true;
       connectionTrackingModules = [ "ftp" ];
       allowedUDPPorts = [
         53
+        24892  # fly-by-wire video stream
       ];
       interfaces = {
         ${lanIf} = {
@@ -243,19 +248,20 @@ in {
     #   DisplaySize 1920 1080
     # '';
 
-    displayManager = {
-      sddm.enable = true;
-      # gdm = {
-      #   enable = true;
-      #   wayland = true;
-      # };
-      autoLogin = {
-        enable = true;
-        user = "game";
-      };
-      # defaultSession = "plasmawayland";
-    };
     desktopManager.plasma5.enable = true;
+  };
+
+  services.displayManager = {
+    sddm.enable = true;
+    # gdm = {
+    #   enable = true;
+    #   wayland = true;
+    # };
+    autoLogin = {
+      enable = true;
+      user = "game";
+    };
+    # defaultSession = "plasmawayland";
   };
 
   security.polkit.enable = true;
@@ -387,7 +393,7 @@ in {
       firefox
       kdeconnect
       kicad
-      qbittorrent
+      # qbittorrent
       stm32cubemx
       telegram-desktop
       signal-desktop
@@ -432,8 +438,8 @@ in {
       podman-compose
       protobuf
       pyright
-      python311Full
-      python311Packages.pip-tools
+      python312Full
+      python312Packages.pip-tools
       rustup
       (pkgs.callPackage rye {})
       shellcheck
@@ -477,6 +483,13 @@ in {
       wget
     ];
   in apps ++ dev ++ i3wm ++ tools;
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-kde
+    ];
+  };
 
   programs.zsh.enable = true;
 
@@ -711,14 +724,14 @@ in {
       };
     };
 
-    docker.rootless = {
-      enable = true;
-      setSocketVariable = true;
-      package = pkgs.docker_24;
-      daemon.settings = {
-        dns = [ "192.168.10.17" "192.168.2.1" ];
-      };
-    };
+    # docker.rootless = {
+    #   enable = true;
+    #   setSocketVariable = true;
+    #   package = pkgs.docker_24;
+    #   daemon.settings = {
+    #     dns = [ "192.168.10.17" "192.168.2.1" ];
+    #   };
+    # };
 
     libvirtd = {
       enable = true;

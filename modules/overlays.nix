@@ -59,6 +59,51 @@ let
             '';
           }
         );
+
+        signal-desktop = super.signal-desktop.overrideAttrs (old:
+          rec {
+            version = "7.26.0";
+            src = pkgs.fetchurl {
+              url = "https://updates.signal.org/desktop/apt/pool/s/signal-desktop/signal-desktop_${version}_amd64.deb";
+              hash = "sha256-FO9tkSW43qx3zzc+qUpCllsHxIKInE3gu1hMgXK7sxQ=";
+            };
+          }
+        );
+
+        ktlint = super.ktlint.overrideAttrs (
+          old: rec {
+            version = "1.0.0";
+            src = pkgs.fetchurl {
+              url = "https://github.com/pinterest/ktlint/releases/download/${version}/ktlint";
+              sha256 = "Kz9vZ0qUTSW7jSg8NTmUe76GB0eTASkJpV3kt3H3S8w=";
+            };
+          }
+        );
+
+        ghidra = super.ghidra.overrideAttrs (
+          old: rec {
+            version = "11.1.1";
+            versiondate = "20240614";
+            rc = pkgs.fetchzip {
+              url = "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_${version}_build/ghidra_${version}_PUBLIC_${versiondate}.zip";
+              hash = "sha256-VwbAqpq6fpPGE+5q+idOxpBAqwXR8oKwHJkJFm1J6ok=";
+            };
+          }
+        );
+
+        turbovnc = super.turbovnc.overrideAttrs (old:
+          rec {
+            version = "3.1.1";
+            src = pkgs.fetchFromGitHub {
+              owner = "TurboVNC";
+              repo = "turbovnc";
+              rev = version;
+              sha256 = "sha256-7dft5Wp9LvRy3FM/cZ5F6qUIesu7mzd/Ww8P3xsSvyI=";
+            };
+
+            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkg-config ];
+          }
+        );
       })
     ];
     "24.11" = [];
