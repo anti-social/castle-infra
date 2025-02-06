@@ -41,6 +41,7 @@ in {
         subnet4 = [
           {
             subnet = guest.network;
+            id = 3;
             option-data = [
               {
                 name = "broadcast-address";
@@ -63,6 +64,7 @@ in {
           }
           {
             subnet = lan.network;
+            id = 2;
             option-data = [
               {
                 name = "broadcast-address";
