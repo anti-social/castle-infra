@@ -24,6 +24,8 @@
   vpn_addr_prefix = "192.168.102";
   vpn_network = "${vpn_addr_prefix}.0/24";
 
+  container_if = "podman0";
+
   iperf_ports = [ 5201 5202 ];
 
   cockpitModule = { config, ... }: {
@@ -285,6 +287,7 @@ in {
     };
     firewall = {
       enable = true;
+      trustedInterfaces = [ container_if ];
       interfaces = {
         ${lan_if}.allowedTCPPorts = iperf_ports;
         ${wan_if} = {
@@ -294,22 +297,8 @@ in {
       filterForward = true;
       extraForwardRules = ''
         iifname "${vpn_if}" oifname "${lan_if}" accept
+        iifname "${container_if}" accept
       '';
-
-      # extraCommands = let
-      #   inetForwardChain = "inet-forward";
-      #   localToUtcTime = time: "$(date -u -d @$(date '+%s' -d '${time}') '+%H:%M')";
-      #   limitedInetHosts = lib.attrsets.filterAttrs (n: v: builtins.hasAttr "inetActiveTime" v) lan.hosts;
-      #   limitInetHostRule = h: ''
-      #     ip46tables -A ${inetForwardChain} --match mac --mac-source ${h.mac} --match time --timestart ${localToUtcTime h.inetActiveTime.to} --timestop ${localToUtcTime h.inetActiveTime.from} -j REJECT
-      #   '';
-      # in ''
-      #   ip46tables -F ${inetForwardChain} 2>/dev/null || true
-      #   ip46tables -X ${inetForwardChain} 2>/dev/null || true
-      #   ip46tables -N ${inetForwardChain} 2>/dev/null || true
-      #   ip46tables -A FORWARD -j ${inetForwardChain}
-      # #   ${lib.concatStringsSep "\n" (map limitInetHostRule limitedInetHosts)}
-      # # '';
     };
 
     nat = {
