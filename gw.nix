@@ -330,6 +330,14 @@ in {
     ];
   };
 
+  services.rustdesk-server = {
+    enable = true;
+    openFirewall = true;
+    signal = {
+      relayHosts = [ "rustdesk.castle.mk" "192.168.2.1" ];
+    };
+  };
+
   services.ntfy-sh = {
     enable = true;
     settings = {
