@@ -90,7 +90,8 @@
 ;; so-long-minor-mode for compilation buffers
 ;;(add-hook 'compilation-mode 'so-long-minor-mode)
 
-(+global-word-wrap-mode +1)
+;; Too slow
+;;(+global-word-wrap-mode +1)
 
 ;; Use // to comment code block
 (add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
