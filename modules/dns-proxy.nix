@@ -37,6 +37,12 @@ in {
       default = {};
       description = "LAN configuration";
     };
+
+    guestBindAddr = mkOption {
+      type = types.str;
+      default = "";
+      description = "Address to listen on";
+    };
   };
 
   config = let
@@ -57,21 +63,47 @@ in {
     in {
       enable = true;
       config = ''
-        . {
-          bind 127.0.0.1 ${cfg.bindAddr}
-
-          prometheus localhost:9153
-
+        (static) {
           hosts /var/lib/hosts/hosts.blacklist {
             ${builtins.concatStringsSep "\n    " (lib.attrsets.mapAttrsToList renderStaticHost lan.hosts)}
 
             reload 1h
             fallthrough
           }
+        }
 
+        (blacklist) {
+          hosts /var/lib/hosts/hosts.blacklist {
+            reload 1h
+            fallthrough
+          }
+        }
+
+        (cloudflare) {
           forward . tls://1.1.1.2 tls://1.0.0.2 {
             tls_servername cloudflare-dns.com
           }
+        }
+
+        . {
+          bind 127.0.0.1 ${cfg.bindAddr}
+
+          prometheus localhost:9153
+
+          import static
+
+          import cloudflare
+
+          cache
+          errors
+        }
+
+        . {
+          bind ${cfg.guestBindAddr}
+
+          import blacklist
+
+          import cloudflare
 
           cache
           errors

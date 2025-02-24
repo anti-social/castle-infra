@@ -276,6 +276,7 @@ in {
               type filter hook input priority filter + 10;
 
               iifname "${guest_if}" ip daddr 192.168.2.1 tcp dport 22 accept
+              iifname "${guest_if}" ip daddr 192.168.3.1 udp dport 53 accept
 
               iifname "${guest_if}" ip daddr 192.168.0.0/16 drop
               iifname "${guest_if}" ip daddr 172.16.0.0/12 drop
@@ -412,9 +413,10 @@ in {
   };
 
   services.dns-proxy = {
-    interfaces = [ lan_if vpn_if ];
+    interfaces = [ lan_if guest_if vpn_if ];
     bindAddr = local_addr;
     lan = lan;
+    guestBindAddr = guest_addr;
   };
 
   # Set your time zone.

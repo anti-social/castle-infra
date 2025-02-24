@@ -53,7 +53,7 @@ in {
               }
               {
                 name = "domain-name-servers";
-                data = "1.1.1.1";
+                data = guest.gw;
               }
             ];
             pools = [
