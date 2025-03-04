@@ -290,7 +290,12 @@ in {
       enable = true;
       trustedInterfaces = [ container_if ];
       interfaces = {
-        ${lan_if}.allowedTCPPorts = iperf_ports;
+        ${lan_if} = {
+          allowedTCPPorts = iperf_ports;
+          allowedUDPPorts = [
+            69 # tfpt
+          ];
+        };
         ${wan_if} = {
           allowedUDPPorts = [ vpn_listen_port ];
         };
@@ -410,6 +415,12 @@ in {
       gw = guest_addr;
       range = "${guest_addr_prefix}.100 - ${guest_addr_prefix}.200";
     };
+  };
+
+  services.atftpd = {
+    enable = true;
+    extraOptions = [ "--bind-address=${local_addr}" ];
+    root = "/var/lib/tftpboot";
   };
 
   services.dns-proxy = {

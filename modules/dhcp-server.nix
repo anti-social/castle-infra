@@ -38,6 +38,22 @@ in {
           persist = true;
           type = "memfile";
         };
+        client-classes = [
+          {
+            name = "UEFI";
+            test = "option[93].hex == 0x0007 and not option[175].exists";
+            option-data = [
+              {
+                name = "tftp-server-name";
+                data = gw_host.ip;
+              }
+              {
+                name = "boot-file-name";
+                data = "netboot.xyz.efi";
+              }
+            ];
+          }
+        ];
         subnet4 = [
           {
             subnet = guest.network;
