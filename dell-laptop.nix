@@ -342,7 +342,7 @@ in {
       checkReversePath = false;
 
       allowedUDPPorts = [
-        24892
+        24892 24896 # Firefly video and osd
       ];
       extraInputRules = ''
         # Usbip devices attaching
