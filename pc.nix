@@ -15,7 +15,7 @@ in {
       ./modules/common.nix
       ./modules/udev.nix
       ./modules/ld-linux.nix
-      # ./modules/overlays.nix
+      ./modules/overlays.nix
     ];
 
   fileSystems."/" =
@@ -194,6 +194,7 @@ in {
           ];
           allowedUDPPorts = [
             137 138  # samba
+            24893 24894
           ];
           allowedUDPPortRanges = [
             { from = 1714; to = 1764; } # kdeconnect

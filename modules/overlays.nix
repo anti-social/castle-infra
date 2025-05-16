@@ -106,10 +106,23 @@ let
         );
       })
     ];
-    "24.11" = [];
+    "24.11" = [
+      (self: super: {
+        podman-compose = super.podman-compose.overrideAttrs rec {
+          version = "1.3.0";
+          src = pkgs.fetchFromGitHub {
+            repo = "podman-compose";
+            owner = "containers";
+            tag = "v${version}";
+            hash = "sha256-0k+vJwWYEXQ6zxkcvjxBv9cq8nIBS15F7ul5VwqYtys=";
+          };
+        };
+      })
+    ];
   };
 in {
   config = {
-    nixpkgs.overlays = overlays."${config.system.nixos.release}";
+    # nixpkgs.overlays = overlays."${config.system.nixos.release}";
+    nixpkgs.overlays = overlays."24.11";
   };
 }
