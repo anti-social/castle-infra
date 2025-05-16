@@ -445,6 +445,11 @@ in {
     ];
   in apps ++ dev ++ i3wm ++ tools;
 
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [];
+  };
+
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
