@@ -5,10 +5,11 @@
 
   lan1_if = "enp1s0";
   lan2_if = "enp2s0";
+  lan3_if = "enp0s21f0u2";
   wlan_if = "wlp3s0b1";
 
   lan_br_if = "br0";
-  lan_br_ifs = [ lan1_if lan2_if ];
+  lan_br_ifs = [ lan1_if lan2_if lan3_if ];
 
   lan_zone = [ lan_br_if wlan_if ];
 
@@ -23,13 +24,14 @@ in {
 
   deployment = {
     targetHost = "minipc.castle";
+    # targetHost ="192.168.2.4";
     targetUser = "root";
     allowLocalDeployment = true;
     # buildOnTarget = true;
   };
 
   nix = {
-    package = pkgs.nixFlakes;
+    # package = pkgs.nixVersions.stable;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -51,7 +53,7 @@ in {
     "net.ipv4.conf.all.forwarding" = true;
   };
 
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.enable = false;
 
   # Set your time zone.
   time.timeZone = "Europe/Kiev";
@@ -95,6 +97,9 @@ in {
         useDHCP = false;
       };
       ${lan2_if} = {
+        useDHCP = false;
+      };
+      ${lan3_if} = {
         useDHCP = false;
       };
       ${lan_br_if} = {
@@ -141,10 +146,12 @@ in {
     ];
   };
 
-  services.xserver.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-  services.displayManager.sddm.enable = true;
-  services.displayManager.defaultSession = "plasmawayland";
+  # services.xserver.enable = true;
+  services.desktopManager.plasma6.enable = true;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
 
   nixpkgs.config.allowUnfree = true;
 

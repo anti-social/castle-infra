@@ -12,7 +12,7 @@
   boot.initrd.kernelModules = [ ];
   # boot.kernelModules = [ "kvm-intel" "wl" ];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+  # boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
   boot.supportedFilesystems = [ "ntfs" ];
 

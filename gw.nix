@@ -406,6 +406,24 @@ in {
     beforeService = "wireguard-${vpn_if}.service";
   };
 
+  networking.wireguard.interfaces.firefly = {
+    ips = [ "10.248.0.1/16" ];
+    listenPort = 24801;
+    privateKeyFile = "/etc/wireguard/firefly.privkey";
+
+    # peers = [
+    #   {
+    #     publicKey = "";
+    #     allowedIPs = [ "10.248.1.0/24" ];
+    #   }
+    # ];
+  };
+  services.secrets.files."firefly-privkey" = {
+    file = ./secrets/firefly-wireguard-privkey.aes-256-cbc.base64;
+    dest = "/etc/wireguard/firefly.privkey";
+    beforeService = "wireguard-firefly.service";
+  };
+
   services.dhcp-server = {
     interfaces = [ lan_if guest_if ];
     lan = lan;
