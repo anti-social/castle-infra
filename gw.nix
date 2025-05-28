@@ -411,12 +411,23 @@ in {
     listenPort = 24801;
     privateKeyFile = "/etc/wireguard/firefly.privkey";
 
-    # peers = [
-    #   {
-    #     publicKey = "";
-    #     allowedIPs = [ "10.248.1.0/24" ];
-    #   }
-    # ];
+    peers = [
+      {
+        # Vitaliy
+        publicKey = "W+TDj4Y+qar6PP6croyMJfsppkSI3S0qz3LCNuFbJAU=";
+        allowedIPs = [ "10.248.0.3/32" ];
+      }
+      {
+        # Flipmoon
+        publicKey = "yFCigCMi9gBtXzULTQ2hohM18U5fR5J5ojLEQ8UvYWs=";
+        allowedIPs = [ "10.248.0.4/32" ];
+      }
+      # Grounds
+      {
+        publicKey = "5M1KmGuRt83Coe7zmWJR0H6sdSh9mu3ppoTapth0xyU=";
+        allowedIPs = [ "10.248.1.0/24" ];
+      }
+    ];
   };
   services.secrets.files."firefly-privkey" = {
     file = ./secrets/firefly-wireguard-privkey.aes-256-cbc.base64;
