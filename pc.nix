@@ -343,6 +343,7 @@ in {
       i3blocks
       maim
       turbovnc
+      virtualgl
       xclip
       xdotool
       xorg.xkill
