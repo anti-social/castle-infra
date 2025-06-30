@@ -165,6 +165,8 @@ in {
 
     useDHCP = false;
 
+    networkmanager.enable = true;
+
     extraHosts = ''
       127.0.0.1 hdfs-namenode-ceph-service
     '';
