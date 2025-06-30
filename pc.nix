@@ -196,7 +196,8 @@ in {
           ];
           allowedUDPPorts = [
             137 138  # samba
-            24893 24894
+            2021  # bambu-studio
+            24893 24894  # firefly
           ];
           allowedUDPPortRanges = [
             { from = 1714; to = 1764; } # kdeconnect
