@@ -51,7 +51,7 @@ in {
       share = true;
       size = 50000;
     };
-    initExtra = ''
+    initContent = ''
       # Bash like navigation
       autoload -U select-word-style && select-word-style bash
       export WORDCHARS=""

@@ -2,9 +2,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-gw.url = "github:NixOS/nixpkgs/nixos-24.11";
-    nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager-pc = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       # Use system packages list where available
       inputs.nixpkgs.follows = "nixpkgs-pc";
     };

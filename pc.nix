@@ -245,8 +245,8 @@ in {
     #   DisplaySize 1920 1080
     # '';
 
-    desktopManager.plasma5.enable = true;
   };
+  services.desktopManager.plasma6.enable = true;
 
   services.displayManager = {
     sddm.enable = true;
@@ -450,12 +450,13 @@ in {
     libraries = with pkgs; [];
   };
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-kde
-    ];
-  };
+  # Please explicitly use kdePackages.xdg-desktop-portal-kde for the latest Qt 6-based version
+  # xdg.portal = {
+  #   enable = true;
+  #   extraPortals = with pkgs; [
+  #     xdg-desktop-portal-kde
+  #   ];
+  # };
 
   programs.zsh.enable = true;
 
@@ -483,7 +484,8 @@ in {
       fira-code-symbols
       input-fonts
       liberation_ttf
-      nerdfonts
+      nerd-fonts._0xproto
+      nerd-fonts.droid-sans-mono
       noto-fonts
       noto-fonts-emoji
       openmoji-color
