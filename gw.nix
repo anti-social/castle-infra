@@ -381,8 +381,8 @@ in {
         persistentKeepalive = 25;
       }
       {
-        # My work laptop (Dell)
-        publicKey = "CnQF8AEr/JZwfM/mg75z/Sh9j3VHNR59dgWegbc6rl8=";
+        # My work laptop
+        publicKey = "c8UHeWjMELB1/+ehjPICvtjBaYkZhRuZw7YZJvLUgEg=";
         allowedIPs = [ "192.168.102.4/32" ];
         persistentKeepalive = 25;
       }
