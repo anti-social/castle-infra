@@ -336,6 +336,10 @@ in {
         };
       }
     );
+    emacs-shell = pkgs.writeShellScriptBin "emacs-shell" ''
+      PROJECT_DIR=''${1:?}
+      exec nix-shell --run "SHELL=${pkgs.zsh}/bin/zsh exec emacs $PROJECT_DIR" $PROJECT_DIR
+    '';
     i3wm = [
       dmenu
       i3
@@ -355,6 +359,7 @@ in {
       betaflight-configurator
       chromium
       emacs
+      emacs-shell
       firefox
       kicad
       plasma5Packages.kdeconnect-kde
