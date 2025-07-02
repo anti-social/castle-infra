@@ -119,10 +119,28 @@ let
         };
       })
     ];
+    "25.05" = [
+      (self: super: {
+        turbovnc = super.turbovnc.overrideAttrs (old:
+          rec {
+            version = "3.2";
+            src = pkgs.fetchFromGitHub {
+              owner = "TurboVNC";
+              repo = "turbovnc";
+              rev = version;
+              sha256 = "sha256-CMJdUG4Dd7pbtr/KXq0hV+zR5i+L/y610O+SWJTR/zQ=";
+            };
+
+            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkg-config ];
+            buildInputs = old.buildInputs ++ [ pkgs.xorg.libxshmfence ];
+          }
+        );
+      })
+    ];
   };
 in {
   config = {
     # nixpkgs.overlays = overlays."${config.system.nixos.release}";
-    nixpkgs.overlays = overlays."24.11";
+    nixpkgs.overlays = overlays."25.05";
   };
 }
