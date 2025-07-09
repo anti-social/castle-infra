@@ -362,8 +362,6 @@ in {
       emacs-shell
       firefox
       kicad
-      plasma5Packages.kdeconnect-kde
-      # qbittorrent
       stm32cubemx
       telegram-desktop
       signal-desktop
@@ -483,6 +481,8 @@ in {
   programs.steam = {
     enable = true;
   };
+
+  programs.kdeconnect.enable = true;
 
   fonts = {
     packages = with pkgs; [
