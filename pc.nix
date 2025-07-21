@@ -411,6 +411,7 @@ in {
       rustup
       shellcheck
       stm32flash
+      uv
       wasmtime
       zlib
     ];
