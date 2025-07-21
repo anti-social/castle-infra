@@ -435,6 +435,7 @@ in {
       linuxPackages.usbip
       lm_sensors
       mc
+      nftables
       nix-index
       nmap
       pciutils
