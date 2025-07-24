@@ -434,6 +434,11 @@ in {
         publicKey = "yFCigCMi9gBtXzULTQ2hohM18U5fR5J5ojLEQ8UvYWs=";
         allowedIPs = [ "10.248.0.4/32" ];
       }
+      {
+        # Work laptop
+        publicKey = "kMatf39glhcZUjqaFMVDnqkUaOPJy6Q1Afj64ME9fkw=";
+        allowedIPs = [ "10.248.0.2/32" ];
+      }
       # Grounds
       {
         publicKey = "5M1KmGuRt83Coe7zmWJR0H6sdSh9mu3ppoTapth0xyU=";
