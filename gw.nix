@@ -24,6 +24,8 @@
   vpn_addr_prefix = "192.168.102";
   vpn_network = "${vpn_addr_prefix}.0/24";
 
+  firefly_vpn_listen_port = 24801;
+
   container_if = "podman0";
 
   iperf_ports = [ 5201 5202 ];
@@ -294,16 +296,26 @@ in {
           allowedTCPPorts = iperf_ports;
           allowedUDPPorts = [
             69 # tfpt
+            firefly_vpn_listen_port
           ];
         };
+        firefly = {
+          allowedTCPPorts = iperf_ports;
+        };
         ${wan_if} = {
-          allowedUDPPorts = [ vpn_listen_port ];
+          allowedUDPPorts = [
+            vpn_listen_port
+            firefly_vpn_listen_port
+          ];
         };
       };
       filterForward = true;
       extraForwardRules = ''
         iifname "${vpn_if}" oifname "${lan_if}" accept
+
         iifname "${container_if}" accept
+
+        iifname firefly oifname firefly accept
       '';
     };
 
