@@ -27,6 +27,7 @@
   firefly_vpn_listen_port = 24801;
 
   container_if = "podman0";
+  unifi_container_if = "podman1";
 
   iperf_ports = [ 5201 5202 ];
 
@@ -290,7 +291,7 @@ in {
     };
     firewall = {
       enable = true;
-      trustedInterfaces = [ container_if ];
+      trustedInterfaces = [ container_if unifi_container_if ];
       interfaces = {
         ${lan_if} = {
           allowedTCPPorts = iperf_ports;
@@ -314,6 +315,7 @@ in {
         iifname "${vpn_if}" oifname "${lan_if}" accept
 
         iifname "${container_if}" accept
+        iifname "${unifi_container_if}" accept
 
         iifname firefly oifname firefly accept
       '';

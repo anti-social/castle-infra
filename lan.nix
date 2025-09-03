@@ -112,6 +112,10 @@ rec {
       mac = "80:2a:a8:46:18:28";
       ip = mkAddr 243;
     };
+    ap4 = {
+      mac = "1c:0b:8b:c2:9e:dc";
+      ip = mkAddr 244;
+    };
     cisco = {
       mac = "0:00:b4:18:02:7e";
       ip = mkAddr 253;
