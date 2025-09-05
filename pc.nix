@@ -18,30 +18,26 @@ in {
       ./modules/overlays.nix
     ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/52a954ae-2a1f-42cd-b4a3-78249213d9dd";
-      fsType = "xfs";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/52a954ae-2a1f-42cd-b4a3-78249213d9dd";
+    fsType = "xfs";
+  };
 
-  fileSystems."/efi" =
-    { device = "/dev/disk/by-uuid/EB98-AA71";
-      fsType = "vfat";
-    };
+  fileSystems."/efi" = {
+    device = "/dev/disk/by-uuid/EB98-AA71";
+    fsType = "vfat";
+  };
 
-  fileSystems."/media/data" =
-    { device = "/dev/disk/by-uuid/fdca98fe-6273-4f51-99ef-cb375d0a8c28";
-      fsType = "ext4";
-    };
+  fileSystems."/home" = {
+    device = "/dev/disk/by-uuid/99bf6dfb-8e78-49ba-96c4-06fe340f9fc6";
+    fsType = "xfs";
+  };
 
-  fileSystems."/media/important_data" =
-    { device = "/dev/disk/by-uuid/30c60db2-6ea8-4380-8a91-52086679b815";
-      fsType = "ext4";
-    };
-
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/99bf6dfb-8e78-49ba-96c4-06fe340f9fc6";
-      fsType = "xfs";
-    };
+  fileSystems."/media/backup" = {
+    device = "/dev/disk/by-uuid/94cd2049-ce86-48eb-b5f8-da86841c4303";
+    fsType = "btrfs";
+    options = [ "subvol=backup" ];
+  };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/1e47dcce-063e-404b-a2db-a9733b62d7a5"; }
@@ -197,6 +193,7 @@ in {
           allowedUDPPorts = [
             137 138  # samba
             2021  # bambu-studio
+            5201  # iperf
             24893 24894  # firefly
           ];
           allowedUDPPortRanges = [
@@ -657,28 +654,28 @@ in {
     group = "photoprism";
     home = "/media/important_data/photoprism";
   };
-  virtualisation.oci-containers.containers.photoprism = {
-    image = "docker.io/photoprism/photoprism:230607";
-    environment = {
-      PHOTOPRISM_DATABASE_DRIVER = "mysql";
-      PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";
-      PHOTOPRISM_DATABASE_NAME = "photoprism";
-      PHOTOPRISM_DATABASE_USER = "photoprism";
-      PHOTOPRISM_ADMIN_PASSWORD = "insecure";
-      PHOTOPRISM_SITE_URL = "https://photos.castle.mk";
-      PHOTOPRISM_UPLOAD_NSFW = "true";
-    };
-    volumes = [
-      "/run/mysqld/mysqld.sock:/run/mysqld/mysqld.sock"
-      "/media/important_data/photoprism:/photoprism"
-    ];
-    user = "500:500";
+  # virtualisation.oci-containers.containers.photoprism = {
+  #   image = "docker.io/photoprism/photoprism:230607";
+  #   environment = {
+  #     PHOTOPRISM_DATABASE_DRIVER = "mysql";
+  #     PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";
+  #     PHOTOPRISM_DATABASE_NAME = "photoprism";
+  #     PHOTOPRISM_DATABASE_USER = "photoprism";
+  #     PHOTOPRISM_ADMIN_PASSWORD = "insecure";
+  #     PHOTOPRISM_SITE_URL = "https://photos.castle.mk";
+  #     PHOTOPRISM_UPLOAD_NSFW = "true";
+  #   };
+  #   volumes = [
+  #     "/run/mysqld/mysqld.sock:/run/mysqld/mysqld.sock"
+  #     "/media/important_data/photoprism:/photoprism"
+  #   ];
+  #   user = "500:500";
 
-    # ports = [
-    #   "2342:2342"
-    # ];
-    extraOptions = [ "--network=host" ];
-  };
+  #   # ports = [
+  #   #   "2342:2342"
+  #   # ];
+  #   extraOptions = [ "--network=host" ];
+  # };
   # systemd.services.podman-photoprism.serviceConfig.User = "photoprism";
 
   virtualisation = {
