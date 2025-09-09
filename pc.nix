@@ -39,9 +39,11 @@ in {
     options = [ "subvol=backup" ];
   };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/1e47dcce-063e-404b-a2db-a9733b62d7a5"; }
-    ];
+  swapDevices = [
+    {
+      device = "/dev/disk/by-uuid/1e47dcce-063e-404b-a2db-a9733b62d7a5";
+    }
+  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
@@ -57,7 +59,7 @@ in {
   boot.extraModulePackages = [ ];
   boot.supportedFilesystems = [ "zfs" ];
   boot.extraModprobeConfig = ''
-    options zfs zfs_arc_max=2147483648
+    options zfs zfs_arc_max=${toString (4 * 1024 * 1024 * 1024)}
   '';
   boot.zfs.extraPools = [ "storage" ];
 
