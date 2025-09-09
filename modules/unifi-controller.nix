@@ -78,6 +78,9 @@ in {
         "--network=unifi"
         "--stop-timeout=10"
       ];
+      volumes = [
+        "unifi-config:/config"
+      ];
       ports = flatten (forEach [
         "8080:8080"
         "8443:8443"
