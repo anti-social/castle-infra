@@ -680,6 +680,59 @@ in {
   # };
   # systemd.services.podman-photoprism.serviceConfig.User = "photoprism";
 
+  # systemd.services.backup-mount = {
+  #   description = "Backup user backups";
+  #   wantedBy = [ "multi-user.target" ];
+  #   after = [ "zfs-mount.service" ];
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     RemainAfterExit = true;
+  #   };
+  #   script = ''
+  #     ${pkgs.coreutils}/bin/echo "Mounting backups..."
+  #     for snapshot in \
+  #       $(${pkgs.zfs}/bin/zfs list -H -t snapshot -o name -S creation storage/home)
+  #     do
+  #       ${pkgs.coreutils}/bin/echo "Mounting snapshot: $snapshot"
+  #       SNAPSHOT_NAME=''${snapshot#storage/home@}
+  #       SNAPSHOT_USER_DIR=/media/home/alla/%backup%/''${SNAPSHOT_NAME}
+  #       ${pkgs.coreutils}/bin/mkdir -p ''${SNAPSHOT_USER_DIR}
+  #       /run/wrappers/bin/mount -o bind /media/home/.zfs/snapshot/''${SNAPSHOT_NAME} ''${SNAPSHOT_USER_DIR}
+  #     done
+  #   '';
+  # };
+  systemd.services.backup = {
+    description = "Backup user datastores";
+    serviceConfig = {
+      Type = "oneshot";
+    };
+    startAt = "*-*-* 3:15:00";
+    script = ''
+      ${pkgs.coreutils}/bin/echo "Creating snapshot..."
+      BACKUP_DT=$(${pkgs.coreutils}/bin/date +'%Y-%m-%d_%H-%M-%S')
+      SNAPSHOT=storage/home@''${BACKUP_DT}
+      ${pkgs.zfs}/bin/zfs snapshot $SNAPSHOT
+      ${pkgs.coreutils}/bin/echo "Snapshot created: $SNAPSHOT"
+
+      ${pkgs.coreutils}/bin/mkdir -p /media/home/alla/%backup%/''${BACKUP_DT}
+      ${pkgs.coreutils}/bin/echo "Starting backup..."
+      ${pkgs.rsync}/bin/rsync -ah \
+        --one-file-system \
+        --exclude=/%backup% \
+        --delete-after \
+        --verbose \
+        /media/home/.zfs/snapshot/''${BACKUP_DT}/alla/ /media/backup/alla/current
+
+      ${pkgs.coreutils}/bin/echo "Cleaning up old snapshots..."
+      for snapshot in \
+        $(${pkgs.zfs}/bin/zfs list -H -t snapshot -o name -S creation storage/home | tail -n +31)
+      do
+        ${pkgs.coreutils}/bin/echo "Destroying snapshot: $snapshot"
+        ${pkgs.zfs}/bin/zfs destroy $snapshot
+      done
+    '';
+  };
+
   virtualisation = {
     podman = {
       enable = true;
