@@ -150,7 +150,7 @@ in {
         octoprint:''${mqtt_octoprint_password}
       '';
       secretsEnvFile = ../secrets/mosquitto-passwd.env;
-      beforeService = "mosquitto";
+      beforeService = "mosquitto.service";
     };
     services.mosquitto = {
       enable = true;
@@ -214,6 +214,12 @@ in {
 
       SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="23a3", SYMLINK+="bms"
     '';
+    services.secrets.templates."zigbee2mqtt-secrets.yaml" = {
+      template = ./zigbee2mqtt/zigbee2mqtt-secrets.yaml;
+      secretsEnvFile = ../secrets/mosquitto-passwd.env;
+      owner = "zigbee2mqtt";
+      beforeService = "zigbee2mqtt.service";
+    };
     services.zigbee2mqtt = {
       enable = true;
       settings = {
@@ -225,7 +231,7 @@ in {
         mqtt = {
           server = "mqtt://${cfg.iotLocalAddr}:${toString mqtt_port}";
           user = "zigbee2mqtt";
-          password = "jFmxSg3gLP";
+          password = "!${config.secretsDestinations.templates."zigbee2mqtt-secrets.yaml"} password";
           include_device_information = true;
         };
       };
@@ -234,7 +240,7 @@ in {
     services.secrets.templates."inverter2mqtt.yaml" = {
       template = ./inverter2mqtt/powmr.yaml;
       secretsEnvFile = ../secrets/mosquitto-passwd.env;
-      beforeService = "inverter2mqtt";
+      beforeService = "inverter2mqtt.service";
     };
     systemd.services.inverter2mqtt = let
       inverter2mqtt = pkgs.rustPlatform.buildRustPackage {
