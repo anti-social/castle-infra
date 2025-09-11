@@ -231,6 +231,49 @@ in {
       };
     };
 
+    services.secrets.templates."inverter2mqtt.yaml" = {
+      template = ./inverter2mqtt/powmr.yaml;
+      secretsEnvFile = ../secrets/mosquitto-passwd.env;
+      beforeService = "inverter2mqtt";
+    };
+    systemd.services.inverter2mqtt = let
+      inverter2mqtt = pkgs.rustPlatform.buildRustPackage {
+        pname = "inverter2mqtt";
+        version = "0.0.0";
+        src = pkgs.fetchFromGitHub {
+          owner = "anti-social";
+          repo = "inverter2mqtt";
+          rev = "6b5c33969190574243cdefc4c2a58a63ced4c8e6";
+          # hash = lib.fakeHash;
+          hash = "sha256-MuTZbBohpgP8jEiY8KgokJ+RRFRRLEbSird7MPpeO2Q=";
+        };
+        # cargoHash = lib.fakeHash;
+        cargoHash = "sha256-ibly/Vd08nPQSTGm1KMawh0iWAQq+J1JLajBMGMvUwc=";
+        nativeBuildInputs = [
+          pkgs.cmake
+          pkgs.perl
+        ];
+        doCheck = false;
+        meta = {
+          description = "Stream inverter data to mqtt";
+          homepage = "https://github.com/anti-social/inverter2mqtt";
+          license = lib.licenses.gpl3;
+          maintainers = [];
+        };
+      };
+    in {
+      description = "Stream inverter data to home assistant";
+      serviceConfig = {
+        Type = "simple";
+        Environment = "RUST_LOG=info,paho_mqtt_c=warn";
+        ExecStart = "${inverter2mqtt}/bin/inverter2mqtt ${config.secretsDestinations.templates."inverter2mqtt.yaml"}";
+        Restart = "on-failure";
+        RestartSec = "30";
+      };
+      wantedBy = [ "multi-user.target" ];
+      after = [ "mosquitto.service" ];
+    };
+
     # OTA server for Sonoff devices
     # TODO: Find out an endpoint which device accesses to after downloading a firmware
     services.nginx.virtualHosts."dl.itead.cn" = {
