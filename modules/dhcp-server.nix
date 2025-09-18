@@ -54,6 +54,14 @@ in {
             ];
           }
         ];
+        option-def = [
+          {
+            name = "unifi-inform";
+            code = 43;
+            type = "binary";
+            space = "dhcp4";
+          }
+        ];
         subnet4 = [
           {
             subnet = guest.network;
@@ -97,6 +105,10 @@ in {
               {
                 name = "domain-name";
                 data = lan.domain;
+              }
+              {
+                name = "unifi-inform";
+                data = "01 04 C0 A8 02 01";
               }
             ];
             pools = [

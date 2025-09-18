@@ -116,14 +116,14 @@ rec {
       mac = "1c:0b:8b:c2:9e:dc";
       ip = mkAddr 244;
     };
-    cisco = {
-      mac = "0:00:b4:18:02:7e";
+    flex5 = {
+      mac = "94:2a:6f:4e:9d:d5";
       ip = mkAddr 253;
     };
-    netgear = {
-      mac = "bc:a5:11:22:25:58";
+    flex8 = {
+      mac = "a8:9c:6c:08:c5:3d";
       ip = mkAddr 254;
-      aliases = [ "switch" ];
+      aliases = [ "flex8" ];
     };
   };
 }
