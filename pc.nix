@@ -589,7 +589,7 @@ in {
         "guest ok" = "no";
       };
       pictures = {
-        path = "/media/important_data/Images";
+        path = "/media/home/pictures";
         public = "no";
         writable = "no";
         "valid users" = "alexk alla";
