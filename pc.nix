@@ -115,6 +115,24 @@ in {
             PublicKey = "J5OIl0Q3QiWuxfEDYIrJ45rLqlxIdJLMKg5V5XEblgA=";
             AllowedIPs = [ "192.168.51.1" ];
             Endpoint = "api.bagspace.ua:51820";
+            PersistentKeepalive = 25;
+        }];
+      };
+      "10-wg-firefly" = {
+        netdevConfig = {
+          Kind = "wireguard";
+          Name = "wg-firefly";
+        };
+        # See also man systemd.netdev (also contains info on the permissions of the key files)
+        wireguardConfig = {
+          # Don't use a file from the Nix store as these are world readable.
+          PrivateKeyFile = "${config.secretsDestinations.files.wg-firefly-privkey}";
+        };
+        wireguardPeers = [{
+            PublicKey = "8TZmhsAgpMD+8q1gmLMR4r1jlw7R+cBmp0LSc6ctkEQ=";
+            AllowedIPs = [ "10.248.0.0/16" ];
+            Endpoint = "firefly.castle.mk:24801";
+            PersistentKeepalive = 25;
         }];
       };
     };
@@ -141,6 +159,25 @@ in {
           IPv6AcceptRA = false;
         };
       };
+      wg-firefly = {
+        matchConfig.Name = "wg-firefly";
+        # IP addresses the client interface will have
+        address = [
+          "10.248.254.2/32"
+        ];
+        DHCP = "no";
+        networkConfig = {
+          IPv6AcceptRA = false;
+        };
+        routes = [
+          {
+            Gateway = "10.248.254.1";
+            GatewayOnLink = "yes";
+            Destination = "10.248.0.0/16";
+            PreferredSource = "10.248.254.2";
+          }
+        ];
+      };
     };
   };
   services.secrets.files."wg-bagspace-privkey" = {
@@ -148,6 +185,12 @@ in {
     group = "systemd-network";
     mode = "0660";
     beforeService = "sys-subsystem-net-devices-wg-bagspace.device";
+  };
+  services.secrets.files."wg-firefly-privkey" = {
+    file = ./secrets/wg-pc-firefly-privkey.aes-256-cbc.base64;
+    group = "systemd-network";
+    mode = "0660";
+    beforeService = "sys-subsystem-net-devices-wg-firefly.device";
   };
 
   services.resolved = {
@@ -201,6 +244,12 @@ in {
           ];
           allowedUDPPortRanges = [
             { from = 1714; to = 1764; } # kdeconnect
+          ];
+        };
+        "wg-firefly" = {
+          allowedUDPPorts = [
+            5201  # iperf
+            24893 24894  # firefly
           ];
         };
 
