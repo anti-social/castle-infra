@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: let
+{ config, lib, pkgs, agenix, ... }: let
   wan_if = "enp2s0";
   wan_mac = "40:21:08:80:03:da";
 
@@ -23,8 +23,6 @@
   vpn_listen_port = 51820;
   vpn_addr_prefix = "192.168.102";
   vpn_network = "${vpn_addr_prefix}.0/24";
-
-  firefly_vpn_listen_port = 24801;
 
   container_if = "podman0";
   unifi_container_if = "podman1";
@@ -114,6 +112,7 @@
 in {
   imports =
     [
+      agenix.nixosModules.default
       ./another-nix-secrets
       ./modules/common.nix
       ./modules/dhcp-server.nix
@@ -297,16 +296,11 @@ in {
           allowedTCPPorts = iperf_ports;
           allowedUDPPorts = [
             69 # tfpt
-            firefly_vpn_listen_port
           ];
-        };
-        firefly = {
-          allowedTCPPorts = iperf_ports;
         };
         ${wan_if} = {
           allowedUDPPorts = [
             vpn_listen_port
-            firefly_vpn_listen_port
           ];
         };
       };
@@ -316,8 +310,6 @@ in {
 
         iifname "${container_if}" accept
         iifname "${unifi_container_if}" accept
-
-        iifname firefly oifname firefly accept
       '';
     };
 
@@ -407,9 +399,14 @@ in {
         persistentKeepalive = 25;
       }
       {
-        # privKey = "SK1T/YxJKGHzecxUsiNCvTkrS8YBlTMfFNQbe2bqjH8=";
         publicKey = "St1qLCN7EtsWiiTQxNRPGtTpwa95fLcguwiZWUJU2S8=";
         allowedIPs = [ "192.168.102.14/32" ];
+        persistentKeepalive = 25;
+      }
+
+      {
+        publicKey = "gzg2FG4kW9ZVI6y9hYfiRhY+ZJ/TI84C6i5K0Fs0kwQ=";
+        allowedIPs = [ "192.168.102.99/32" ];
         persistentKeepalive = 25;
       }
     ];
@@ -418,45 +415,6 @@ in {
     file = ./secrets/gw-wireguard-privkey.aes-256-cbc.base64;
     dest = "/etc/wireguard/${vpn_if}.privkey";
     beforeService = "wireguard-${vpn_if}.service";
-  };
-
-  networking.wireguard.interfaces.firefly = {
-    ips = [ "10.248.253.1/16" ];
-    listenPort = 24801;
-    privateKeyFile = "/etc/wireguard/firefly.privkey";
-
-    peers = [
-      {
-        # Work laptop
-        publicKey = "kMatf39glhcZUjqaFMVDnqkUaOPJy6Q1Afj64ME9fkw=";
-        allowedIPs = [ "10.248.253.2/32" ];
-      }
-      {
-        # Vitaliy
-        publicKey = "W+TDj4Y+qar6PP6croyMJfsppkSI3S0qz3LCNuFbJAU=";
-        allowedIPs = [ "10.248.253.3/32" ];
-      }
-      {
-        # Flipmoon
-        publicKey = "yFCigCMi9gBtXzULTQ2hohM18U5fR5J5ojLEQ8UvYWs=";
-        allowedIPs = [ "10.248.253.4/32" ];
-      }
-
-      # Ground stations
-      {
-        publicKey = "5M1KmGuRt83Coe7zmWJR0H6sdSh9mu3ppoTapth0xyU=";
-        allowedIPs = [ "10.248.1.1/32" "10.248.1.0/24" ];
-      }
-      {
-        publicKey = "n1ofHVW+oCEnd61cjiYoYMEyv563MxgrVvg8V0l8jB0=";
-        allowedIPs = [ "10.248.2.1/32" ];
-      }
-    ];
-  };
-  services.secrets.files."firefly-privkey" = {
-    file = ./secrets/firefly-wireguard-privkey.aes-256-cbc.base64;
-    dest = "/etc/wireguard/firefly.privkey";
-    beforeService = "wireguard-firefly.service";
   };
 
   services.dhcp-server = {
