@@ -473,7 +473,7 @@ in {
       podman-compose
       protobuf
       pyright
-      python313Full
+      python313
       python313Packages.pip-tools
       rustup
       shellcheck
@@ -569,10 +569,10 @@ in {
       nerd-fonts._0xproto
       nerd-fonts.droid-sans-mono
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       openmoji-color
       proggyfonts
-      ubuntu_font_family
+      ubuntu-classic
     ];
 
     # enableDefaultFonts = true;

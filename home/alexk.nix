@@ -72,16 +72,18 @@ in {
 
   programs.git = {
     enable = true;
-    userEmail = "kovalidis@gmail.com";
-    userName = "Alexander Koval";
-    aliases = {
-      ci = "commit";
-      co = "checkout";
-      ff = "merge --ff-only";
-      last = "log -1 HEAD";
-      meld = "difftool --dir-diff -t meld";
-      st = "status";
-      up = "pull --no-stat --ff-only";
+    settings = {
+      user.email = "kovalidis@gmail.com";
+      user.name = "Alexander Koval";
+      alias = {
+        ci = "commit";
+        co = "checkout";
+        ff = "merge --ff-only";
+        last = "log -1 HEAD";
+        meld = "difftool --dir-diff -t meld";
+        st = "status";
+        up = "pull --no-stat --ff-only";
+      };
     };
   };
 
