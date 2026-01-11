@@ -1,4 +1,4 @@
-args @ { config, lib, pkgs, modulesPath, home-manager, ... }:
+args @ { config, lib, pkgs, modulesPath, home-manager, agenix, ... }:
 let
   lanIf = "enp13s0";
 in {
@@ -11,6 +11,7 @@ in {
     [ # Include the results of the hardware scan.
       (modulesPath + "/installer/scan/not-detected.nix")
       home-manager.nixosModules.home-manager
+      agenix.nixosModules.default
       ./another-nix-secrets
       ./modules/common.nix
       ./modules/udev.nix

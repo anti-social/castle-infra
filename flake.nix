@@ -1,5 +1,6 @@
 {
   inputs = {
+    agenix.url = "github:ryantm/agenix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-gw.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-25.05";
@@ -20,6 +21,7 @@
 
   outputs = {
     self,
+    agenix,
     nixpkgs,
     nixpkgs-gw,
     nixpkgs-pc,
@@ -70,9 +72,11 @@
         nodeSpecialArgs = {
           gw = {
             nixpkgs = nodes.gw;
+            agenix = agenix;
           };
           pc = {
             nixpkgs = nodes.pc;
+            agenix = agenix;
             home-manager = home-manager-pc;
           };
           minipc.nixpkgs = nodes.minipc;
