@@ -436,9 +436,9 @@ in {
 
   services.dns-proxy = {
     interfaces = [ lan_if guest_if vpn_if ];
-    bindAddr = local_addr;
+    bindInterface = lan_if;
+    guestBindInterface = guest_if;
     lan = lan;
-    guestBindAddr = guest_addr;
   };
 
   # Set your time zone.

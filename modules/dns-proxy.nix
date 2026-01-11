@@ -26,10 +26,10 @@ in {
       description = "Interfaces to allow in firewall";
     };
 
-    bindAddr = mkOption {
+    bindInterface = mkOption {
       type = types.str;
       default = "";
-      description = "Address to listen on";
+      description = "Interfaces to listen on";
     };
 
     lan = mkOption {
@@ -38,10 +38,10 @@ in {
       description = "LAN configuration";
     };
 
-    guestBindAddr = mkOption {
+    guestBindInterface = mkOption {
       type = types.str;
       default = "";
-      description = "Address to listen on";
+      description = "Guest interface to listen on (do not respond with lan names)";
     };
   };
 
@@ -86,7 +86,7 @@ in {
         }
 
         . {
-          bind 127.0.0.1 ${cfg.bindAddr}
+          bind lo ${cfg.bindInterface}
 
           prometheus localhost:9153
 
@@ -99,7 +99,7 @@ in {
         }
 
         . {
-          bind ${cfg.guestBindAddr}
+          bind ${cfg.guestBindInterface}
 
           import blacklist
 
