@@ -463,6 +463,7 @@ in {
       openssl
       openssl.dev
       patchelf
+      picotool
       pkg-config
       podman-compose
       protobuf
