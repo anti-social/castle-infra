@@ -237,6 +237,7 @@ in {
             { from = 1714; to = 1764; } # kdeconnect
           ];
           allowedUDPPorts = [
+            69  # tftp
             137 138  # samba
             2021  # bambu-studio
             5201  # iperf
