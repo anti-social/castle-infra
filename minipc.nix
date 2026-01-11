@@ -221,7 +221,6 @@ in {
       betaflight-configurator
       emacs
       firefox
-      tdesktop
       turbovnc
       zoom-us
     ];
