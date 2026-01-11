@@ -136,6 +136,17 @@ let
           }
         );
       })
+      (self: super: {
+        podman-compose = super.podman-compose.overrideAttrs rec {
+          version = "1.5.0";
+          src = pkgs.fetchFromGitHub {
+            repo = "podman-compose";
+            owner = "containers";
+            tag = "v${version}";
+            hash = "sha256-AEnq0wsDHaCxefaEX4lB+pCAIKzN0oyaBNm7t7tK/yI=";
+          };
+        };
+      })
     ];
   };
 in {
