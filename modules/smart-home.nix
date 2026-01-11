@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.modules.smart-home;
-  home_assistant_version = "2025.2.0";
+  home_assistant_version = "2025.12.5";
   mqtt_port = 1883;
   upsd_port = 3493;
 in {
@@ -58,27 +58,6 @@ in {
 
         shell_command:
           shutdown_ups: touch /config/commands/shutdown_ups
-
-        telegram_bot:
-        - platform: polling
-          api_key: "''${castle_alert_telegram_bot_token}"
-          allowed_chat_ids:
-          - -732670381
-          - -1001597296737
-
-        # - platform: polling
-        #   api_key: "''${novooskolska_power_telegram_bot_token}"
-        #   allowed_chat_ids:
-        #   - -1001597296737
-
-        notify:
-        - platform: telegram
-          name: castle_alerts_notifier
-          chat_id: -732670381
-
-        - platform: telegram
-          name: power_status_notifier
-          chat_id: -1001597296737
 
         # Text to speech
         tts:
@@ -157,7 +136,7 @@ in {
       logType = [
         "error" "warning" "notice" "information"
         # Uncomment to debug
-        #"debug" "subscribe" "unsubscribe"
+        # "debug" "subscribe" "unsubscribe"
       ];
       listeners = [
         {
