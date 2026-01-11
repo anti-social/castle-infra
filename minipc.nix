@@ -114,6 +114,11 @@ in {
     firewall = {
       enable = true;
 
+      allowedUDPPorts = [
+        5201  # iperf
+        24891 24892 24893 24894  # firefly
+      ];
+
       extraInputRules = ''
         # Allow usbip devices attaching
         tcp dport 3240 ether saddr == ${lan.pc.mac} accept
