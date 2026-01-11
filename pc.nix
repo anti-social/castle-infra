@@ -350,6 +350,17 @@ in {
     isNormalUser = true;
     shell = pkgs.zsh;
   };
+  users.groups.nopasswdlogin = {
+    members = ["game"];
+  };
+  # TODO: Find out a better way to add a rule
+  security.pam.services.sddm.text = lib.mkForce ''
+    auth      sufficient    pam_succeed_if.so user ingroup nopasswdlogin
+    auth      substack      login
+    account   include       login
+    password  substack      login
+    session   include       login
+  '';
 
   nixpkgs.config = {
     allowUnfree = true;
