@@ -521,6 +521,10 @@ in {
     ];
   in apps ++ dev ++ i3wm ++ tools;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "python3.12-ecdsa-0.19.1" # used by esptool
+  ];
+
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [];
