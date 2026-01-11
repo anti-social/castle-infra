@@ -202,7 +202,7 @@ in {
     services.zigbee2mqtt = {
       enable = true;
       settings = {
-        homeassistant = true;
+        homeassistant.enabled = true;
         permit_join = true;
         serial = {
           port = "/dev/zigbee-bridge";
@@ -249,7 +249,7 @@ in {
           hash = "sha256-MuTZbBohpgP8jEiY8KgokJ+RRFRRLEbSird7MPpeO2Q=";
         };
         # cargoHash = lib.fakeHash;
-        cargoHash = "sha256-ibly/Vd08nPQSTGm1KMawh0iWAQq+J1JLajBMGMvUwc=";
+        cargoHash = "sha256-XMDNXi9YUK53l7HgDPrG33fLqgWzGegAfrCMzHUtHB8=";
         nativeBuildInputs = [
           pkgs.cmake
           pkgs.perl
