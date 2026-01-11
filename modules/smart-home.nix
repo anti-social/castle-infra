@@ -207,12 +207,28 @@ in {
         serial = {
           port = "/dev/zigbee-bridge";
         };
+        frontend = {
+          enabled = true;
+          port = 8008;
+          host = "127.0.0.1";
+        };
         mqtt = {
           server = "mqtt://${cfg.iotLocalAddr}:${toString mqtt_port}";
           user = "zigbee2mqtt";
           password = "!${config.secretsDestinations.templates."zigbee2mqtt-secrets.yaml"} password";
           include_device_information = true;
         };
+      };
+    };
+    services.nginx.virtualHosts."zigbee.castle" = {
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8008/";
+        recommendedProxySettings = true;
+      };
+      locations."/api" = {
+        proxyPass = "http://127.0.0.1:8008/api";
+        recommendedProxySettings = true;
+        proxyWebsockets = true;
       };
     };
 
