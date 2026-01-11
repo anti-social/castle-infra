@@ -18,8 +18,9 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./minipc-hardware-configuration.nix
-
       ./another-nix-secrets
+      ./modules/common.nix
+      ./modules/udev.nix
     ];
 
   deployment = {
