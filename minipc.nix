@@ -212,6 +212,7 @@ in {
     dev-tools = [
       esptool
       minicom
+      openocd
       picocom
       tio
     ];
