@@ -142,8 +142,13 @@ in {
         matchConfig = {
           Name = lanIf;
         };
+        # networkConfig = {
+        #   DHCP = "ipv4";
+        # };
+        address = [ "192.168.2.2/24" ];
         networkConfig = {
-          DHCP = "ipv4";
+          DNS = "192.168.2.1";
+          Gateway = "192.168.2.1";
         };
       };
       wg-bagspace = {
