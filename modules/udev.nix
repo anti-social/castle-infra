@@ -11,6 +11,9 @@
 
       # WCH-Link
       SUBSYSTEMS=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="8012", MODE="660", GROUP="dialout"
+
+      # DSLogic
+      SUBSYSTEMS=="usb", ATTRS{idVendor}=="2a0e", ATTRS{idProduct}=="0034", MODE="660", GROUP="dialout"
     '';
   };
 }
