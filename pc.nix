@@ -468,8 +468,8 @@ in {
       podman-compose
       protobuf
       pyright
-      python312Full
-      python312Packages.pip-tools
+      python313Full
+      python313Packages.pip-tools
       rustup
       shellcheck
       stm32flash
