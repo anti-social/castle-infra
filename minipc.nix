@@ -227,6 +227,10 @@ in {
   in
     system-utils ++ network-utils ++ dev-tools ++ apps;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "python3.12-ecdsa-0.19.1" # used by esptool
+  ];
+
   ### List services that you want to enable:
 
   services.openssh = {
