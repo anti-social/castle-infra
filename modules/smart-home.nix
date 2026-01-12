@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.modules.smart-home;
-  home_assistant_version = "2025.12.5";
+  home_assistant_version = "2026.1.1";
   mqtt_port = 1883;
   upsd_port = 3493;
 in {
