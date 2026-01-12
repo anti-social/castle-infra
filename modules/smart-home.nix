@@ -205,6 +205,7 @@ in {
         homeassistant.enabled = true;
         permit_join = true;
         serial = {
+          adapter = "zstack";
           port = "/dev/zigbee-bridge";
         };
         frontend = {
