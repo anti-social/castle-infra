@@ -222,6 +222,7 @@ in {
       127.0.0.1 hdfs-namenode-ceph-service
     '';
 
+    nftables.enable = true;
     firewall = {
       enable = true;
       connectionTrackingModules = [ "ftp" ];
@@ -270,7 +271,7 @@ in {
         };
 
         # Allow DHCP for systemd-nspawn containers
-        "ve-+" = {
+        "ve-*" = {
           allowedUDPPorts = [ 67 ];
         };
       };
