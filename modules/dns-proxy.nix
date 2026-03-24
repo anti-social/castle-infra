@@ -67,6 +67,8 @@ in {
           hosts /var/lib/hosts/hosts.blacklist {
             ${builtins.concatStringsSep "\n    " (lib.attrsets.mapAttrsToList renderStaticHost lan.hosts)}
 
+            fe80::5835:30ff:fe93:4e30 gw.castle
+
             reload 1h
             fallthrough
           }

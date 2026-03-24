@@ -100,7 +100,7 @@ in {
               }
               {
                 name = "domain-name-servers";
-                data = gw_host.ip;
+                data = "${gw_host.ip}, fe80::5835:30ff:fe93:4e30";
               }
               {
                 name = "domain-name";
