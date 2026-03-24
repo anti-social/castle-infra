@@ -479,6 +479,7 @@ in {
       pyright
       python313
       python313Packages.pip-tools
+      ragenix
       rustup
       shellcheck
       stm32flash
