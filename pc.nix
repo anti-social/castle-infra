@@ -616,6 +616,7 @@ in {
       config = ''
         config /root/openvpn/smartweb.conf
 
+        askpass /root/openvpn/smartweb.pass
         script-security 2
         up ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved
         down ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved
