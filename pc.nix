@@ -238,7 +238,6 @@ in {
             139 445  # samba
             2342  # photoprism
             5201  # iperf
-            5353  # mdns
             5901  # vnc
             8080  # home projects
             9100  # node exporter
@@ -252,6 +251,7 @@ in {
             137 138  # samba
             2021  # bambu-studio
             5201  # iperf
+            5353  # mdns
             24893 24894  # firefly
           ];
           allowedUDPPortRanges = [
