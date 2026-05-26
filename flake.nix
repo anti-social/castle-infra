@@ -3,9 +3,9 @@
     agenix.url = "github:ryantm/agenix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-gw.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-pc.url = "github:NixOS/nixpkgs/nixos-26.05";
     home-manager-pc = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       # Use system packages list where available
       inputs.nixpkgs.follows = "nixpkgs-pc";
     };

@@ -1,6 +1,6 @@
 args @ { config, lib, pkgs, modulesPath, home-manager, agenix, ... }:
 let
-  lanIf = "enp13s0";
+  lanIf = "enp14s0";
 in {
   deployment = {
     targetHost = "pc";
@@ -62,7 +62,10 @@ in {
   boot.extraModprobeConfig = ''
     options zfs zfs_arc_max=${toString (4 * 1024 * 1024 * 1024)}
   '';
-  boot.zfs.extraPools = [ "storage" ];
+  boot.zfs = {
+    extraPools = [ "storage" ];
+    forceImportRoot = false;
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -206,7 +209,11 @@ in {
 
   services.resolved = {
     enable = true;
-    dnssec = "false";
+    settings = {
+      Resolve = {
+        DNSSEC = "false";
+      };
+    };
   };
 
   networking = {
@@ -220,7 +227,7 @@ in {
 
     networkmanager = {
       enable = true;
-      unmanaged = [ "enp13s0" ];
+      unmanaged = [ lanIf ];
     };
 
     extraHosts = ''
@@ -427,8 +434,8 @@ in {
       virtualgl
       xclip
       xdotool
-      xorg.xkill
-      xorg.xsetroot
+      xkill
+      xsetroot
       xterm
     ];
     apps = [
