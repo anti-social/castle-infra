@@ -153,6 +153,8 @@ in {
           # DNS = ["192.168.2.1" "fe80::5835:30ff:fe93:4e30"];
           DNS = ["192.168.2.1"];
           Gateway = "192.168.2.1";
+          IPv6AcceptRA = false;
+          LinkLocalAddressing = "no";
         };
       };
       wg-bagspace = {
