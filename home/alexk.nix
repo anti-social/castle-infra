@@ -1,4 +1,4 @@
-{ name, pkgs, ... }:
+{ name, lib, pkgs, ... }:
 let
   zshThemes = {
     dell-laptop = "agnoster";
@@ -36,6 +36,13 @@ in {
   # paths it should manage.
   home.username = "alexk";
   home.homeDirectory = "/home/alexk";
+  home.sessionPath = [
+    "/home/alexk/.local/bin"
+  ];
+  home.sessionVariables = {
+    LETS_CONTAINER_ENGINE = "podman";
+    CROSS_CONTAINER_ENGINE = "podman";
+  };
 
   # home.packages = [ doom-emacs ];
 
@@ -68,6 +75,38 @@ in {
     #     # showReturnVal = true;
     #   };
     # };
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = lib.mkMerge [
+      (builtins.fromTOML
+        (builtins.readFile "${pkgs.starship}/share/starship/presets/nerd-font-symbols.toml"
+      ))
+      {
+        add_newline = true;
+        character = {
+          # success_symbol = "[\\$](green)";
+          # error_symbol = "[\\$](bold red)";
+        };
+        aws = {
+          disabled = true;
+        };
+        cmd_duration = {
+          min_time = 0;
+          show_milliseconds = true;
+        };
+        package = {
+          disabled = true;
+        };
+        status = {
+          disabled = false;
+        };
+        time = {
+          disabled = false;
+        };
+      }
+    ];
   };
 
   programs.git = {
