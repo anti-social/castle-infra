@@ -218,7 +218,10 @@ in {
 
     useDHCP = false;
 
-    networkmanager.enable = true;
+    networkmanager = {
+      enable = true;
+      unmanaged = [ "enp13s0" ];
+    };
 
     extraHosts = ''
       127.0.0.1 hdfs-namenode-ceph-service
