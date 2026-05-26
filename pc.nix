@@ -542,13 +542,14 @@ in {
     libraries = with pkgs; [];
   };
 
-  # Please explicitly use kdePackages.xdg-desktop-portal-kde for the latest Qt 6-based version
-  # xdg.portal = {
-  #   enable = true;
-  #   extraPortals = with pkgs; [
-  #     xdg-desktop-portal-kde
-  #   ];
-  # };
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+    extraPortals = with pkgs; [
+      kdePackages.xdg-desktop-portal-kde
+    ];
+    config.common.default = ["kde"];
+  };
 
   programs.zsh.enable = true;
 
