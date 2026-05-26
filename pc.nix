@@ -579,9 +579,11 @@ in {
       fira-code-symbols
       input-fonts
       liberation_ttf
+      noto-fonts
       nerd-fonts._0xproto
       nerd-fonts.droid-sans-mono
-      noto-fonts
+      nerd-fonts.liberation
+      nerd-fonts.ubuntu-mono
       noto-fonts-color-emoji
       openmoji-color
       proggyfonts
