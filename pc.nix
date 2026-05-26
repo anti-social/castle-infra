@@ -822,6 +822,9 @@ in {
         --verbose \
         /media/home/.zfs/snapshot/''${BACKUP_DT}/alla/ /media/backup/alla/current
 
+      # Unmount the snapshot to not pollute 'df' output
+      ${pkgs.util-linux}/bin/umount /media/home/.zfs/snapshot/$BACKUP_DT
+
       ${pkgs.coreutils}/bin/echo "Cleaning up old snapshots..."
       for snapshot in \
         $(${pkgs.zfs}/bin/zfs list -H -t snapshot -o name -S creation storage/home | tail -n +31)
