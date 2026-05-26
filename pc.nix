@@ -513,6 +513,7 @@ in {
       fd
       ffmpeg-full
       git
+      graphviz
       grpcurl
       hdparm
       htop
@@ -524,7 +525,10 @@ in {
       mc
       nftables
       nix-index
+      nix-du
+      nix-tree
       nmap
+      nvme-cli
       pciutils
       radeontop
       read-edid
