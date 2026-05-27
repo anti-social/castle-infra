@@ -1,4 +1,4 @@
-args @ { config, lib, pkgs, modulesPath, home-manager, agenix, ... }:
+args @ { config, lib, pkgs, modulesPath, home-manager, agenix, utils, ... }:
 let
   lanIf = "enp14s0";
 in {
@@ -390,6 +390,10 @@ in {
     input-fonts.acceptLicense = true;
   };
 
+  # environment.etc."gai.conf".text = ''
+  #   precedence ::ffff:0:0/96  100
+  # '';
+  
   environment.sessionVariables = {
     PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.zlib.dev}/lib/pkgconfig";
     LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
@@ -504,6 +508,7 @@ in {
     tools = [
       awscli2
       bat
+      btop-rocm
       clinfo
       colmena
       curl
@@ -520,6 +525,7 @@ in {
       inetutils
       jq
       iperf
+      llama-cpp-rocm
       linuxPackages.usbip
       lm_sensors
       mc
@@ -727,6 +733,89 @@ in {
     };
   };
 
+  systemd.services.llama-cpp = {
+    description = "LLaMA C++ server";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "idle";
+      KillSignal = "SIGINT";
+      StateDirectory = "llama-cpp";
+      CacheDirectory = "llama-cpp";
+      WorkingDirectory = "/var/lib/llama-cpp";
+      Environment = [
+        "LLAMA_CACHE=/var/cache/llama-cpp"
+        "ROCR_VISIBLE_DEVICES=0"
+      ];
+      ExecStart =
+        let
+          args = [
+            "--host" "127.0.0.1"
+            "--port" "8080"
+            "--fit" "on"
+            "--fit-target" "2048"
+            "--models-preset" "/media/data/ai/llama-cpp/presets.ini"
+          ];
+        in
+        "${pkgs.llama-cpp-rocm}/bin/llama-server ${utils.escapeSystemdExecArgs args}";
+      Restart = "on-failure";
+      RestartSec = 300;
+
+      # for GPU acceleration
+      PrivateDevices = false;
+
+      # hardening
+      DynamicUser = true;
+      CapabilityBoundingSet = "";
+      RestrictAddressFamilies = [
+        "AF_INET"
+        "AF_INET6"
+        "AF_UNIX"
+      ];
+      NoNewPrivileges = true;
+      PrivateMounts = true;
+      PrivateTmp = true;
+      PrivateUsers = true;
+      ProtectClock = true;
+      ProtectControlGroups = true;
+      ProtectHome = true;
+      ProtectKernelLogs = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      ProtectSystem = "strict";
+      MemoryDenyWriteExecute = true;
+      LockPersonality = true;
+      RemoveIPC = true;
+      RestrictNamespaces = true;
+      RestrictRealtime = true;
+      RestrictSUIDSGID = true;
+      SystemCallArchitectures = "native";
+      SystemCallFilter = [
+        "@system-service"
+        "~@privileged"
+      ];
+      SystemCallErrorNumber = "EPERM";
+      ProtectProc = "invisible";
+      ProtectHostname = true;
+      ProcSubset = "pid";
+    };
+  };
+  # services.llama-cpp = {
+  #   enable = true;
+  #   package = pkgs.llama-cpp-rocm;
+  #   # modelsDir = "/media/data/ai/llama-cpp";
+  #   environment = {
+  #     ROCR_VISIBLE_DEVICES = "0";
+  #   };
+  #   modelsPreset = {
+  #     "Qwen3.6-35B-A3B-UD-Q4_K_M" = {
+  #       model = "/media/data/ai/llama-cpp/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf";
+  #       n-gpu-layers = 10;
+  #     };
+  #   };
+  # };
+  
   services.mysql = {
     enable = true;
     # dataDir = "/var/lib/mariadb";
@@ -842,6 +931,12 @@ in {
       # Required for containers under podman-compose to be able to talk to each other
       defaultNetwork.settings = {
         dns_enabled = true;
+      };
+    };
+
+    containers.containersConf.settings = {
+      engine = {
+        cgroup_manager = "cgroupfs";
       };
     };
 
