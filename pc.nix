@@ -404,16 +404,16 @@ in {
     lets = ({}:
       buildGoModule rec {
         pname = "lets";
-        version = "0.0.52";
+        version = "0.0.61";
 
         src = fetchFromGitHub {
           owner = "lets-cli";
           repo = "lets";
           rev = "v${version}";
-          hash = "sha256-iYjakrzZ2l00ph2T1gjxPJLI8zXlc5TCMpY4j2oEVzM=";
+          hash = "sha256-AoANBxpOouasOe1EFmt75hqf+2IJqEpFOAsIQe+nuzc=";
         };
 
-        vendorHash = "sha256-tIRXQB/gbG8zrZht6RJQ26m4mJQeWb0AxlS1UYNe8V0=";
+        vendorHash = "sha256-1H8eiRvS0Z3whY5EsPpnlbMzOTWdt3YpAtcYT96RU4A=";
 
         meta = with lib; {
           description = "Simple command-line snippet manager, written in Go";
