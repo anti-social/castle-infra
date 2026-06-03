@@ -34,6 +34,22 @@ in {
     fsType = "xfs";
   };
 
+  fileSystems."/media/var" = {
+    device = "/dev/disk/by-uuid/ba5b0d97-82b4-48f1-9f01-ed4b59f04ca6";
+    fsType = "btrfs";
+  };
+  fileSystems."/home/alexk/.local/share/containers" = {
+    device = "/dev/disk/by-uuid/ba5b0d97-82b4-48f1-9f01-ed4b59f04ca6";
+    fsType = "btrfs";
+    options = [ "subvol=containers" ];
+  };
+
+
+  fileSystems."/media/data" = {
+    device = "/dev/disk/by-uuid/94cd2049-ce86-48eb-b5f8-da86841c4303";
+    fsType = "btrfs";
+  };
+
   fileSystems."/media/backup" = {
     device = "/dev/disk/by-uuid/94cd2049-ce86-48eb-b5f8-da86841c4303";
     fsType = "btrfs";
