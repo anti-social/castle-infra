@@ -770,8 +770,8 @@ in {
             "--host" "127.0.0.1"
             "--port" "8080"
             "--fit" "on"
-            "--fit-target" "2048"
-            "--models-preset" "/media/data/ai/llama-cpp/presets.ini"
+            "--fit-target" "1024"
+            "--models-preset" "/media/var/llama-cpp/models/presets.ini"
           ];
         in
         "${pkgs.llama-cpp-rocm}/bin/llama-server ${utils.escapeSystemdExecArgs args}";
