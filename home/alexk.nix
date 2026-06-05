@@ -126,6 +126,166 @@ in {
     };
   };
 
+  wayland.windowManager.sway = {
+    enable = true;
+
+    config = rec {
+      modifier = "Mod4";
+      left = "j";
+      down = "k";
+      up = "l";
+      right = "semicolon";
+
+      output = {
+        HEADLESS-1 = {
+          resolution = "1920x1080";
+        };
+      };
+
+      input."type:keyboard" = {
+        xkb_layout = "us,ua";
+        xkb_options = "grp:caps_toggle";
+      };
+
+      terminal = "${pkgs.alacritty}/bin/alacritty";
+
+      fonts = {
+        names = [ "pango" ];
+        style = "monospace";
+        size = 10.0;
+      };
+    };
+  };
+  systemd.user.services.sway-headless = {
+    Unit.Description = "Headless Sway";
+
+    Service = {
+      ExecStart = "${pkgs.sway}/bin/sway";
+      Restart = "always";
+
+      Environment = [
+        "WLR_BACKENDS=headless"
+        "WLR_LIBINPUT_NO_DEVICES=1"
+      ];
+    };
+
+    Install.WantedBy = [ "default.target" ];
+  };
+  systemd.user.services.wayvnc = {
+    Unit = {
+      Description = "WayVNC";
+    };
+
+    Service = {
+      ExecStart = "${pkgs.wayvnc}/bin/wayvnc --output=HEADLESS-1 0.0.0.0";
+      Restart = "always";
+    };
+
+    Install.WantedBy = [ "default.target" ];
+  };
+  programs.waybar = {
+    enable = true;
+
+    systemd = {
+      enable = true;
+      target = "sway-session.target";
+    };
+
+    style = ''
+      @import "${pkgs.waybar}/etc/xdg/waybar/style.css";
+
+      * {
+        font-family: LiberationMono;
+        font-size: 13px;
+      }
+
+      #custom-gpu {
+        padding: 0 10px;
+        background-color: #2980b9;
+        color: #ffffff;
+      }
+
+      #language {
+        background-color: transparent;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+      }
+    '';
+    
+    settings.main = {
+      position = "bottom";
+      height = 24;
+
+      modules-left = [
+        "sway/workspaces"
+        "sway/language"
+      ];
+      modules-right = [
+        "tray"
+        "disk#root"
+        "disk#home"
+        "disk#media-var"
+        "memory"
+        "cpu"
+        "temperature#tccd1"
+        "temperature#tccd2"
+        "custom/gpu"
+        "clock#date"
+        "clock#time"
+      ];
+
+      "sway/language" = {
+        on-click = "swaymsg input '*' xkb_switch_layout next";
+      };
+
+      "disk#root" = {
+        format = "/ {percentage_used}%";
+        path = "/";
+      };
+      "disk#home" = {
+        format = "/home {percentage_used}%";
+        path = "/home";
+      };
+      "disk#media-var" = {
+        format = "/media/var {percentage_used}%";
+        path = "/media/var";
+      };
+
+      memory = {
+        interval = 5;
+        format = "RAM {percentage}%";
+      };
+      
+      cpu = {
+        interval = 2;
+        format = "CPU {usage}%";
+      };
+
+      "temperature#tccd1" = {
+        hwmon-path = "/sys/class/hwmon/hwmon5/temp3_input";
+      };
+      "temperature#tccd2" = {
+        hwmon-path = "/sys/class/hwmon/hwmon5/temp4_input";
+      };
+
+      "custom/gpu" = {
+        exec = "${pkgs.python313}/bin/python ${./waybar-gpu-module.py} /sys/class/drm/card1/device";
+        return-type = "json";
+        format = "{text}";
+      };
+      
+      "clock#date" = {
+        format = "{:%d %B %a}";
+        tooltip-format = "<tt>{calendar}</tt>";
+      };
+      "clock#time" = {
+        format = "{:%H:%M:%S}";
+        interval = 1;
+      };
+    };
+  };
+
   xdg.configFile = {
     "containers/registries.conf".text = ''
       [registries.search]

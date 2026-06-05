@@ -406,6 +406,57 @@ in {
     input-fonts.acceptLicense = true;
   };
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      aml1 = (prev.aml.overrideAttrs (old: rec {
+        version = "1.0.0";
+        src = prev.fetchFromGitHub {
+          owner = "any1";
+          repo = "aml";
+          rev = "v${version}";
+          hash = "sha256-10gm6YphZrpLShj3NUj/AG24dSVLZAZbbnXr7GiF4DI=";
+        };
+      }));
+      neatvnc1 = (prev.aml.overrideAttrs (old: rec {
+        version = "1.0.0";
+        src = prev.fetchFromGitHub {
+          owner = "any1";
+          repo = "neatvnc";
+          rev = "v${version}";
+          hash = "sha256-yEWNiazRxc8G7ToqOcTtCXEuBCgXO64v31Xx1YeOPCM=";
+        };
+        buildInputs = with prev; [
+          final.aml1
+          ffmpeg
+          gnutls
+          libjpeg_turbo
+          libgbm
+          pixman
+          zlib
+        ];
+      }));
+      wayvnc = (prev.wayvnc.overrideAttrs (old: rec {
+        version = "0.10.0";
+        src = prev.fetchFromGitHub {
+          owner = "any1";
+          repo = "wayvnc";
+          rev = "v${version}";
+          hash = "sha256-+CAH2jcIIQqImonWeWxMQyTtEEuuQlaGyl/ajPfClh8=";
+        };
+        buildInputs = with prev; [
+          final.aml1
+          jansson
+          libxkbcommon
+          libgbm
+          final.neatvnc1
+          pam
+          pixman
+          wayland
+        ];
+      }));
+    })
+  ];
+
   # environment.etc."gai.conf".text = ''
   #   precedence ::ffff:0:0/96  100
   # '';
