@@ -769,7 +769,7 @@ in {
         let
           args = [
             "--host" "127.0.0.1"
-            "--port" "8080"
+            "--port" "11080"
             "--fit" "on"
             "--fit-target" "1024"
             "--models-preset" "/media/var/llama-cpp/models/presets.ini"
@@ -832,6 +832,26 @@ in {
   #     };
   #   };
   # };
+  virtualisation.oci-containers.containers.open-webui = {
+    image = "ghcr.io/open-webui/open-webui:0.9.6";
+    environment = {
+      PORT = "11081";
+    };
+    networks = [ "host" ];
+    volumes = [
+      "open-webui:/app/backend/data"
+    ];
+  };
+  services.nginx.virtualHosts."llm.castle" = {
+    extraConfig = ''
+      client_max_body_size 10m;
+      proxy_buffering off;
+    '';
+    locations."/" = {
+      proxyPass = "http://localhost:11081";
+      proxyWebsockets = true;
+    };
+  };
   
   services.mysql = {
     enable = true;
@@ -950,6 +970,8 @@ in {
         dns_enabled = true;
       };
     };
+
+    oci-containers.backend = "podman";
 
     containers.containersConf.settings = {
       engine = {

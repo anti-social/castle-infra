@@ -23,6 +23,7 @@ rec {
       # mac = "18:c0:4d:a4:67:97";
       mac = "74:56:3c:43:9a:36";
       ip = mkAddr 2;
+      aliases = [ "llm" ];
     };
     oldpc = {
       mac = "f8:32:e4:9a:87:da";
