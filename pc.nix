@@ -465,6 +465,7 @@ in {
       emacs
       emacs-shell
       firefox
+      orca-slicer
       kicad
       stm32cubemx
       telegram-desktop
