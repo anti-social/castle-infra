@@ -384,30 +384,25 @@ in {
         # Alla's macbook
         publicKey = "SR6YONkjoS5guGF/2vv8aR4GqI2UWRvkq28BSVVumVc=";
         allowedIPs = [ "192.168.102.3/32" ];
-        persistentKeepalive = 25;
       }
       {
         # My work laptop
         publicKey = "c8UHeWjMELB1/+ehjPICvtjBaYkZhRuZw7YZJvLUgEg=";
         allowedIPs = [ "192.168.102.4/32" ];
-        persistentKeepalive = 25;
       }
       {
-        # My phone (Samsung Note)
-        publicKey = "5fbeSwMP1b1QK3DHxiR0jbGNOvHXEcohC7TV+hnQCDo=";
+        # My phone
+        publicKey = "9BU5DrVu3eJ/PpzHzdWTSsr3oUUaYBLdfUnKXdu0JRo=";
         allowedIPs = [ "192.168.102.11/32" ];
-        persistentKeepalive = 25;
       }
       {
         publicKey = "St1qLCN7EtsWiiTQxNRPGtTpwa95fLcguwiZWUJU2S8=";
         allowedIPs = [ "192.168.102.14/32" ];
-        persistentKeepalive = 25;
       }
 
       {
         publicKey = "gzg2FG4kW9ZVI6y9hYfiRhY+ZJ/TI84C6i5K0Fs0kwQ=";
         allowedIPs = [ "192.168.102.99/32" ];
-        persistentKeepalive = 25;
       }
     ];
   };
