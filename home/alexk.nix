@@ -62,6 +62,8 @@ in {
       # Bash like navigation
       autoload -U select-word-style && select-word-style bash
       export WORDCHARS=""
+
+      bindkey '^R' history-incremental-pattern-search-backward
     '';
     oh-my-zsh = {
       enable = true;
