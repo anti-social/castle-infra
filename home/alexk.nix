@@ -144,6 +144,8 @@ in {
         };
       };
 
+      bars = [];
+
       input."type:keyboard" = {
         xkb_layout = "us,ua";
         xkb_options = "grp:caps_toggle";
@@ -168,6 +170,7 @@ in {
       Environment = [
         "WLR_BACKENDS=headless"
         "WLR_LIBINPUT_NO_DEVICES=1"
+        "PULSE_SERVER=unix:/run/user/1000/pulse/native"
       ];
     };
 
@@ -179,7 +182,7 @@ in {
     };
 
     Service = {
-      ExecStart = "${pkgs.wayvnc}/bin/wayvnc --output=HEADLESS-1 0.0.0.0";
+      ExecStart = "${pkgs.wayvnc}/bin/wayvnc --output=HEADLESS-1 127.0.0.1";
       Restart = "always";
     };
 
@@ -221,10 +224,10 @@ in {
 
       modules-left = [
         "sway/workspaces"
+        "sway/mode"
         "sway/language"
       ];
       modules-right = [
-        "tray"
         "disk#root"
         "disk#home"
         "disk#media-var"
@@ -266,9 +269,11 @@ in {
 
       "temperature#tccd1" = {
         hwmon-path = "/sys/class/hwmon/hwmon5/temp3_input";
+        interval = 5;
       };
       "temperature#tccd2" = {
         hwmon-path = "/sys/class/hwmon/hwmon5/temp4_input";
+        interval = 5;
       };
 
       "custom/gpu" = {
