@@ -9,6 +9,7 @@
       # Use system packages list where available
       inputs.nixpkgs.follows = "nixpkgs-pc";
     };
+    quadlet-nix-pc.url = "github:SEIAROTg/quadlet-nix";
     nixpkgs-dell-laptop.url = "github:NixOS/nixpkgs/nixos-24.11";
     home-manager-dell-laptop = {
       url = "github:nix-community/home-manager/release-24.11";
@@ -26,6 +27,7 @@
     nixpkgs-gw,
     nixpkgs-pc,
     home-manager-pc,
+    quadlet-nix-pc,
     nixpkgs-dell-laptop,
     home-manager-dell-laptop,
     nixpkgs-minipc,
@@ -78,6 +80,7 @@
             nixpkgs = nodes.pc;
             agenix = agenix;
             home-manager = home-manager-pc;
+            quadlet-nix = quadlet-nix-pc;
           };
           minipc.nixpkgs = nodes.minipc;
           dell-laptop = {

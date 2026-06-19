@@ -1,4 +1,4 @@
-{ name, lib, pkgs, ... }:
+{ name, lib, pkgs, quadlet-nix, ... }:
 let
   zshThemes = {
     dell-laptop = "agnoster";
@@ -32,6 +32,10 @@ let
   #   ];
   # };
 in {
+  imports = [
+    quadlet-nix.homeManagerModules.quadlet
+  ];
+
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home.username = "alexk";
@@ -324,6 +328,24 @@ in {
       recursive = true;
     };
   };
+
+  # TODO: Configure hermes agent
+  # virtualisation.quadlet.containers = {
+  #   hermes-agent = {
+  #     autoStart = true;
+  #     serviceConfig = {
+  #       RestartSec = "10";
+  #       Restart = "always";
+  #     };
+  #     containerConfig = {
+  #       image = "docker.io/nousresearch/hermes-agent:v2026.6.5";
+  #       userns = "keep-id";
+  #       volumes = [
+  #         "/home/alexk/.hermes:/opt/data"
+  #       ];
+  #     };
+  #   };
+  # };
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage

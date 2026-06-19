@@ -1,4 +1,4 @@
-args @ { config, lib, pkgs, modulesPath, home-manager, agenix, utils, ... }:
+args @ { config, lib, pkgs, modulesPath, home-manager, quadlet-nix, agenix, utils, ... }:
 let
   lanIf = "enp14s0";
 in {
@@ -11,6 +11,7 @@ in {
     [ # Include the results of the hardware scan.
       (modulesPath + "/installer/scan/not-detected.nix")
       home-manager.nixosModules.home-manager
+      quadlet-nix.nixosModules.quadlet
       agenix.nixosModules.default
       ./another-nix-secrets
       ./modules/common.nix
@@ -1023,6 +1024,8 @@ in {
         dns_enabled = true;
       };
     };
+
+    quadlet.enable = true;
 
     oci-containers.backend = "podman";
 
