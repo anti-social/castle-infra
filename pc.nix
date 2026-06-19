@@ -381,11 +381,13 @@ in {
 
   users.users.game = {
     uid = 1003;
+    autoSubUidGidRange = false;
     isNormalUser = true;
     shell = pkgs.zsh;
   };
   users.users.alla = {
     uid = 1004;
+    autoSubUidGidRange = false;
     isNormalUser = true;
     shell = pkgs.zsh;
   };
