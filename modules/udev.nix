@@ -14,6 +14,9 @@
 
       # DSLogic
       SUBSYSTEMS=="usb", ATTRS{idVendor}=="2a0e", ATTRS{idProduct}=="0034", MODE="660", GROUP="dialout"
+
+      # Raspberry Pi Debug Probe (CMSIS-DAP)
+      SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="000c", MODE="660", GROUP="dialout"
     '';
   };
 }
