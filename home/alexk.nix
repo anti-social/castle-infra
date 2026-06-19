@@ -48,7 +48,23 @@ in {
     CROSS_CONTAINER_ENGINE = "podman";
   };
 
-  # home.packages = [ doom-emacs ];
+  home.packages = with pkgs; let
+    emacs-shell = pkgs.writeShellScriptBin "emacs-shell" ''
+      PROJECT_NAME=''${1:?}
+      PROJECT_DIR=$HOME/projects/$PROJECT_NAME
+      export __NIXOS_SET_ENVIRONMENT_DONE=1
+      cd $PROJECT_DIR
+      exec nix-shell --run "SHELL=${pkgs.zsh}/bin/zsh exec emacs"
+    '';
+  in [
+    alacritty
+    emacs
+    emacs-shell
+    grim
+    rofi
+    slurp
+    wl-clipboard
+  ];
 
   programs.zsh = {
     enable = true;
@@ -148,6 +164,8 @@ in {
         };
       };
 
+      menu = "rofi -show combi -modes combi -combi-modes 'drun,run,ssh' -theme solarized";
+
       bars = [];
 
       input."type:keyboard" = {
@@ -155,12 +173,16 @@ in {
         xkb_options = "grp:caps_toggle";
       };
 
-      terminal = "${pkgs.alacritty}/bin/alacritty";
+      terminal = "alacritty";
 
       fonts = {
         names = [ "pango" ];
         style = "monospace";
         size = 10.0;
+      };
+
+      keybindings = lib.mkOptionDefault {
+        "Mod4+Print" = "exec grim -g \"$(slurp)\" - | wl-copy";
       };
     };
   };
@@ -168,6 +190,12 @@ in {
     Unit.Description = "Headless Sway";
 
     Service = {
+      # Launch via a login shell so sway inherits the full NixOS session
+      # environment (/etc/profile -> /etc/set-environment). This sets
+      # __NIXOS_SET_ENVIRONMENT_DONE=1, which stops descendant shells from
+      # re-sourcing set-environment and clobbering vars like LD_LIBRARY_PATH
+      # (e.g. a nix-shell override from emacs-shell).
+      # ExecStart = "${pkgs.bash}/bin/bash -lc '${pkgs.sway}/bin/sway'";
       ExecStart = "${pkgs.sway}/bin/sway";
       Restart = "always";
 

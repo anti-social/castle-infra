@@ -494,30 +494,9 @@ in {
         };
       }
     );
-    emacs-shell = pkgs.writeShellScriptBin "emacs-shell" ''
-      PROJECT_DIR=''${1:?}
-      exec nix-shell --run "SHELL=${pkgs.zsh}/bin/zsh exec emacs $PROJECT_DIR" $PROJECT_DIR
-    '';
-    i3wm = [
-      dmenu
-      i3
-      i3status
-      i3blocks
-      maim
-      turbovnc
-      virtualgl
-      xclip
-      xdotool
-      xkill
-      xsetroot
-      xterm
-    ];
     apps = [
-      alacritty
       betaflight-configurator
       chromium
-      emacs
-      emacs-shell
       firefox
       orca-slicer
       kicad
@@ -619,7 +598,7 @@ in {
       watchman
       wget
     ];
-  in apps ++ dev ++ i3wm ++ tools;
+  in apps ++ dev ++ tools;
 
   nixpkgs.config.permittedInsecurePackages = [
     "python3.12-ecdsa-0.19.1" # used by esptool
