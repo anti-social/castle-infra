@@ -823,7 +823,7 @@ in {
             "--host" "127.0.0.1"
             "--port" "11080"
             "--fit" "on"
-            "--fit-target" "1024"
+            # "--fit-target" "1024"
             "--models-preset" "/media/var/llama-cpp/models/presets.ini"
           ];
         in
