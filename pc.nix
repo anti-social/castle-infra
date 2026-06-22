@@ -457,6 +457,23 @@ in {
           wayland
         ];
       }));
+      llama-cpp = prev.llama-cpp.overrideAttrs (old:
+        rec {
+          version = "9608";
+          src = pkgs.fetchFromGitHub {
+            owner = "ggml-org";
+            repo = "llama.cpp";
+            tag = "b${version}";
+            hash = "sha256-nNQzEfSqVwusixHdiZCyAOtrQTQ7aAdV+S9qZywWWx0=";
+            leaveDotGit = true;
+            postFetch = ''
+              git -C "$out" rev-parse --short HEAD > $out/COMMIT
+              find "$out" -name .git -print0 | xargs -0 rm -rf
+            '';
+          };
+          npmDepsHash = "sha256-pjdbI6NcZRlJVd62xhgbLhWrwFYwgsIwjORqvo1+VD8=";
+        }
+      );
     })
   ];
 
