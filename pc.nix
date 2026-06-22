@@ -72,6 +72,7 @@ in {
   boot.kernelModules = [ "kvm-amd" ];
   boot.kernelParams = [
     "amdgpu.runpm=0"
+    "amdgpu.ppfeaturemask=0xffffffff"
     # "drm.edid_firmware=HDMI-A-1:/root/lgtv-edid.bin"
   ];
   boot.extraModulePackages = [ ];
